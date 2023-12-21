@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,35 +10,35 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class PostTypeBLL : BaseBLL<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>, IPostTypeBLL
     {
-        public PostTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, IValidate validate) : base(unitOfWork, mapper, validate)
+        public PostTypeBLL(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 
         }
 
 
-        public Task<int> CountAll()
+        public async Task<int> CountAllAsync()
         {
-            throw new NotImplementedException();
+            return await UnitOfWork.PostTypes.Query().CountAsync();
         }
 
-        public async Task<IEnumerable<PostTypeReadDTO>> GetAll()
+        public async Task<IEnumerable<PostTypeReadDTO>> GetAllAsync()
         {
             return await ExecuteListAsync(new GetAllPostTypes(UnitOfWork, Mapper));
         }
 
-        public Task<IEnumerable<PostTypeReadDTO>> GetAllByIsAvailable(bool isAvailable)
+        public async Task<IEnumerable<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
         {
-            throw new NotImplementedException();
+            return await ExecuteListAsync(new GetAllPostTypeByIsAvailable(UnitOfWork, Mapper, isAvailable));
         }
 
-        public Task<IEnumerable<PostTypeReadDTO>> GetAllPaged(IPagerDTO pagerDTO)
+        public async Task<IEnumerable<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
         {
-            throw new NotImplementedException();
+            return await ExecuteListAsync(new GetAllPostTypePaged(UnitOfWork, Mapper, pagerDTO));
         }
 
-        public Task<IEnumerable<PostTypeReadDTO>> GetTopWithPosts(int top)
+        public async Task<IEnumerable<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
         {
-            throw new NotImplementedException();
+            return await ExecuteListAsync(new GetPostTypeTopWithPosts(UnitOfWork, Mapper, top));
         }
 
         public override async Task<PostTypeReadDTO> GetByIdAsync(int id)

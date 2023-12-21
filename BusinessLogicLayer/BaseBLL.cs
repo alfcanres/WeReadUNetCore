@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
+using DataTransferObjects;
 using DataTransferObjects.Interfaces;
 
 
@@ -10,7 +11,7 @@ namespace BusinessLogicLayer
         #region Properties
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        protected readonly IValidate _validate;
+        protected readonly IValidate _validate = new ValidateDTO();
 
 
         protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
@@ -20,12 +21,10 @@ namespace BusinessLogicLayer
 
         protected BaseBLL(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IValidate validate)
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _validate = validate;
         }
 
         protected void ResetValidations()
@@ -147,6 +146,11 @@ namespace BusinessLogicLayer
                 _validate.MessageList.Add(friendlyError);
                 _validate.IsValid = false;
             }
+            return _validate;
+        }
+
+        public IValidate IsOperationValid()
+        {
             return _validate;
         }
 

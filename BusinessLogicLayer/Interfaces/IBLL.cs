@@ -15,6 +15,8 @@ namespace BusinessLogicLayer.Interfaces
 
         Task<ReadDTO> GetByIdAsync(int id);
 
+        IValidate IsOperationValid();
+
 
     }
 }

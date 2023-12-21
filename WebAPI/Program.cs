@@ -1,3 +1,8 @@
+using AutoMapper;
+using BusinessLogicLayer;
+using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
+using BusinessLogicLayer.Interfaces;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +11,21 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // Add services to the container.
+
+//AutoMapper Config
+builder.Services.AddScoped(
+    provider => new MapperConfiguration(cgf =>
+    {
+        cgf.AddProfile(new AutoMapperProfiles());
+    }).CreateMapper());
+
+#region Business Objects
+
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+
+builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
+
+#endregion
 
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),

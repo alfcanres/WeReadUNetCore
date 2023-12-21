@@ -20,7 +20,7 @@ namespace DataTransferObjects
         int pageCount;
 
 
-        public PagedListDTO(List<T> list, int recordCount, IPagerDTO pagerDTO)
+        public PagedListDTO(IEnumerable<T> list, int recordCount, IPagerDTO pagerDTO)
         {
             SetPagedListDTO(list, recordCount, pagerDTO.RecordsPerPage, pagerDTO.CurrentPage);
         }
@@ -29,7 +29,7 @@ namespace DataTransferObjects
         {
         }
 
-        public void SetPagedListDTO(List<T> list, int recordCount, int recordsPerPage, int currenPage)
+        public void SetPagedListDTO(IEnumerable<T> list, int recordCount, int recordsPerPage, int currenPage)
         {
             this.list = list;
             this.recordCount = recordCount;

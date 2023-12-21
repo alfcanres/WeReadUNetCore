@@ -11,7 +11,7 @@ namespace BusinessLogicLayer.Helpers
 {
     public class AutoMapperProfiles : Profile
     {
-        protected AutoMapperProfiles()
+        public AutoMapperProfiles()
         {
 
             CreateMap<PostTypeCreateDTO, PostType>();
