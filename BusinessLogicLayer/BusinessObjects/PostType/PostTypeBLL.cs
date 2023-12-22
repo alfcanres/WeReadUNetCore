@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.BusinessObjects
             return await ExecuteListAsync(new GetPostTypeTopWithPosts(UnitOfWork, Mapper, top));
         }
 
-        public override async Task<PostTypeReadDTO> GetByIdAsync(int id)
+        protected override async Task<PostTypeReadDTO> ExecuteGetByIdAsync(int id)
         {
             var entity = await UnitOfWork.PostTypes.GetByIdAsync(id);
             var dto = Mapper.Map<PostTypeReadDTO>(entity);
@@ -53,7 +53,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
         protected override async Task<bool> ExecuteDeleteAsync(int id)
         {
-            await UnitOfWork.PostVotes.DeleteAsync(id);
+            await UnitOfWork.PostTypes.DeleteAsync(id);
             return true;
         }
 
@@ -92,7 +92,7 @@ namespace BusinessLogicLayer.BusinessObjects
         protected override async Task<IValidate> ExecValidateInsertAsync(PostTypeCreateDTO createDTO)
         {
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Description == createDTO.Description).AnyAsync();
-            if (!exists)
+            if (exists)
             {
                 _validate.AddError("An item with the same description already exists, please type another");
             }

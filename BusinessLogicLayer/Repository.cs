@@ -31,6 +31,7 @@ namespace BusinessLogicLayer
             }
 
             _dbSet.Remove(entity);
+            await _appDbContext.SaveChangesAsync();
         }
 
         public async Task<TEntity> GetByIdAsync(int id)

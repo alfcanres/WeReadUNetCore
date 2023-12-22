@@ -18,19 +18,23 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("Paged")]
-        public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] IPagerDTO pagerDTO)
+        public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
-            var totalRecordsTask = _BLL.CountAllAsync();
+            var totalRecords = await _BLL.CountAllAsync();
 
-            var listTask = _BLL.GetAllPagedAsync(pagerDTO);
+            var list = await _BLL.GetAllPagedAsync(pagerDTO);
 
-            int totalRecords = await totalRecordsTask;
-            var list = await listTask;
+            IValidate validate = _BLL.IsOperationValid();
 
-            PagedListDTO<PostTypeReadDTO> result = new PagedListDTO<PostTypeReadDTO>(list, totalRecords, pagerDTO);
-
-            return Ok(result);
-
+            if (validate.IsValid && list != null)
+            {
+                PagedListDTO<PostTypeReadDTO> result = new PagedListDTO<PostTypeReadDTO>(list, totalRecords, pagerDTO);
+                return Ok(result);
+            }
+            else
+            {
+                return StatusCode(500, validate);
+            }
         }
 
         [HttpGet("{id}")]
@@ -57,7 +61,7 @@ namespace WebAPI.Controllers
             return await DeleteAsync(id);
         }
 
-        [HttpGet("Top/{id}")]
+        [HttpGet("Top/{top}")]
         public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetTop(int top)
         {
             var result = await _BLL.GetTopWithPostsAsync(top);

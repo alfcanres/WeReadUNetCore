@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataTransferObjects;
+using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 
 
@@ -81,17 +82,57 @@ namespace BusinessLogicLayer
                 return false;
             }
         }
-        public abstract Task<ReadDTO> GetByIdAsync(int id);
+        public async Task<ReadDTO> GetByIdAsync(int id)
+        {
+            ResetValidations();
+            try
+            {
+                return await ExecuteGetByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = ex.Message;
+                _validate.IsValid = false;
+                _validate.MessageList.Add(friendlyError);
+                //LOG
+                return default(ReadDTO);
+            }
+
+        }
+
+        protected abstract Task<ReadDTO> ExecuteGetByIdAsync(int id);
         protected abstract Task<bool> ExecuteDeleteAsync(int id);
         protected abstract Task<ReadDTO> ExecuteInsertAsync(CreateDTO createDTO);
         protected abstract Task<ReadDTO> ExecuteUpdateAsync(UpdateDTO updateDTO);
         protected async Task<IEnumerable<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
-            return await queryStrategy.GetResults();
+            ResetValidations();
+            try
+            {
+                return await queryStrategy.GetResults();
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = ex.Message;
+                _validate.IsValid = false;
+                _validate.AddError(friendlyError);
+                return null;
+            }
         }
         protected async Task<int> CountListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
-            return await queryStrategy.CountResults();
+            ResetValidations();
+            try
+            {
+                return await queryStrategy.CountResults();
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = ex.Message;
+                _validate.IsValid = false;
+                _validate.AddError(friendlyError);
+                return 0;
+            }
         }
 
         #endregion

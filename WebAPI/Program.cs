@@ -12,12 +12,8 @@ var configuration = builder.Configuration;
 
 // Add services to the container.
 
-//AutoMapper Config
-builder.Services.AddScoped(
-    provider => new MapperConfiguration(cgf =>
-    {
-        cgf.AddProfile(new AutoMapperProfiles());
-    }).CreateMapper());
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 #region Business Objects
 

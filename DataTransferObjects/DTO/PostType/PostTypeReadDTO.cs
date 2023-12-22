@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 namespace DataTransferObjects.DTO
 {
     public record PostTypeReadDTO
-    (
-        int Id,
-        string Description,
-        bool IsAvailable,
-        int PostCount
-    );
+    {
+        public int Id { init; get; }
+        public string Description { init; get; }
+        public bool IsAvailable { init; get; }
+        public int PostCount { init; get; }
+    }
+
 }

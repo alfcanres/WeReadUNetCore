@@ -16,12 +16,27 @@ namespace WebAPI.Controllers
             _BLL = BLL;
         }
 
-        public abstract Task<ActionResult<PagedListDTO<ReadDTO>>> GetPaged(IPagerDTO pagerDTO);
+        public abstract Task<ActionResult<PagedListDTO<ReadDTO>>> GetPaged(PagerDTO pagerDTO);
 
         protected async Task<ActionResult<ReadDTO>> GetByIdAsync(int id)
         {
             var readModel = await _BLL.GetByIdAsync(id);
-            return readModel;
+            IValidate validate = _BLL.IsOperationValid();
+            if (validate.IsValid)
+            {
+                if (readModel == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return readModel;
+                }
+            }
+            else
+            {
+                return StatusCode(500, validate);
+            }
         }
 
         protected async Task<ActionResult> CreateAsync(CreateDTO createDTO)
