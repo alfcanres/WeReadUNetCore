@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
+using Microsoft.Extensions.Logging;
 
 
 namespace BusinessLogicLayer
@@ -13,8 +15,7 @@ namespace BusinessLogicLayer
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         protected readonly IValidate _validate = new ValidateDTO();
-
-
+        private readonly ILogger _logger; 
         protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
         protected IMapper Mapper { get { return _mapper; } }
 
@@ -22,10 +23,12 @@ namespace BusinessLogicLayer
 
         protected BaseBLL(
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
         protected void ResetValidations()
@@ -43,10 +46,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
-                //LOG
+                _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createDTO);
                 return default(ReadDTO);
             }
         }
@@ -59,10 +62,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnUpdateOpeation;
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
-                //LOG
+                _logger.LogError(ex, "UPDATE OPERATION : {updateDTO}", updateDTO);
                 return default(ReadDTO);
             }
         }
@@ -75,10 +78,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnDeleteOperation;
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
-                //LOG
+                _logger.LogError(ex, "DELETE OPERATION : {id}", id);
                 return false;
             }
         }
@@ -91,10 +94,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
-                //LOG
+                _logger.LogError(ex, "GET BY ID OPERATION : {id}", id);
                 return default(ReadDTO);
             }
 
@@ -113,9 +116,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
                 _validate.IsValid = false;
                 _validate.AddError(friendlyError);
+                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
                 return null;
             }
         }
@@ -128,9 +132,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
                 _validate.IsValid = false;
                 _validate.AddError(friendlyError);
+                _logger.LogError(ex, "EXECUTE COUNT ERROR {queryStrategy}", queryStrategy);
                 return 0;
             }
         }
@@ -149,9 +154,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
                 _validate.MessageList.Add(friendlyError);
                 _validate.IsValid = false;
+                _logger.LogError(ex, "VALIDATE INSERT OPERATION : {createDTO}", createDTO);
             }
             return _validate;
         }
@@ -165,9 +171,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnDeleteOperation;
                 _validate.MessageList.Add(friendlyError);
                 _validate.IsValid = false;
+                _logger.LogError(ex, "VALIDATE DELETE OPERATION : {id}", id);
             }
             return _validate;
         }
@@ -183,9 +190,10 @@ namespace BusinessLogicLayer
             }
             catch (Exception ex)
             {
-                string friendlyError = ex.Message;
+                string friendlyError = FriendlyErrorMessages.ErrorOnUpdateOpeation;
                 _validate.MessageList.Add(friendlyError);
                 _validate.IsValid = false;
+                _logger.LogError(ex, "VALIDATE UPDATE OPERATION : {updateDTO}", updateDTO);
             }
             return _validate;
         }

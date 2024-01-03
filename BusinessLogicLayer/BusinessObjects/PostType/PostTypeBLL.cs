@@ -5,12 +5,13 @@ using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public class PostTypeBLL : BaseBLL<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>, IPostTypeBLL
     {
-        public PostTypeBLL(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public PostTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<PostType> logger) : base(unitOfWork, mapper, logger)
         {
 
         }

@@ -10,10 +10,12 @@ namespace WebAPI.Controllers
     public abstract class CustomControllerBase<CreateDTO, ReadDTO, UpdateDTO> : ControllerBase
     {
         protected readonly IBLL<CreateDTO, ReadDTO, UpdateDTO> _BLL;
+        private readonly ILogger _logger;
 
-        protected CustomControllerBase(IBLL<CreateDTO, ReadDTO, UpdateDTO> BLL)
+        protected CustomControllerBase(IBLL<CreateDTO, ReadDTO, UpdateDTO> BLL, ILogger logger)
         {
             _BLL = BLL;
+            _logger = logger;   
         }
 
         public abstract Task<ActionResult<PagedListDTO<ReadDTO>>> GetPaged(PagerDTO pagerDTO);

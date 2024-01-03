@@ -25,7 +25,7 @@ builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
 
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-    options => options.MigrationsAssembly("DataAccessLayer") //Se pone para que las migraciones se guarden en el proyecto DataAccessLayer que está fuera de este proyecto CambalachApi
+    options => options.MigrationsAssembly("DataAccessLayer") 
     ));
 
 

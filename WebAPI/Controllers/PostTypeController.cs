@@ -11,17 +11,18 @@ namespace WebAPI.Controllers
     public class PostTypeController : CustomControllerBase<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
     {
         private readonly IPostTypeBLL _BLL;
+        private readonly ILogger<PostTypeController> _logger;
 
-        public PostTypeController(IPostTypeBLL BLL) : base(BLL)
+        public PostTypeController(IPostTypeBLL BLL, ILogger<PostTypeController> logger) : base(BLL, logger)
         {
             _BLL = BLL;
+            _logger = logger;
         }
 
         [HttpGet("Paged")]
         public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var totalRecords = await _BLL.CountAllAsync();
-
             var list = await _BLL.GetAllPagedAsync(pagerDTO);
 
             IValidate validate = _BLL.IsOperationValid();
@@ -72,6 +73,7 @@ namespace WebAPI.Controllers
         [HttpGet("Available/{isAvalable}")]
         public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetIsAvailable(bool isAvalable)
         {
+
             var result = await _BLL.GetAllByIsAvailableAsync(isAvalable);
 
             return Ok(result);
