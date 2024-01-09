@@ -14,6 +14,8 @@ namespace DataTransferObjects.Interfaces
         void AddError(string message);
 
         void Clear();
+
+        string ToString();
  
     }
 }

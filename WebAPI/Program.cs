@@ -8,16 +8,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var configuration = builder.Configuration;
 
-// Add services to the container.
+builder.Logging.ClearProviders();
+builder.Logging.AddConfiguration(configuration.GetSection("Logging"));
+builder.Logging.AddDebug();
+builder.Logging.AddConsole();
 
+// Add services to the container.
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 #region Business Objects
 
-builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
 
@@ -25,7 +30,7 @@ builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
 
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-    options => options.MigrationsAssembly("DataAccessLayer") 
+    options => options.MigrationsAssembly("DataAccessLayer")
     ));
 
 
@@ -50,3 +55,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

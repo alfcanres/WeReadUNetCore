@@ -15,7 +15,7 @@ namespace BusinessLogicLayer
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         protected readonly IValidate _validate = new ValidateDTO();
-        private readonly ILogger _logger; 
+        private readonly ILogger _logger;
         protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
         protected IMapper Mapper { get { return _mapper; } }
 
@@ -151,6 +151,9 @@ namespace BusinessLogicLayer
             try
             {
                 await ExecValidateInsertAsync(createDTO);
+
+                if (!_validate.IsValid)
+                    _logger.LogWarning("VALIDATE INSERT RETURNED FALSE: {validate}", _validate);
             }
             catch (Exception ex)
             {
@@ -168,6 +171,10 @@ namespace BusinessLogicLayer
             try
             {
                 await ExecValidateDeleteAsync(id);
+
+                //TODO: Implement this logging with message list of _validate object
+                if (!_validate.IsValid)
+                    _logger.LogWarning("VALIDATE DELETE RETURNED FALSE: {id} {validate}", id, _validate);
             }
             catch (Exception ex)
             {
@@ -187,6 +194,10 @@ namespace BusinessLogicLayer
             try
             {
                 await ExecValidateUpdateAsync(updateDTO);
+
+                if (!_validate.IsValid)
+                    _logger.LogWarning("VALIDATE UPDATE RETURNED FALSE: {validate}", _validate);
+
             }
             catch (Exception ex)
             {
@@ -197,7 +208,6 @@ namespace BusinessLogicLayer
             }
             return _validate;
         }
-
         public IValidate IsOperationValid()
         {
             return _validate;
