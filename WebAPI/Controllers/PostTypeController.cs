@@ -2,12 +2,15 @@
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PostTypeController : CustomControllerBase<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
     {
         private readonly IPostTypeBLL _BLL;
@@ -17,31 +20,6 @@ namespace WebAPI.Controllers
         {
             _BLL = BLL;
             _logger = logger;
-        }
-
-        [HttpGet("Paged")]
-        public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
-        {
-            var totalRecords = await _BLL.CountAllAsync();
-            var list = await _BLL.GetAllPagedAsync(pagerDTO);
-
-            IValidate validate = _BLL.IsOperationValid();
-
-            if (validate.IsValid && list != null)
-            {
-                PagedListDTO<PostTypeReadDTO> result = new PagedListDTO<PostTypeReadDTO>(list, totalRecords, pagerDTO);
-                return Ok(result);
-            }
-            else
-            {
-                return StatusCode(500, validate);
-            }
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PostTypeReadDTO>> Get(int id)
-        {
-            return await GetByIdAsync(id);
         }
 
         [HttpPost]
@@ -62,14 +40,6 @@ namespace WebAPI.Controllers
             return await DeleteAsync(id);
         }
 
-        [HttpGet("Top/{top}")]
-        public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetTop(int top)
-        {
-            var result = await _BLL.GetTopWithPostsAsync(top);
-
-            return Ok(result);
-        }
-
         [HttpGet("Available/{isAvalable}")]
         public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetIsAvailable(bool isAvalable)
         {
@@ -78,5 +48,44 @@ namespace WebAPI.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet("Paged")]
+        [AllowAnonymous]
+        public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        {
+            var totalRecords = await _BLL.CountAllAsync();
+            var list = await _BLL.GetAllPagedAsync(pagerDTO);
+
+            IValidate validate = _BLL.IsOperationValid();
+
+            if (validate.IsValid && list != null)
+            {
+                PagedListDTO<PostTypeReadDTO> result = new PagedListDTO<PostTypeReadDTO>(list, totalRecords, pagerDTO);
+                return Ok(result);
+            }
+            else
+            {
+                return StatusCode(500, validate);
+            }
+        }
+
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PostTypeReadDTO>> Get(int id)
+        {
+            return await GetByIdAsync(id);
+        }
+
+        [HttpGet("Top/{top}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetTop(int top)
+        {
+            var result = await _BLL.GetTopWithPostsAsync(top);
+
+            return Ok(result);
+        }
+
+
     }
 }
