@@ -5,6 +5,7 @@ using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace BusinessLogicLayer
@@ -150,7 +151,20 @@ namespace BusinessLogicLayer
 
             try
             {
-                await ExecValidateInsertAsync(createDTO);
+                var context = new ValidationContext(createDTO);
+                var results = new List<ValidationResult>();
+                if (!Validator.TryValidateObject(createDTO, context, results, true))
+                {
+                    foreach (var validationResult in results)
+                    {
+                        _validate.AddError(validationResult.ErrorMessage);
+                    }
+                }
+                else
+                {
+                    await ExecValidateInsertAsync(createDTO);
+                }
+
 
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE INSERT RETURNED FALSE: {validate}", _validate);
@@ -172,7 +186,7 @@ namespace BusinessLogicLayer
             {
                 await ExecValidateDeleteAsync(id);
 
-                //TODO: Implement this logging with message list of _validate object
+
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE DELETE RETURNED FALSE: {id} {validate}", id, _validate);
             }
