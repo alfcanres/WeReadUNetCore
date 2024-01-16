@@ -11,12 +11,16 @@ using System.ComponentModel.DataAnnotations;
 namespace BusinessLogicLayer
 {
     public abstract class BaseBLL<CreateDTO, ReadDTO, UpdateDTO> : IBLL<CreateDTO, ReadDTO, UpdateDTO>
+        where CreateDTO : class
+        where ReadDTO : class
+        where UpdateDTO : class
     {
         #region Properties
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         protected readonly IValidate _validate = new ValidateDTO();
         private readonly ILogger _logger;
+        private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
         protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
         protected IMapper Mapper { get { return _mapper; } }
 
@@ -25,11 +29,13 @@ namespace BusinessLogicLayer
         protected BaseBLL(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILogger logger)
+            ILogger logger,
+            IDataAnnotationsValidator dataAnnotationsValidator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _dataAnnotationsValidator = dataAnnotationsValidator;
         }
 
         protected void ResetValidations()
@@ -38,12 +44,18 @@ namespace BusinessLogicLayer
         }
 
         #region CRUDS
-        public async Task<ReadDTO> InsertAsync(CreateDTO createDTO)
+        public async Task<ResultResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO)
         {
-            ResetValidations();
+
+            ReadDTO readDTO = null;
+
             try
             {
-                return await ExecuteInsertAsync(createDTO);
+                await ValidateInsertAsync(createDTO);
+                if (this._validate.IsValid)
+                {
+                    readDTO = await ExecuteInsertAsync(createDTO);
+                }
             }
             catch (Exception ex)
             {
@@ -51,15 +63,22 @@ namespace BusinessLogicLayer
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
                 _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createDTO);
-                return default(ReadDTO);
+
             }
+
+            return new ResultResponseDTO<ReadDTO>(readDTO, this._validate);
         }
-        public async Task<ReadDTO> UpdateAsync(UpdateDTO updateDTO)
+        public async Task<ResultResponseDTO<ReadDTO>> UpdateAsync(UpdateDTO updateDTO)
         {
-            ResetValidations();
+            ReadDTO readDTO = null;
+
             try
             {
-                return await ExecuteUpdateAsync(updateDTO);
+                await ValidateUpdateAsync(updateDTO);
+                if (this._validate.IsValid)
+                {
+                    readDTO = await ExecuteUpdateAsync(updateDTO);
+                }
             }
             catch (Exception ex)
             {
@@ -67,15 +86,19 @@ namespace BusinessLogicLayer
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
                 _logger.LogError(ex, "UPDATE OPERATION : {updateDTO}", updateDTO);
-                return default(ReadDTO);
             }
+
+            return new ResultResponseDTO<ReadDTO>(readDTO, this._validate);
         }
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<IValidate> DeleteAsync(int id)
         {
-            ResetValidations();
             try
             {
-                return await ExecuteDeleteAsync(id);
+                await ValidateDeleteAsync(id);
+                if (this._validate.IsValid)
+                {
+                    await ExecuteDeleteAsync(id);
+                }
             }
             catch (Exception ex)
             {
@@ -83,15 +106,17 @@ namespace BusinessLogicLayer
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
                 _logger.LogError(ex, "DELETE OPERATION : {id}", id);
-                return false;
             }
+
+            return this._validate;
         }
-        public async Task<ReadDTO> GetByIdAsync(int id)
+        public async Task<ResultResponseDTO<ReadDTO>> GetByIdAsync(int id)
         {
             ResetValidations();
+            ReadDTO readDTO = null;
             try
             {
-                return await ExecuteGetByIdAsync(id);
+                readDTO = await ExecuteGetByIdAsync(id);
             }
             catch (Exception ex)
             {
@@ -99,14 +124,13 @@ namespace BusinessLogicLayer
                 _validate.IsValid = false;
                 _validate.MessageList.Add(friendlyError);
                 _logger.LogError(ex, "GET BY ID OPERATION : {id}", id);
-                return default(ReadDTO);
             }
 
+            return new ResultResponseDTO<ReadDTO>(readDTO, this._validate);
         }
-
         protected abstract Task<ReadDTO> ExecuteGetByIdAsync(int id);
-        protected abstract Task<bool> ExecuteDeleteAsync(int id);
         protected abstract Task<ReadDTO> ExecuteInsertAsync(CreateDTO createDTO);
+        protected abstract Task ExecuteDeleteAsync(int id);
         protected abstract Task<ReadDTO> ExecuteUpdateAsync(UpdateDTO updateDTO);
         protected async Task<IEnumerable<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
@@ -144,88 +168,51 @@ namespace BusinessLogicLayer
         #endregion
 
         #region Model Validations
-        protected abstract Task<IValidate> ExecValidateInsertAsync(CreateDTO createDTO);
-        public async Task<IValidate> ValidateInsertAsync(CreateDTO createDTO)
+
+        protected abstract Task ExecValidateInsertAsync(CreateDTO createDTO);
+        private async Task ValidateInsertAsync(CreateDTO createDTO)
         {
             ResetValidations();
 
-            try
-            {
-                var context = new ValidationContext(createDTO);
-                var results = new List<ValidationResult>();
-                if (!Validator.TryValidateObject(createDTO, context, results, true))
-                {
-                    foreach (var validationResult in results)
-                    {
-                        _validate.AddError(validationResult.ErrorMessage);
-                    }
-                }
-                else
-                {
-                    await ExecValidateInsertAsync(createDTO);
-                }
+            _dataAnnotationsValidator.ValidateModel(createDTO, this._validate);
 
+            if (this._validate.IsValid)
+            {
+                await ExecValidateInsertAsync(createDTO);
 
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE INSERT RETURNED FALSE: {validate}", _validate);
             }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                _validate.MessageList.Add(friendlyError);
-                _validate.IsValid = false;
-                _logger.LogError(ex, "VALIDATE INSERT OPERATION : {createDTO}", createDTO);
-            }
-            return _validate;
         }
-        protected abstract Task<IValidate> ExecValidateDeleteAsync(int id);
-        public async Task<IValidate> ValidateDeleteAsync(int id)
+        protected abstract Task ExecValidateDeleteAsync(int id);
+        private async Task ValidateDeleteAsync(int id)
         {
             ResetValidations();
-            try
-            {
-                await ExecValidateDeleteAsync(id);
 
+            await ExecValidateDeleteAsync(id);
 
-                if (!_validate.IsValid)
-                    _logger.LogWarning("VALIDATE DELETE RETURNED FALSE: {id} {validate}", id, _validate);
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnDeleteOperation;
-                _validate.MessageList.Add(friendlyError);
-                _validate.IsValid = false;
-                _logger.LogError(ex, "VALIDATE DELETE OPERATION : {id}", id);
-            }
-            return _validate;
+            if (!_validate.IsValid)
+                _logger.LogWarning("VALIDATE DELETE RETURNED FALSE: {id} {validate}", id, _validate);
+
         }
-        protected abstract Task<IValidate> ExecValidateUpdateAsync(UpdateDTO updateDTO);
-        public async Task<IValidate> ValidateUpdateAsync(UpdateDTO updateDTO)
+        protected abstract Task ExecValidateUpdateAsync(UpdateDTO updateDTO);
+        private async Task ValidateUpdateAsync(UpdateDTO updateDTO)
         {
 
             ResetValidations();
 
-            try
+            _dataAnnotationsValidator.ValidateModel(updateDTO, this._validate);
+
+            if (this._validate.IsValid)
             {
                 await ExecValidateUpdateAsync(updateDTO);
 
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE UPDATE RETURNED FALSE: {validate}", _validate);
+            }
 
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnUpdateOpeation;
-                _validate.MessageList.Add(friendlyError);
-                _validate.IsValid = false;
-                _logger.LogError(ex, "VALIDATE UPDATE OPERATION : {updateDTO}", updateDTO);
-            }
-            return _validate;
         }
-        public IValidate IsOperationValid()
-        {
-            return _validate;
-        }
+
 
         #endregion
 

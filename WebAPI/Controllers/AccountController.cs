@@ -26,7 +26,6 @@ namespace WebAPI.Controllers
         private readonly IAccountBLL _accountBLL;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
-        private IValidate validate;
 
         public AccountController(IAccountBLL accountBLL, ILogger logger, IConfiguration configuration)
         {
@@ -94,9 +93,9 @@ namespace WebAPI.Controllers
             try
             {
 
-                ResultResponseDTO<bool> response = await _accountBLL.UpdatePasswordAsync(updateModel);
+                IValidate response = await _accountBLL.UpdatePasswordAsync(updateModel);
 
-                if (response.ValidateResponse.IsValid)
+                if (response.IsValid)
                 {
                     return Ok(response);
                 }

@@ -1,22 +1,16 @@
-﻿using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
+using DataTransferObjects.Interfaces;
 
 namespace BusinessLogicLayer.Interfaces
 {
-    public interface IBLL<CreateDTO, ReadDTO, UpdateDTO>
+    public interface IBLL<CreateDTO, ReadDTO, UpdateDTO> 
+        where CreateDTO : class
+        where ReadDTO : class
+        where UpdateDTO : class
     {
-        Task<IValidate> ValidateDeleteAsync(int id);
-        Task<bool> DeleteAsync(int id);
-
-        Task<IValidate> ValidateInsertAsync(CreateDTO createDTO);
-        Task<ReadDTO> InsertAsync(CreateDTO createDTO);
-
-        Task<IValidate> ValidateUpdateAsync(UpdateDTO updateDTO);
-        Task<ReadDTO> UpdateAsync(UpdateDTO updateDTO);
-
-        Task<ReadDTO> GetByIdAsync(int id);
-
-        IValidate IsOperationValid();
-
-
+        Task<IValidate> DeleteAsync(int id);
+        Task<ResultResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO);
+        Task<ResultResponseDTO<ReadDTO>> UpdateAsync(UpdateDTO updateDTO);
+        Task<ResultResponseDTO<ReadDTO>> GetByIdAsync(int id);
     }
 }

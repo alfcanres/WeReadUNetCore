@@ -18,11 +18,11 @@ namespace DataTransferObjects.DTO
         public string Email { init; get; }
 
         [MaxLength(255)]
-        [Required(ErrorMessage = "Type a valid email")]
+        [Required(ErrorMessage = "Type a valid fist name")]
         public string FirstName { init; get; }
 
         [MaxLength(255)]
-        [Required(ErrorMessage = "Type a valid email")]
+        [Required(ErrorMessage = "Type a valid last name")]
         public string LastName { init; get; }
 
         [MinLength(150)]

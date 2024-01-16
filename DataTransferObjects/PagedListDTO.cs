@@ -9,33 +9,26 @@ namespace DataTransferObjects
 {
     public class PagedListDTO<T> : IPagedListDTO<T>
     {
-        public IEnumerable<T> List { get { return list; } set { list = value; } }
-        public int RecordCount { get { return recordCount; } set { recordCount = value; } }
-        public int CurrentPage { get { return currentPage; } set { currentPage = value; } }
-        public int PageCount { get { return pageCount; } set { pageCount = value; } }
+        public IEnumerable<T> List => _list;
+        public int RecordCount => _recordCount;
+        public int CurrentPage => _currentPage;
+        public int PageCount => _pageCount;
+        public IValidate Validate => _validate;
 
-        IEnumerable<T> list;
-        int recordCount;
-        int currentPage;
-        int pageCount;
+        private readonly IEnumerable<T> _list;
+        private readonly int _recordCount;
+        private readonly int _currentPage;
+        private readonly int _pageCount;
+        private readonly IValidate _validate;
 
-
-        public PagedListDTO(IEnumerable<T> list, int recordCount, IPagerDTO pagerDTO)
+        public PagedListDTO(IEnumerable<T> list, int recordCount, IPagerDTO pagerDTO, IValidate validate)
         {
-            SetPagedListDTO(list, recordCount, pagerDTO.RecordsPerPage, pagerDTO.CurrentPage);
-        }
-
-        public PagedListDTO()
-        {
-        }
-
-        public void SetPagedListDTO(IEnumerable<T> list, int recordCount, int recordsPerPage, int currenPage)
-        {
-            this.list = list;
-            this.recordCount = recordCount;
-            this.currentPage = currenPage;
-            double pageCount = Math.Ceiling(Convert.ToDouble((recordCount / Convert.ToDouble(recordsPerPage))));
-            this.pageCount = Convert.ToInt32(pageCount);
+            this._list = list;
+            this._recordCount = recordCount;
+            this._currentPage = pagerDTO.CurrentPage;
+            double pageCountDoub = Math.Ceiling(Convert.ToDouble((recordCount / Convert.ToDouble(pagerDTO.RecordsPerPage))));
+            this._pageCount = Convert.ToInt32(pageCountDoub);
+            _validate = validate;
         }
 
     }

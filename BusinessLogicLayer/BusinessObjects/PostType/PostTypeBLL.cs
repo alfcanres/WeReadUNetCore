@@ -11,35 +11,45 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class PostTypeBLL : BaseBLL<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>, IPostTypeBLL
     {
-        public PostTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<PostType> logger) : base(unitOfWork, mapper, logger)
+        public PostTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
         {
-
         }
-
 
         public async Task<int> CountAllAsync()
         {
             return await UnitOfWork.PostTypes.Query().CountAsync();
         }
 
-        public async Task<IEnumerable<PostTypeReadDTO>> GetAllAsync()
+        public async Task<IListDTO<PostTypeReadDTO>> GetAllAsync()
         {
-            return await ExecuteListAsync(new GetAllPostTypes(UnitOfWork, Mapper));
+            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetAllPostTypes(UnitOfWork, Mapper));
+
+            return new ListDTO<PostTypeReadDTO>(list, this._validate);
         }
 
-        public async Task<IEnumerable<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
+
+
+        public async Task<IPagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
         {
-            return await ExecuteListAsync(new GetAllPostTypeByIsAvailable(UnitOfWork, Mapper, isAvailable));
+            int recordCount = await CountAllAsync();
+
+            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetAllPostTypePaged(UnitOfWork, Mapper, pagerDTO));
+
+            return new PagedListDTO<PostTypeReadDTO>(list, recordCount, pagerDTO, this._validate);
         }
 
-        public async Task<IEnumerable<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
+        public async Task<IListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
         {
-            return await ExecuteListAsync(new GetAllPostTypePaged(UnitOfWork, Mapper, pagerDTO));
+            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetPostTypeTopWithPosts(UnitOfWork, Mapper, top));
+
+            return new ListDTO<PostTypeReadDTO>(list, this._validate);
         }
 
-        public async Task<IEnumerable<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
+        public async Task<IListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
         {
-            return await ExecuteListAsync(new GetPostTypeTopWithPosts(UnitOfWork, Mapper, top));
+            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetAllPostTypeByIsAvailable(UnitOfWork, Mapper, isAvailable));
+
+            return new ListDTO<PostTypeReadDTO>(list, this._validate);
         }
 
         protected override async Task<PostTypeReadDTO> ExecuteGetByIdAsync(int id)
@@ -52,10 +62,9 @@ namespace BusinessLogicLayer.BusinessObjects
 
         #region CREATE, UPDATE, DELETE BASE METHODS
 
-        protected override async Task<bool> ExecuteDeleteAsync(int id)
+        protected override async Task ExecuteDeleteAsync(int id)
         {
             await UnitOfWork.PostTypes.DeleteAsync(id);
-            return true;
         }
 
         protected override async Task<PostTypeReadDTO> ExecuteInsertAsync(PostTypeCreateDTO createDTO)
@@ -80,36 +89,37 @@ namespace BusinessLogicLayer.BusinessObjects
 
         #region Validations
 
-        protected override async Task<IValidate> ExecValidateDeleteAsync(int id)
+        protected override async Task ExecValidateDeleteAsync(int id)
         {
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Id == id).AnyAsync();
             if (!exists)
             {
                 _validate.AddError("No record was found or was previously deleted");
             }
-            return _validate;
         }
 
-        protected override async Task<IValidate> ExecValidateInsertAsync(PostTypeCreateDTO createDTO)
+        protected override async Task ExecValidateInsertAsync(PostTypeCreateDTO createDTO)
         {
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Description == createDTO.Description).AnyAsync();
             if (exists)
             {
                 _validate.AddError("An item with the same description already exists, please type another");
             }
-            return _validate;
         }
 
-        protected override async Task<IValidate> ExecValidateUpdateAsync(PostTypeUpdateDTO updateDTO)
+        protected override async Task ExecValidateUpdateAsync(PostTypeUpdateDTO updateDTO)
         {
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)
             {
                 _validate.AddError("No record was found or was previously deleted");
             }
-            return _validate;
         }
 
-        #endregion 
+
+
+
+
+        #endregion
     }
 }

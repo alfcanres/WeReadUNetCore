@@ -30,16 +30,14 @@ namespace BusinessLogicLayer.BusinessObjects
             _dataAnnotationsValidator = dataAnnotationsValidator;
         }
 
-        private async Task<IValidate> ValidateInsertAsync(UserCreateDTO createDTO)
+        private async Task ValidateInsertAsync(UserCreateDTO createDTO)
         {
-            ResetValidations();
+            _validate.Clear();
 
-            try
+            _dataAnnotationsValidator.ValidateModel(createDTO, this._validate);
+
+            if (this._validate.IsValid)
             {
-                _dataAnnotationsValidator.ValidateModel(createDTO, this._validate);
-
-                if(this._validate.IsValid == false)
-                    return await Task.FromResult(this._validate);
 
                 var appUser = await _userManager.FindByEmailAsync(createDTO.Email);
 
@@ -58,15 +56,8 @@ namespace BusinessLogicLayer.BusinessObjects
 
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE INSERT RETURNED FALSE: {validate}", _validate);
+
             }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                _validate.MessageList.Add(friendlyError);
-                _validate.IsValid = false;
-                _logger.LogError(ex, "VALIDATE INSERT OPERATION : {createDTO}", createDTO);
-            }
-            return _validate;
         }
         public async Task<ResultResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO)
         {
@@ -115,11 +106,11 @@ namespace BusinessLogicLayer.BusinessObjects
             }
 
 
-            return new ResultResponseDTO<UserReadDTO>(new UserReadDTO(), this._validate);
+            return new ResultResponseDTO<UserReadDTO>(userReadDTO, this._validate);
         }
         public async Task<ResultResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO)
         {
-            ResetValidations();
+            _validate.Clear();
             UserReadDTO userReadDTO = null;
             try
             {
@@ -157,19 +148,14 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return new ResultResponseDTO<UserReadDTO>(userReadDTO, this._validate);
         }
-
-        private async Task<IValidate> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        private async Task ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
         {
-            ResetValidations();
+            _validate.Clear();
 
-            try
+            _dataAnnotationsValidator.ValidateModel(updateDTO, this._validate);
+
+            if (this._validate.IsValid)
             {
-
-                _dataAnnotationsValidator.ValidateModel(updateDTO, this._validate);
-
-                if (this._validate.IsValid == false)
-                    return await Task.FromResult(this._validate);
-
 
                 var applicationUser = await _userManager.FindByEmailAsync(updateDTO.Email);
 
@@ -190,23 +176,16 @@ namespace BusinessLogicLayer.BusinessObjects
                     _logger.LogWarning("VALIDATE UPDATE PASSWORD RETURNED FALSE: {validate}", _validate);
 
             }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnUpdateOpeation;
-                _validate.MessageList.Add(friendlyError);
-                _validate.IsValid = false;
-                _logger.LogError(ex, "VALIDATE UPDATE PASSWORD OPERATION : {updateDTO}", updateDTO);
-            }
-            return _validate;
         }
-        public async Task<ResultResponseDTO<bool>> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        public async Task<IValidate> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
         {
-            await ValidateUpdatePasswordAsync(updateDTO);
-
-            if (this._validate.IsValid)
+            try
             {
-                try
+                await ValidateUpdatePasswordAsync(updateDTO);
+
+                if (this._validate.IsValid)
                 {
+
                     var applicationUser = await _userManager.FindByEmailAsync(updateDTO.Email);
 
                     var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
@@ -221,23 +200,24 @@ namespace BusinessLogicLayer.BusinessObjects
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                    _validate.IsValid = false;
-                    _validate.MessageList.Add(friendlyError);
-                    _logger.LogError(ex, "CHANGE PASSWORD OPERATION : {createDTO}", updateDTO);
 
-                }
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
+                _validate.IsValid = false;
+                _validate.MessageList.Add(friendlyError);
+                _logger.LogError(ex, "CHANGE PASSWORD OPERATION : {createDTO}", updateDTO);
+
             }
 
-            return new ResultResponseDTO<bool>(this._validate.IsValid, this._validate);
+            return _validate;
 
 
         }
         public async Task<ResultResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
         {
-            ResetValidations();
+            _validate.Clear();
             UserReadDTO userDTO = null;
             var appUser = await _userManager.FindByEmailAsync(userNameOrEmail);
             if (appUser == null)
@@ -266,11 +246,6 @@ namespace BusinessLogicLayer.BusinessObjects
             }
 
             return new ResultResponseDTO<UserReadDTO>(userDTO, this._validate);
-        }
-
-        private void ResetValidations()
-        {
-            _validate.Clear();
         }
 
     }

@@ -17,7 +17,7 @@ namespace BusinessLogicLayer.BusinessObjects
         Task<ResultResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO);
         Task<ResultResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail);
         public Task<ResultResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO);
-        Task<ResultResponseDTO<bool>> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
+        Task<IValidate> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
 
     }
 }

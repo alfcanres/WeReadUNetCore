@@ -12,10 +12,12 @@ namespace BusinessLogicLayerTest
     public class AccountBLLTest
     {
         [Fact]
-        public async Task CreateAsyncShouldNotBeValid()
+        public async Task CreateAsyncWithEmptyDataShouldNotBeValid()
         {
 
             //Arrange
+            int expectedErrorsCount = 5;
+
             IdentityResult identityResult = IdentityResult.Failed(new[] { new IdentityError() { Description = "Just a test" } });
 
             var userManager = new Mock<IUserManagerWrapper>();
@@ -37,8 +39,12 @@ namespace BusinessLogicLayerTest
                 LastName = ""
             });
 
-            //Acert
-            Assert.False(result.ValidateResponse.IsValid);
+            string errorMessage = "Type a valid";
+
+            //Assert
+            int actualErrorsCount = result.ValidateResponse.MessageList.Where(t => t.Contains(errorMessage)).Count();
+
+            Assert.Equal(expectedErrorsCount, actualErrorsCount);
 
         }
     }

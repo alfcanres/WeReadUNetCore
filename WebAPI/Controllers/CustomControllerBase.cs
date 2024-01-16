@@ -8,6 +8,9 @@ using WebAPI.ExtensionMethods;
 namespace WebAPI.Controllers
 {
     public abstract class CustomControllerBase<CreateDTO, ReadDTO, UpdateDTO> : ControllerBase
+        where CreateDTO : class
+        where ReadDTO : class
+        where UpdateDTO : class
     {
         protected readonly IBLL<CreateDTO, ReadDTO, UpdateDTO> _BLL;
         private readonly ILogger _logger;
@@ -15,94 +18,93 @@ namespace WebAPI.Controllers
         protected CustomControllerBase(IBLL<CreateDTO, ReadDTO, UpdateDTO> BLL, ILogger logger)
         {
             _BLL = BLL;
-            _logger = logger;   
+            _logger = logger;
         }
 
         public abstract Task<ActionResult<PagedListDTO<ReadDTO>>> GetPaged(PagerDTO pagerDTO);
 
         protected async Task<ActionResult<ReadDTO>> GetByIdAsync(int id)
         {
-            var readModel = await _BLL.GetByIdAsync(id);
-            IValidate validate = _BLL.IsOperationValid();
-            if (validate.IsValid)
+            try
             {
-                if (readModel == null)
+                var response = await _BLL.GetByIdAsync(id);
+                if (response.ValidateResponse.IsValid)
                 {
-                    return NotFound();
+                    return Ok(response);
                 }
                 else
                 {
-                    return readModel;
+                    return NotFound(response);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return StatusCode(500, validate);
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(500, "Something whent wrong, please try again later");
             }
         }
 
         protected async Task<ActionResult> CreateAsync(CreateDTO createDTO)
         {
-            IValidate validate = null;
-            if (!TryValidateModel(createDTO))
+            try
             {
-                validate = ModelState.ToValidate();
+                ResultResponseDTO<ReadDTO> response = await _BLL.InsertAsync(createDTO);
+                if (response.ValidateResponse.IsValid)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
-            validate = await _BLL.ValidateInsertAsync(createDTO);
-            if (validate.IsValid)
+            catch (Exception ex)
             {
-                var readModel = await _BLL.InsertAsync(createDTO);
-                validate = _BLL.IsOperationValid();
-                if (!validate.IsValid)
-                    return StatusCode(500, validate);
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(500, "Something whent wrong, please try again later");
+            }
 
-                return Ok(readModel);
-            }
-            else
-            {
-                return BadRequest(validate);
-            }
         }
 
         protected async Task<ActionResult> UpdateAsync(UpdateDTO updateDTO)
         {
-            IValidate validate = null;
-            if (!TryValidateModel(updateDTO))
+            try
             {
-                validate = ModelState.ToValidate();
-                return BadRequest(validate);
+                ResultResponseDTO<ReadDTO> response = await _BLL.UpdateAsync(updateDTO);
+                if (response.ValidateResponse.IsValid)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
-
-            validate = await _BLL.ValidateUpdateAsync(updateDTO);
-            if (validate.IsValid)
+            catch (Exception ex)
             {
-                await _BLL.UpdateAsync(updateDTO);
-                validate = _BLL.IsOperationValid();
-                if (!validate.IsValid)
-                    return StatusCode(500, validate);
-                return NoContent();
-            }
-            else
-            {
-                return BadRequest(validate);
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(500, "Something whent wrong, please try again later");
             }
         }
 
         protected async Task<ActionResult> DeleteAsync(int id)
         {
-            IValidate validate = null;
-            validate = await _BLL.ValidateDeleteAsync(id);
-            if (validate.IsValid)
+            try
             {
-                await _BLL.DeleteAsync(id);
-                validate = _BLL.IsOperationValid();
-                if (!validate.IsValid)
-                    return StatusCode(500, validate);
-                return NoContent();
+                IValidate response = await _BLL.DeleteAsync(id);
+                if (response.IsValid)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(validate);
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(500, "Something whent wrong, please try again later");
             }
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataTransferObjects
 {
-    public class ResultResponseDTO<DTO>
+    public class ResultResponseDTO<DTO> where DTO : class
     {
         private readonly DTO _DTO;
         private readonly IValidate _validate;

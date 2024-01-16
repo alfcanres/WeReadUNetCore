@@ -1,7 +1,6 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,12 +40,14 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("Available/{isAvalable}")]
-        public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetIsAvailable(bool isAvalable)
+        public async Task<ActionResult> GetIsAvailable(bool isAvalable)
         {
-
             var result = await _BLL.GetAllByIsAvailableAsync(isAvalable);
 
-            return Ok(result);
+            if (result.Validate.IsValid)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
 
 
@@ -54,20 +55,13 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
-            var totalRecords = await _BLL.CountAllAsync();
-            var list = await _BLL.GetAllPagedAsync(pagerDTO);
+            var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
-            IValidate validate = _BLL.IsOperationValid();
-
-            if (validate.IsValid && list != null)
-            {
-                PagedListDTO<PostTypeReadDTO> result = new PagedListDTO<PostTypeReadDTO>(list, totalRecords, pagerDTO);
+            if (result.Validate.IsValid)
                 return Ok(result);
-            }
             else
-            {
-                return StatusCode(500, validate);
-            }
+                return BadRequest(result);
+
         }
 
         [HttpGet("{id}")]
@@ -79,11 +73,14 @@ namespace WebAPI.Controllers
 
         [HttpGet("Top/{top}")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<PostTypeReadDTO>>> GetTop(int top)
+        public async Task<ActionResult> GetTop(int top)
         {
             var result = await _BLL.GetTopWithPostsAsync(top);
 
-            return Ok(result);
+            if (result.Validate.IsValid)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
 
 
