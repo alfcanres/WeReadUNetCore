@@ -23,7 +23,7 @@ namespace BusinessLogicLayerTest
             var userManager = new Mock<IUserManagerWrapper>();
             userManager.Setup(s => s.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<String>())).Returns(Task.FromResult(identityResult));
             IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
-            var logger = new Mock<ILogger>();
+            var logger = new Mock<ILogger<AccountBLL>>();
 
             AccountBLL accountBLL = new AccountBLL(userManager.Object, logger.Object, validator);
 

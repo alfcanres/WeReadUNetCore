@@ -1,18 +1,10 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
-using BusinessLogicLayer.Interfaces;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using WebAPI.ExtensionMethods;
 using WebAPI.Model;
 
 namespace WebAPI.Controllers
@@ -24,10 +16,10 @@ namespace WebAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountBLL _accountBLL;
-        private readonly ILogger _logger;
+        private readonly ILogger<AccountController> _logger;
         private readonly IConfiguration _configuration;
 
-        public AccountController(IAccountBLL accountBLL, ILogger logger, IConfiguration configuration)
+        public AccountController(IAccountBLL accountBLL, ILogger<AccountController> logger, IConfiguration configuration)
         {
             _accountBLL = accountBLL;
             _logger = logger;

@@ -1,4 +1,3 @@
-using AutoMapper;
 using BusinessLogicLayer;
 using BusinessLogicLayer.BusinessObjects;
 using BusinessLogicLayer.Helpers;
@@ -7,9 +6,10 @@ using DataAccessLayer;
 using DataAccessLayer.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,15 +21,32 @@ builder.Logging.AddConfiguration(configuration.GetSection("Logging"));
 builder.Logging.AddDebug();
 builder.Logging.AddConsole();
 
+
+//Disable model validation
+builder.Services.Configure<ApiBehaviorOptions>(op =>
+{
+    op.SuppressModelStateInvalidFilter = true;
+});
+
+
 // Add services to the container.
+
+
+
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 #region Business Objects
 
+builder.Services.AddScoped<IUserManagerWrapper, UserManagerWrapper>();
+
+builder.Services.AddScoped<IDataAnnotationsValidator, DataAnnotationsValidatorHelper>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
+
+builder.Services.AddScoped<IAccountBLL, AccountBLL>();
 
 #endregion
 
@@ -41,6 +58,7 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
     {
+        ClockSkew = TimeSpan.Zero,
         ValidateActor = true,
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -69,7 +87,35 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeReadU", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+        new string[]{ }
+        }
+    });
+
+});
 
 var app = builder.Build();
 
@@ -87,6 +133,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();
 

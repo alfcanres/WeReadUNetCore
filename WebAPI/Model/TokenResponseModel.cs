@@ -58,7 +58,7 @@ namespace WebAPI.Model
             SigningCredentials signingCredentials =
                 new SigningCredentials(
                     securityKey,
-                    SecurityAlgorithms.EcdsaSha256Signature
+                    SecurityAlgorithms.HmacSha256
             );
 
 

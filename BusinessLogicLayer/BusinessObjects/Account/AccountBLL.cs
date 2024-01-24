@@ -15,14 +15,14 @@ namespace BusinessLogicLayer.BusinessObjects
     public class AccountBLL : IAccountBLL
     {
         protected readonly IValidate _validate = new ValidateDTO();
-        private readonly ILogger _logger;
+        private readonly ILogger<AccountBLL> _logger;
         private readonly IUserManagerWrapper _userManager;
         private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
 
 
         public AccountBLL(
             IUserManagerWrapper userManager,
-            ILogger logger,
+            ILogger<AccountBLL> logger,
             IDataAnnotationsValidator dataAnnotationsValidator)
         {
             _userManager = userManager;
