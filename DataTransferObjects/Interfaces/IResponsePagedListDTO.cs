@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataTransferObjects.Interfaces
 {
-    public interface IPagedListDTO<T>
+    public interface IResponsePagedListDTO<T>
     {
         IValidate Validate { get; }
         IEnumerable<T> List { get; }

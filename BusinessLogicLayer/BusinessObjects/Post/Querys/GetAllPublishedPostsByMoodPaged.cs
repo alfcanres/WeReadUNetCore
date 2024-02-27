@@ -12,25 +12,26 @@ using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class GetAllPostTypePaged : QueryStrategyBase<PostTypeReadDTO>
+    public class GetAllPublishedPostsByMoodPaged : QueryStrategyBase<PostReadDTO>
     {
-
-        private readonly IQueryable<PostType> query;
-
-        public GetAllPostTypePaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
+        private readonly IQueryable<Post> query;
+        public GetAllPublishedPostsByMoodPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager, int moodTypeId) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.PostTypes
+            query = unitOfWork.Posts
                 .Query()
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage)
+                .OrderBy(t => t.CreationDate)
+                .Where(t => t.IsPublished && t.MoodTypeId == moodTypeId)
                 .AsNoTracking();
         }
+
         internal override async Task<int> CountResultsAsync()
         {
-            return await unitOfWork.PostTypes.Query().CountAsync();
+            return await query.CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
+        internal override async Task<IEnumerable<PostReadDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
             return Map(result);

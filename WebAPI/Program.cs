@@ -48,7 +48,11 @@ builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
 
 builder.Services.AddScoped<IAccountBLL, AccountBLL>();
 
+
 #endregion
+
+builder.Services.AddResponseCaching();
+
 
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
@@ -128,12 +132,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseResponseCaching();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 app.Run();
 

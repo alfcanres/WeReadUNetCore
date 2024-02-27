@@ -1,6 +1,6 @@
 ﻿namespace DataTransferObjects.Interfaces
 {
-    public interface IListDTO<T>
+    public interface IResponseListDTO<T>
     {
         IEnumerable<T> List { get; }
         int RecordCount { get; }

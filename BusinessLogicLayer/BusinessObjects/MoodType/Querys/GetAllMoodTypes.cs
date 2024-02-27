@@ -5,24 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class GetAllPostTypes : QueryStrategyBase<PostTypeReadDTO>
+    public class GetAllMoodTypes : QueryStrategyBase<MoodTypeReadDTO>
     {
-        public GetAllPostTypes(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public GetAllMoodTypes(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
         internal override async Task<int> CountResultsAsync()
         {
-            return await unitOfWork.PostTypes.Query().CountAsync();
+            return await unitOfWork.MoodTypes.Query().CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
+        internal override async Task<IEnumerable<MoodTypeReadDTO>> GetResultsAsync()
         {
-            var result = await unitOfWork.PostTypes
+            var result = await unitOfWork.MoodTypes
                 .Query()
                 .AsNoTracking()
                 .ToListAsync();
-          
+
             return Map(result);
         }
     }

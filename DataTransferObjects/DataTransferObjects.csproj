@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="DTO\PostVote\" />
-    <Folder Include="DTO\Post\" />
   </ItemGroup>
 
 </Project>

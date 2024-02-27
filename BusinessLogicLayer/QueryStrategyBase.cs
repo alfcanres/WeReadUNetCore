@@ -20,9 +20,9 @@ namespace BusinessLogicLayer
             this.mapper = mapper;
         }
 
-        internal abstract Task<IEnumerable<ReadDTO>> GetResults();
+        internal abstract Task<IEnumerable<ReadDTO>> GetResultsAsync();
 
-        internal abstract Task<int> CountResults();
+        internal abstract Task<int> CountResultsAsync();
 
         protected IEnumerable<ReadDTO> Map(object list)
         {

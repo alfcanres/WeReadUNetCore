@@ -32,9 +32,9 @@ namespace WebAPI.Controllers
         {
             try
             {
-                ResultResponseDTO<UserReadDTO> responseDTO = await _accountBLL.InsertAsync(createModel);
+                IResponseDTO<UserReadDTO> responseDTO = await _accountBLL.InsertAsync(createModel);
 
-                if (responseDTO.ValidateResponse.IsValid)
+                if (responseDTO.Validate.IsValid)
                 {
                     return Ok(responseDTO);
                 }

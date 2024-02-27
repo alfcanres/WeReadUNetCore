@@ -14,16 +14,16 @@ namespace WebAPI.Model
     {
         private readonly string _token;
         private readonly DateTime _expires;
-        private readonly ResultResponseDTO<UserReadDTO> _resultResponseDTO;
+        private readonly IResponseDTO<UserReadDTO> _resultResponseDTO;
         private readonly IConfiguration _configuration;
         private readonly IValidate _validate;
 
 
-        public TokenResponseModel(ResultResponseDTO<UserReadDTO> resultResponseDTO, DateTime expires, IConfiguration configuration)
+        public TokenResponseModel(IResponseDTO<UserReadDTO> resultResponseDTO, DateTime expires, IConfiguration configuration)
         {
             _resultResponseDTO = resultResponseDTO;
             _configuration = configuration;
-            _validate = resultResponseDTO.ValidateResponse;
+            _validate = resultResponseDTO.Validate;
             if (_validate.IsValid)
             {
                 _token = GenerateToken(_resultResponseDTO.Data);

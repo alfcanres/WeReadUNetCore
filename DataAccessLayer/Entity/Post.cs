@@ -10,6 +10,8 @@ namespace DataAccessLayer.Entity
     public class Post
     {
         public int Id { get; set; }
+        public string ApplicationUserId { set; get; }
+        public ApplicationUser User { get; set; }
         public int PostTypeId { get; set; }
         public PostType PostType { get; set; }
 
@@ -29,8 +31,7 @@ namespace DataAccessLayer.Entity
 
         public ICollection<PostVote> Votes { set; get; }
 
-
-
+        public ICollection<PostComment> Comments { set; get; }
 
     }
 }

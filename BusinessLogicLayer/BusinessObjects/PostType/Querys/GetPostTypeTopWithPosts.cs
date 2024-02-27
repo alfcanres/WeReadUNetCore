@@ -24,12 +24,12 @@ namespace BusinessLogicLayer.BusinessObjects
                 .AsNoTracking();
         }
 
-        internal override async Task<int> CountResults()
+        internal override async Task<int> CountResultsAsync()
         {
             return await query.CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResults()
+        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
             return Map(result);

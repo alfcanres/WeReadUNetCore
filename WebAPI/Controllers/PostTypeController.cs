@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
+using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,7 @@ namespace WebAPI.Controllers
             return await DeleteAsync(id);
         }
 
+        [ResponseCache(Duration = 10)]
         [HttpGet("Available/{isAvalable}")]
         public async Task<ActionResult> GetIsAvailable(bool isAvalable)
         {
@@ -53,7 +55,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("Paged")]
         [AllowAnonymous]
-        public override async Task<ActionResult<PagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public override async Task<ActionResult<IResponsePagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
@@ -64,6 +66,7 @@ namespace WebAPI.Controllers
 
         }
 
+        [ResponseCache(Duration = 10)]
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<PostTypeReadDTO>> Get(int id)
@@ -71,6 +74,7 @@ namespace WebAPI.Controllers
             return await GetByIdAsync(id);
         }
 
+        [ResponseCache(Duration = 10)]
         [HttpGet("Top/{top}")]
         [AllowAnonymous]
         public async Task<ActionResult> GetTop(int top)

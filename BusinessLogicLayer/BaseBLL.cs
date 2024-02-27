@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
+using BusinessLogicLayer.Response;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
@@ -19,7 +20,7 @@ namespace BusinessLogicLayer
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         protected readonly IValidate _validate = new ValidateDTO();
-        private readonly ILogger _logger;
+        protected readonly ILogger _logger;
         private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
         protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
         protected IMapper Mapper { get { return _mapper; } }
@@ -44,7 +45,7 @@ namespace BusinessLogicLayer
         }
 
         #region CRUDS
-        public async Task<ResultResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO)
+        public async Task<IResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO)
         {
 
             ReadDTO readDTO = null;
@@ -66,9 +67,9 @@ namespace BusinessLogicLayer
 
             }
 
-            return new ResultResponseDTO<ReadDTO>(readDTO, this._validate);
+            return new ResponseDTO<ReadDTO>(readDTO, this._validate);
         }
-        public async Task<ResultResponseDTO<ReadDTO>> UpdateAsync(UpdateDTO updateDTO)
+        public async Task<IResponseDTO<ReadDTO>> UpdateAsync(UpdateDTO updateDTO)
         {
             ReadDTO readDTO = null;
 
@@ -88,7 +89,7 @@ namespace BusinessLogicLayer
                 _logger.LogError(ex, "UPDATE OPERATION : {updateDTO}", updateDTO);
             }
 
-            return new ResultResponseDTO<ReadDTO>(readDTO, this._validate);
+            return new ResponseDTO<ReadDTO>(readDTO, this._validate);
         }
         public async Task<IValidate> DeleteAsync(int id)
         {
@@ -110,7 +111,7 @@ namespace BusinessLogicLayer
 
             return this._validate;
         }
-        public async Task<ResultResponseDTO<ReadDTO>> GetByIdAsync(int id)
+        public async Task<IResponseDTO<ReadDTO>> GetByIdAsync(int id)
         {
             ResetValidations();
             ReadDTO readDTO = null;
@@ -126,34 +127,18 @@ namespace BusinessLogicLayer
                 _logger.LogError(ex, "GET BY ID OPERATION : {id}", id);
             }
 
-            return new ResultResponseDTO<ReadDTO>(readDTO, this._validate);
+            return new ResponseDTO<ReadDTO>(readDTO, this._validate);
         }
         protected abstract Task<ReadDTO> ExecuteGetByIdAsync(int id);
         protected abstract Task<ReadDTO> ExecuteInsertAsync(CreateDTO createDTO);
         protected abstract Task ExecuteDeleteAsync(int id);
         protected abstract Task<ReadDTO> ExecuteUpdateAsync(UpdateDTO updateDTO);
-        protected async Task<IEnumerable<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
-        {
-            ResetValidations();
-            try
-            {
-                return await queryStrategy.GetResults();
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
-                return null;
-            }
-        }
         protected async Task<int> CountListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
             ResetValidations();
             try
             {
-                return await queryStrategy.CountResults();
+                return await queryStrategy.CountResultsAsync();
             }
             catch (Exception ex)
             {
@@ -162,6 +147,41 @@ namespace BusinessLogicLayer
                 _validate.AddError(friendlyError);
                 _logger.LogError(ex, "EXECUTE COUNT ERROR {queryStrategy}", queryStrategy);
                 return 0;
+            }
+        }
+
+        protected async Task<IResponsePagedListDTO<ReadDTO>> ExecutePagedListAsync(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager)
+        {
+            ResetValidations();
+            try
+            {
+
+                return await ResponsePagedListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy, pager, this._validate);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validate.IsValid = false;
+                _validate.AddError(friendlyError);
+                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
+                return new ResponsePagedListDTO<ReadDTO>(this._validate);
+            }
+        }
+
+        protected async Task<IResponseListDTO<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
+        {
+            ResetValidations();
+            try
+            {
+                return await ResponseListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy, this._validate);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validate.IsValid = false;
+                _validate.AddError(friendlyError);
+                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
+                return new ResponseListDTO<ReadDTO>(this._validate);
             }
         }
 

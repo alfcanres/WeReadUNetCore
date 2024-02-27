@@ -4,33 +4,30 @@ using DataAccessLayer.Entity;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class GetAllPostTypePaged : QueryStrategyBase<PostTypeReadDTO>
+    public class GetAllPostsNotPublished : QueryStrategyBase<PostPendingToublishDTO>
     {
-
-        private readonly IQueryable<PostType> query;
-
-        public GetAllPostTypePaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
+        private readonly IQueryable<Post> query;
+        public GetAllPostsNotPublished(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.PostTypes
+            query = unitOfWork.Posts
                 .Query()
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage)
+                .OrderBy(t => t.CreationDate)
+                .Where(t => !t.IsPublished)
                 .AsNoTracking();
         }
+
         internal override async Task<int> CountResultsAsync()
         {
-            return await unitOfWork.PostTypes.Query().CountAsync();
+            return await query.CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
+        internal override async Task<IEnumerable<PostPendingToublishDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
             return Map(result);

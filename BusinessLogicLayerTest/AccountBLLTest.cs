@@ -42,7 +42,7 @@ namespace BusinessLogicLayerTest
             string errorMessage = "Type a valid";
 
             //Assert
-            int actualErrorsCount = result.ValidateResponse.MessageList.Where(t => t.Contains(errorMessage)).Count();
+            int actualErrorsCount = result.Validate.MessageList.Where(t => t.Contains(errorMessage)).Count();
 
             Assert.Equal(expectedErrorsCount, actualErrorsCount);
 

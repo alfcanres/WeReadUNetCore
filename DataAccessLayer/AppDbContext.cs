@@ -15,6 +15,7 @@ namespace DataAccessLayer
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
         }
 
@@ -32,8 +33,7 @@ namespace DataAccessLayer
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<PostType> PostTypes => Set<PostType>();
         public DbSet<PostVote> PostVotes => Set<PostVote>();
-
-
+        public DbSet<PostComment> PostComments  => Set<PostComment>();
 
     }
 }

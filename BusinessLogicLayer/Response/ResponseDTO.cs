@@ -1,23 +1,18 @@
 ﻿using DataTransferObjects.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DataTransferObjects
+namespace BusinessLogicLayer.Response
 {
-    public class ResultResponseDTO<DTO> where DTO : class
+    public class ResponseDTO<T> : IResponseDTO<T> where T : class
     {
-        private readonly DTO _DTO;
+        private readonly T _DTO;
         private readonly IValidate _validate;
-        public ResultResponseDTO(DTO DTO, IValidate validate)
+        public ResponseDTO(T DTO, IValidate validate)
         {
             _DTO = DTO;
             _validate = validate;
         }
 
-        public DTO Data
+        public T Data
         {
             get
             {
@@ -25,14 +20,12 @@ namespace DataTransferObjects
             }
         }
 
-        public IValidate ValidateResponse
+        public IValidate Validate
         {
             get
             {
                 return _validate;
             }
         }
-
-
     }
 }

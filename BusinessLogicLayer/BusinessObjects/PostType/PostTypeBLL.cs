@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
+using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
@@ -21,36 +22,24 @@ namespace BusinessLogicLayer.BusinessObjects
             return await UnitOfWork.PostTypes.Query().CountAsync();
         }
 
-        public async Task<IListDTO<PostTypeReadDTO>> GetAllAsync()
+        public async Task<IResponseListDTO<PostTypeReadDTO>> GetAllAsync()
         {
-            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetAllPostTypes(UnitOfWork, Mapper));
-
-            return new ListDTO<PostTypeReadDTO>(list, this._validate);
+            return await ExecuteListAsync(new GetAllPostTypes(UnitOfWork, Mapper));
         }
 
-
-
-        public async Task<IPagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
+        public async Task<IResponsePagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
         {
-            int recordCount = await CountAllAsync();
-
-            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetAllPostTypePaged(UnitOfWork, Mapper, pagerDTO));
-
-            return new PagedListDTO<PostTypeReadDTO>(list, recordCount, pagerDTO, this._validate);
+            return await ExecutePagedListAsync(new GetAllPostTypePaged(UnitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
+        public async Task<IResponseListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
         {
-            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetPostTypeTopWithPosts(UnitOfWork, Mapper, top));
-
-            return new ListDTO<PostTypeReadDTO>(list, this._validate);
+            return await ExecuteListAsync(new GetPostTypeTopWithPosts(UnitOfWork, Mapper, top));
         }
 
-        public async Task<IListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
+        public async Task<IResponseListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
         {
-            IEnumerable<PostTypeReadDTO> list = await ExecuteListAsync(new GetAllPostTypeByIsAvailable(UnitOfWork, Mapper, isAvailable));
-
-            return new ListDTO<PostTypeReadDTO>(list, this._validate);
+            return await ExecuteListAsync(new GetAllPostTypeByIsAvailable(UnitOfWork, Mapper, isAvailable));
         }
 
         protected override async Task<PostTypeReadDTO> ExecuteGetByIdAsync(int id)
@@ -59,7 +48,6 @@ namespace BusinessLogicLayer.BusinessObjects
             var dto = Mapper.Map<PostTypeReadDTO>(entity);
             return dto;
         }
-
 
         #region CREATE, UPDATE, DELETE BASE METHODS
 
@@ -95,7 +83,7 @@ namespace BusinessLogicLayer.BusinessObjects
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Id == id).AnyAsync();
             if (!exists)
             {
-                _validate.AddError("No record was found or was previously deleted");
+                _validate.AddError(Helpers.ValidationErrorMessages.OnDeleteNoRecordWasFound);
             }
         }
 
@@ -104,7 +92,7 @@ namespace BusinessLogicLayer.BusinessObjects
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Description == createDTO.Description).AnyAsync();
             if (exists)
             {
-                _validate.AddError("An item with the same description already exists, please type another");
+                _validate.AddError(Helpers.ValidationErrorMessages.OnInsertAnItemAlreadyExists);
             }
         }
 
@@ -113,7 +101,7 @@ namespace BusinessLogicLayer.BusinessObjects
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)
             {
-                _validate.AddError("No record was found or was previously deleted");
+                _validate.AddError(Helpers.ValidationErrorMessages.OnUpdateNoRecordWasFound);
             }
         }
 

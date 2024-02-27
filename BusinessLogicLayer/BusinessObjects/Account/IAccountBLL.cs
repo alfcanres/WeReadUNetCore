@@ -14,9 +14,9 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IAccountBLL
     {
-        Task<ResultResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO);
-        Task<ResultResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail);
-        public Task<ResultResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO);
+        Task<IResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO);
+        Task<IResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail);
+        public Task<IResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO);
         Task<IValidate> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
 
     }

@@ -6,11 +6,11 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IPostTypeBLL : IBLL<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
     {
-        Task<IPagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO);
+        Task<IResponsePagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO);
         Task<int> CountAllAsync();
-        Task<IListDTO<PostTypeReadDTO>> GetAllAsync();
-        Task<IListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable);
-        Task<IListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top);
+        Task<IResponseListDTO<PostTypeReadDTO>> GetAllAsync();
+        Task<IResponseListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable);
+        Task<IResponseListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top);
 
 
     }

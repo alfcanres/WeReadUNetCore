@@ -11,13 +11,14 @@ using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class GetAllPostTypeByIsAvailable : QueryStrategyBase<PostTypeReadDTO>
+    public class GetAllMoodTypeByIsAvailable : QueryStrategyBase<MoodTypeReadDTO>
     {
-        private readonly IQueryable<PostType> query;
+        private readonly IQueryable<MoodType> query;
 
-        public GetAllPostTypeByIsAvailable(IUnitOfWork unitOfWork, IMapper mapper, bool isAvailable) : base(unitOfWork, mapper)
+        public GetAllMoodTypeByIsAvailable(IUnitOfWork unitOfWork, IMapper mapper, bool isAvailable) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.PostTypes.Query()
+            query = unitOfWork.MoodTypes
+                .Query()
                 .Where(t => t.IsAvailable == isAvailable)
                 .AsNoTracking();
         }
@@ -27,7 +28,7 @@ namespace BusinessLogicLayer.BusinessObjects
             return await query.CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
+        internal override async Task<IEnumerable<MoodTypeReadDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
             return Map(result);

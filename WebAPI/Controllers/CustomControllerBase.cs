@@ -21,14 +21,14 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        public abstract Task<ActionResult<PagedListDTO<ReadDTO>>> GetPaged(PagerDTO pagerDTO);
+        public abstract Task<ActionResult<IResponsePagedListDTO<ReadDTO>>> GetPaged(PagerDTO pagerDTO);
 
         protected async Task<ActionResult<ReadDTO>> GetByIdAsync(int id)
         {
             try
             {
                 var response = await _BLL.GetByIdAsync(id);
-                if (response.ValidateResponse.IsValid)
+                if (response.Validate.IsValid)
                 {
                     return Ok(response);
                 }
@@ -48,8 +48,8 @@ namespace WebAPI.Controllers
         {
             try
             {
-                ResultResponseDTO<ReadDTO> response = await _BLL.InsertAsync(createDTO);
-                if (response.ValidateResponse.IsValid)
+                var response = await _BLL.InsertAsync(createDTO);
+                if (response.Validate.IsValid)
                 {
                     return Ok(response);
                 }
@@ -70,8 +70,8 @@ namespace WebAPI.Controllers
         {
             try
             {
-                ResultResponseDTO<ReadDTO> response = await _BLL.UpdateAsync(updateDTO);
-                if (response.ValidateResponse.IsValid)
+                var response = await _BLL.UpdateAsync(updateDTO);
+                if (response.Validate.IsValid)
                 {
                     return Ok(response);
                 }

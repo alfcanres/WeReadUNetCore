@@ -1,14 +1,12 @@
 ﻿using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
-using DataAccessLayer;
+using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
+
 
 namespace BusinessLogicLayer.BusinessObjects
 {
@@ -59,7 +57,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             }
         }
-        public async Task<ResultResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO)
+        public async Task<IResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO)
         {
             UserReadDTO userReadDTO = null;
             try
@@ -106,9 +104,9 @@ namespace BusinessLogicLayer.BusinessObjects
             }
 
 
-            return new ResultResponseDTO<UserReadDTO>(userReadDTO, this._validate);
+            return new ResponseDTO<UserReadDTO>(userReadDTO, this._validate);
         }
-        public async Task<ResultResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO)
+        public async Task<IResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO)
         {
             _validate.Clear();
             UserReadDTO userReadDTO = null;
@@ -146,7 +144,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _logger.LogError(ex, "SINGIN OPERATION : {createDTO}", userSignInDTO);
             }
 
-            return new ResultResponseDTO<UserReadDTO>(userReadDTO, this._validate);
+            return new ResponseDTO<UserReadDTO>(userReadDTO, this._validate);
         }
         private async Task ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
         {
@@ -215,7 +213,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
 
         }
-        public async Task<ResultResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
+        public async Task<IResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
         {
             _validate.Clear();
             UserReadDTO userDTO = null;
@@ -245,7 +243,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.AddError("Incorrect user or the user doesn't exists");
             }
 
-            return new ResultResponseDTO<UserReadDTO>(userDTO, this._validate);
+            return new ResponseDTO<UserReadDTO>(userDTO, this._validate);
         }
 
     }
