@@ -15,6 +15,7 @@ namespace BusinessLogicLayer.Interfaces
         public IRepository<PostType> PostTypes { get; }
         public IRepository<PostVote> PostVotes { get; }
         public IRepository<MoodType> MoodTypes { get; }
+        public IRepository<ApplicationUserInfo> UsersInfo { get; }
         Task SaveAsync();
     }
 }

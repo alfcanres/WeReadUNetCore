@@ -1,9 +1,10 @@
-﻿using DataTransferObjects.DTO;
+﻿using BusinessLogicLayer.Interfaces;
+using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public interface IMoodTypeBLL
+    public interface IMoodTypeBLL : IBLL<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>
     {
         Task<int> CountAllAsync();
         Task<IResponseListDTO<MoodTypeReadDTO>> GetAllAsync();

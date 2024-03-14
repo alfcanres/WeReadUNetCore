@@ -10,18 +10,18 @@ namespace BusinessLogicLayer.Interfaces
 {
     public interface IUserManagerWrapper
     {
-        Task<ApplicationUser> FindByEmailAsync(string email);
+        Task<IdentityUser> FindByEmailAsync(string email);
 
-        Task<ApplicationUser> FindByNameAsync(string userName);
+        Task<IdentityUser> FindByNameAsync(string userName);
 
-        Task<ApplicationUser> FindByIdAsync(string userName);
+        Task<IdentityUser> FindByIdAsync(string userName);
 
-        Task<IdentityResult> CreateAsync(ApplicationUser appUser, string password);
+        Task<IdentityResult> CreateAsync(IdentityUser appUser, string password);
 
-        Task<bool> CheckPasswordAsync(ApplicationUser appUser, string password);
+        Task<bool> CheckPasswordAsync(IdentityUser appUser, string password);
 
-        Task<IdentityResult> DeleteAsync(ApplicationUser appUser);
+        Task<IdentityResult> DeleteAsync(IdentityUser appUser);
 
-        Task<IdentityResult> ChangePasswordAsync(ApplicationUser appUser, string oldPassword, string newPassword);
+        Task<IdentityResult> ChangePasswordAsync(IdentityUser appUser, string oldPassword, string newPassword);
     }
 }

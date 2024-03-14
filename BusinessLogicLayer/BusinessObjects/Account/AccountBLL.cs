@@ -5,6 +5,8 @@ using DataAccessLayer.Entity;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 
@@ -16,16 +18,19 @@ namespace BusinessLogicLayer.BusinessObjects
         private readonly ILogger<AccountBLL> _logger;
         private readonly IUserManagerWrapper _userManager;
         private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
+        private readonly IUnitOfWork _unitOfWork;
 
 
         public AccountBLL(
             IUserManagerWrapper userManager,
             ILogger<AccountBLL> logger,
-            IDataAnnotationsValidator dataAnnotationsValidator)
+            IDataAnnotationsValidator dataAnnotationsValidator,
+            IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _logger = logger;
             _dataAnnotationsValidator = dataAnnotationsValidator;
+            _unitOfWork = unitOfWork;
         }
 
         private async Task ValidateInsertAsync(UserCreateDTO createDTO)
@@ -66,17 +71,26 @@ namespace BusinessLogicLayer.BusinessObjects
 
                 if (this._validate.IsValid)
                 {
-                    var user = new ApplicationUser
+                    var user = new IdentityUser
                     {
                         UserName = createDTO.UserName,
                         Email = createDTO.Email,
-                        FirstName = createDTO.FirstName,
-                        LastName = createDTO.LastName,
                     };
 
                     var result = await _userManager.CreateAsync(user, createDTO.Password);
                     if (result.Succeeded)
                     {
+
+                        ApplicationUserInfo applicationUserInfo = new ApplicationUserInfo()
+                        {
+                            FirstName = createDTO.UserName,
+                            LastName = createDTO.LastName,
+                            UserID = user.Id
+                        };
+
+                        await _unitOfWork.UsersInfo.InsertAsync(applicationUserInfo);
+
+
                         userReadDTO = new UserReadDTO
                         {
                             Email = createDTO.Email,
@@ -121,14 +135,21 @@ namespace BusinessLogicLayer.BusinessObjects
                 {
                     if (await _userManager.CheckPasswordAsync(user, userSignInDTO.Password))
                     {
+
+
+                        var userInfo = await GetUserInfoAsync(user);
+
+
                         userReadDTO = new UserReadDTO
                         {
                             Email = userSignInDTO.Email,
                             UserName = user.UserName,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            FullName = $"{user.FirstName} {user.LastName}"
+                            FirstName = userInfo.FirstName,
+                            LastName = userInfo.LastName,
+                            FullName = $"{userInfo.FirstName} {userInfo.LastName}",
+                            ProfilePicture = userInfo.ProfilePicture
                         };
+
                     }
                     else
                     {
@@ -217,26 +238,20 @@ namespace BusinessLogicLayer.BusinessObjects
         {
             _validate.Clear();
             UserReadDTO userDTO = null;
-            var appUser = await _userManager.FindByEmailAsync(userNameOrEmail);
-            if (appUser == null)
-            {
-                appUser = await _userManager.FindByNameAsync(userNameOrEmail);
-                if (appUser != null)
-                {
+            var identityUser = await _userManager.FindByNameAsync(userNameOrEmail);
 
-                    userDTO = new UserReadDTO
-                    {
-                        Email = appUser.Email,
-                        FirstName = appUser.FirstName,
-                        LastName = appUser.LastName,
-                        UserName = appUser.UserName,
-                        FullName = $"{appUser.FirstName} {appUser.LastName}"
-                    };
-                }
-                else
+            if (identityUser != null)
+            {
+                var userInfo = await GetUserInfoAsync(identityUser);
+
+                userDTO = new UserReadDTO
                 {
-                    _validate.AddError("Incorrect user or the user doesn't exists");
-                }
+                    Email = identityUser.Email,
+                    FirstName = userInfo.FirstName,
+                    LastName = userInfo.LastName,
+                    UserName = userInfo.UserName,
+                    FullName = $"{userInfo.FirstName} {userInfo.LastName}"
+                };
             }
             else
             {
@@ -244,6 +259,26 @@ namespace BusinessLogicLayer.BusinessObjects
             }
 
             return new ResponseDTO<UserReadDTO>(userDTO, this._validate);
+        }
+
+        private async Task<(string UserName, string FirstName, string LastName, string ProfilePicture)> GetUserInfoAsync(IdentityUser user)
+        {
+            var userInfo = await _unitOfWork.UsersInfo.Query().FirstOrDefaultAsync(t => t.UserID == user.Id);
+            string firstName = "";
+            string lastName = "";
+            string profilePicture = "";
+            string userName = user.Email;
+
+            if (userInfo is ApplicationUserInfo)
+            {
+                firstName = userInfo.FirstName;
+                lastName = userInfo.LastName;
+                profilePicture = userInfo.ProfilePicture;
+                userName = userInfo.UserName;
+            }
+
+            return (userName, firstName, lastName, profilePicture);
+
         }
 
     }
