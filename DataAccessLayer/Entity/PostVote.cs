@@ -11,14 +11,10 @@ namespace DataAccessLayer.Entity
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public string ApplicationUserId { set; get; }
-        public ApplicationUser User { get; set; }
         public Post Post { get; set; }
-
+        public int ApplicationUserInfoId { set; get; }
+        public ApplicationUserInfo ApplicationUserInfo { get; set; }
         public bool ILikedThis { get; set; }
-
         public DateTime VoteDate { get; set; }
-
-
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : IdentityDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -34,6 +34,6 @@ namespace DataAccessLayer
         public DbSet<PostType> PostTypes => Set<PostType>();
         public DbSet<PostVote> PostVotes => Set<PostVote>();
         public DbSet<PostComment> PostComments  => Set<PostComment>();
-
+        public DbSet<ApplicationUserInfo> ApplicationUsers => Set<ApplicationUserInfo>();
     }
 }

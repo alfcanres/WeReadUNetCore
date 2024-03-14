@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace DataTransferObjects.DTO
 {
-    public class UserReadDTO
+    public record UserReadDTO
     {
         public string UserName { init; get; }
+
+        public string ProfilePicture { init; get; }
 
         public string FullName { init; get; }
         public string FirstName { init; get; }

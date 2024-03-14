@@ -11,25 +11,25 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class PostTypeController : CustomControllerBase<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
+    public class MoodTypeController : CustomControllerBase<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>
     {
-        private readonly IPostTypeBLL _BLL;
-        private readonly ILogger<PostTypeController> _logger;
+        private readonly IMoodTypeBLL _BLL;
+        private readonly ILogger<MoodTypeController> _logger;
 
-        public PostTypeController(IPostTypeBLL BLL, ILogger<PostTypeController> logger) : base(BLL, logger)
+        public MoodTypeController(IMoodTypeBLL BLL, ILogger<MoodTypeController> logger) : base(BLL, logger)
         {
             _BLL = BLL;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] PostTypeCreateDTO createModel)
+        public async Task<ActionResult> Post([FromBody] MoodTypeCreateDTO createModel)
         {
             return await CreateAsync(createModel);
         }
 
         [HttpPut]
-        public async Task<ActionResult> Put([FromBody] PostTypeUpdateDTO updateModel)
+        public async Task<ActionResult> Put([FromBody] MoodTypeUpdateDTO updateModel)
         {
             return await UpdateAsync(updateModel);
         }
@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("Paged")]
-        public override async Task<ActionResult<IResponsePagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public override async Task<ActionResult<IResponsePagedListDTO<MoodTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
@@ -67,7 +67,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostTypeReadDTO>> Get(int id)
+        public async Task<ActionResult<MoodTypeReadDTO>> Get(int id)
         {
             return await GetByIdAsync(id);
         }

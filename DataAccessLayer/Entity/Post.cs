@@ -10,14 +10,18 @@ namespace DataAccessLayer.Entity
     public class Post
     {
         public int Id { get; set; }
-        public string ApplicationUserId { set; get; }
-        public ApplicationUser User { get; set; }
+        public int ApplicationUserInfoId { set; get; }
+        public ApplicationUserInfo ApplicationUserInfo { get; set; }
         public int PostTypeId { get; set; }
         public PostType PostType { get; set; }
 
         public int MoodTypeId { get; set; }
 
         public MoodType MoodType { get; set; }
+
+        [MaxLength(255, ErrorMessage = "Max chars 255")]
+        [Required(ErrorMessage = "Please type a title for your post")]
+        public string Title { set; get; }
 
         [MaxLength(1024, ErrorMessage = "Avoid TDL!!! Max chars 1024")]
         [Required(ErrorMessage = "Need some text here!")]

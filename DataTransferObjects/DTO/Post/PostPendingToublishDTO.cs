@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataTransferObjects.DTO
 {
-    public class PostPendingToublishDTO
+    public record PostPendingToublishDTO
     {
         public int Id { get; init; }
         public string ApplicationUserId { init; get; }
@@ -15,6 +15,7 @@ namespace DataTransferObjects.DTO
         public string ProfilePic { init; get; }
         public string PostType { get; init; }
         public string MoodType { get; init; }
+        public string Title { init; get; }
         public bool IsPublished { get; set; }
 
     }

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataTransferObjects.DTO
+namespace DataTransferObjects.DTO.Post
 {
-    public record PostReadDTO
+    public record PostListDTO
     {
         public int Id { get; init; }
         public string ApplicationUserId { init; get; }
@@ -16,6 +15,9 @@ namespace DataTransferObjects.DTO
         public string PostType { get; init; }
         public string MoodType { get; init; }
         public string Title { init; get; }
-        public string Text { get; init; }
+        public int Votes { init; get; }
+
+        public int Comments { init; get; }
+
     }
 }

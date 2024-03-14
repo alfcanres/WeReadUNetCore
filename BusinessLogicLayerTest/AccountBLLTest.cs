@@ -20,12 +20,19 @@ namespace BusinessLogicLayerTest
 
             IdentityResult identityResult = IdentityResult.Failed(new[] { new IdentityError() { Description = "Just a test" } });
 
+            IQueryable<ApplicationUserInfo> userInfos = new List<ApplicationUserInfo>().AsQueryable();
+
+
+            var unitOfWork = new Mock<IUnitOfWork>();
+            unitOfWork.Setup(s => s.UsersInfo.Query()).Returns(userInfos);
+
             var userManager = new Mock<IUserManagerWrapper>();
-            userManager.Setup(s => s.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<String>())).Returns(Task.FromResult(identityResult));
+            userManager.Setup(s => s.CreateAsync(It.IsAny<IdentityUser>(), It.IsAny<String>())).Returns(Task.FromResult(identityResult));
+
             IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
             var logger = new Mock<ILogger<AccountBLL>>();
 
-            AccountBLL accountBLL = new AccountBLL(userManager.Object, logger.Object, validator);
+            AccountBLL accountBLL = new AccountBLL(userManager.Object, logger.Object, validator, unitOfWork.Object);
 
             //Act
 
