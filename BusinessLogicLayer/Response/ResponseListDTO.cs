@@ -1,5 +1,4 @@
 ﻿using DataTransferObjects.Interfaces;
-using System.Collections.Generic;
 
 namespace BusinessLogicLayer.Response
 {
@@ -43,5 +42,14 @@ namespace BusinessLogicLayer.Response
             return new ResponseListDTO<ReadDTO>(list, recordCount, validate);
 
         }
+
+        //public static async Task<IResponseListDTO<T>> GetResponseFromQueryAsync<T>(QueryStrategyBase<T> queryStrategyBase, IValidate validate)
+        //{
+        //    var list = await queryStrategyBase.GetResultsAsync();
+        //    var recordCount = await queryStrategyBase.CountResultsAsync();
+
+        //    return new ResponseListDTO<T>(list, recordCount, validate);
+
+        //}
     }
 }

@@ -9,12 +9,25 @@ namespace DataAccessLayer
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-           
+
 
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            builder.Entity<Post>()
+                .HasMany(t => t.Comments)
+                .WithOne(t => t.Post)
+                .HasForeignKey(t => t.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Post>()
+                .HasMany(t => t.Votes)
+                .WithOne(t => t.Post)
+                .HasForeignKey(t => t.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             base.OnModelCreating(builder);
         }
@@ -25,7 +38,7 @@ namespace DataAccessLayer
             //add package Microsoft.EntityFrameworkCore.Proxies
             //optionsBuilder.UseLazyLoadingProxies();
 
-            base.OnConfiguring(optionsBuilder); 
+            base.OnConfiguring(optionsBuilder);
 
         }
 
@@ -33,7 +46,7 @@ namespace DataAccessLayer
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<PostType> PostTypes => Set<PostType>();
         public DbSet<PostVote> PostVotes => Set<PostVote>();
-        public DbSet<PostComment> PostComments  => Set<PostComment>();
+        public DbSet<PostComment> PostComments => Set<PostComment>();
         public DbSet<ApplicationUserInfo> ApplicationUsers => Set<ApplicationUserInfo>();
     }
 }

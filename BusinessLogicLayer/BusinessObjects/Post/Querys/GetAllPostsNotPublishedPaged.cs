@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class GetAllPostsNotPublished : QueryStrategyBase<PostPendingToublishDTO>
+    public class GetAllPostsNotPublished : QueryStrategyBase<PostPendingToPublishDTO>
     {
         private readonly IQueryable<Post> query;
         public GetAllPostsNotPublished(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
@@ -27,7 +27,7 @@ namespace BusinessLogicLayer.BusinessObjects
             return await query.CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostPendingToublishDTO>> GetResultsAsync()
+        internal override async Task<IEnumerable<PostPendingToPublishDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
             return Map(result);

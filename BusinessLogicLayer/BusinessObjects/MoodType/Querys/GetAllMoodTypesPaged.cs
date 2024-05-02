@@ -11,7 +11,8 @@ namespace BusinessLogicLayer.BusinessObjects
     {
         private readonly IQueryable<MoodType> query;
 
-        public GetAllMoodTypesPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
+        public GetAllMoodTypesPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) 
+            : base(unitOfWork, mapper)
         {
             query = unitOfWork.MoodTypes
                 .Query()

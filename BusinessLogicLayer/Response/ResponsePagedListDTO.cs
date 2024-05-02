@@ -1,6 +1,4 @@
-﻿using DataTransferObjects;
-using DataTransferObjects.Interfaces;
-using System.Collections.Generic;
+﻿using DataTransferObjects.Interfaces;
 
 
 namespace BusinessLogicLayer.Response
@@ -38,7 +36,7 @@ namespace BusinessLogicLayer.Response
             _validate = validate;
         }
 
-        public static async Task<IResponsePagedListDTO<ReadDTO>> GetResponseFromQueryAsync<ReadDTO>(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager, IValidate validate) where ReadDTO : class
+        public static async Task<IResponsePagedListDTO<ReadDTO>> GetResponseFromQueryAsync<ReadDTO>(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager, IValidate validate) 
         {
             var list = await queryStrategy.GetResultsAsync();
             var recordCount = await queryStrategy.CountResultsAsync();
@@ -51,5 +49,7 @@ namespace BusinessLogicLayer.Response
             return newList;
 
         }
+
+
     }
 }

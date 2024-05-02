@@ -1,11 +1,6 @@
 ﻿using BusinessLogicLayer.Interfaces;
 using DataAccessLayer;
 using DataAccessLayer.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer
 {
@@ -16,6 +11,8 @@ namespace BusinessLogicLayer
         private readonly IRepository<PostType> _postType;
         private readonly IRepository<PostVote> _postVote;
         private readonly IRepository<MoodType> _moodType;
+        private readonly IRepository<PostComment> _postComment;
+
         private readonly IRepository<ApplicationUserInfo> _applicationUserInfo;
 
 
@@ -27,6 +24,7 @@ namespace BusinessLogicLayer
             _postVote = new Repository<PostVote>(appDbContext);
             _moodType = new Repository<MoodType>(appDbContext);
             _applicationUserInfo = new Repository<ApplicationUserInfo>(appDbContext);
+            _postComment = new Repository<PostComment>(appDbContext);
         }
 
         public IRepository<Post> Posts => _post;
@@ -34,6 +32,7 @@ namespace BusinessLogicLayer
         public IRepository<PostVote> PostVotes => _postVote;
         public IRepository<MoodType> MoodTypes => _moodType;
         public IRepository<ApplicationUserInfo> UsersInfo => _applicationUserInfo;
+        public IRepository<PostComment> PostComments => _postComment;
 
         public async Task SaveAsync()
         {

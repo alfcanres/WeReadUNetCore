@@ -46,14 +46,14 @@ namespace BusinessLogicLayer.BusinessObjects
 
                 if (appUser != null)
                 {
-                    _validate.AddError("There's already an user with that email. Please use another email");
+                    _validate.AddError(ValidationAccountErrorMessages.OnInsertEmailAlreadyInUse);
                 }
 
                 appUser = await _userManager.FindByNameAsync(createDTO.UserName);
 
                 if (appUser != null)
                 {
-                    _validate.AddError("There's already an user with that user name. Please use another user name");
+                    _validate.AddError(ValidationAccountErrorMessages.OnInsertUserNameAlreadyInUse);
                 }
 
 
@@ -129,7 +129,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 var user = await _userManager.FindByEmailAsync(userSignInDTO.Email);
                 if (user == null)
                 {
-                    _validate.AddError("Incorrect username or password.");
+                    _validate.AddError(ValidationAccountErrorMessages.OnLoginIncorrectUserNameOrPassword);
                 }
                 else
                 {
@@ -153,7 +153,7 @@ namespace BusinessLogicLayer.BusinessObjects
                     }
                     else
                     {
-                        _validate.AddError("Incorrect username or password.");
+                        _validate.AddError(ValidationAccountErrorMessages.OnLoginIncorrectUserNameOrPassword);
                     }
                 }
             }
@@ -182,12 +182,12 @@ namespace BusinessLogicLayer.BusinessObjects
 
                 if (!result)
                 {
-                    _validate.AddError("Incorrect password");
+                    _validate.AddError(ValidationAccountErrorMessages.OnUpdatePasswordWrongPassword);
                 }
 
                 if (String.Compare(updateDTO.NewPassword, updateDTO.ComfirmNewPassword) != 0)
                 {
-                    _validate.AddError("Your new password is different than confirm new password. Please verify");
+                    _validate.AddError(ValidationAccountErrorMessages.OnUpdatePasswordIncorretConfirmPassword);
                 }
 
 
@@ -208,10 +208,7 @@ namespace BusinessLogicLayer.BusinessObjects
                     var applicationUser = await _userManager.FindByEmailAsync(updateDTO.Email);
 
                     var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
-                    if (result.Succeeded)
-                    {
-                    }
-                    else
+                    if (!result.Succeeded)
                     {
                         foreach (var item in result.Errors)
                         {
@@ -260,7 +257,6 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return new ResponseDTO<UserReadDTO>(userDTO, this._validate);
         }
-
         private async Task<(string UserName, string FirstName, string LastName, string ProfilePicture)> GetUserInfoAsync(IdentityUser user)
         {
             var userInfo = await _unitOfWork.UsersInfo.Query().FirstOrDefaultAsync(t => t.UserID == user.Id);

@@ -3,15 +3,15 @@ using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
-using DataTransferObjects;
 using DataTransferObjects.DTO;
+using DataTransferObjects.DTO.Post;
 using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class PostBLL : BaseBLL<PostCreateDTO, PostReadDTO, PostUpdateDTO>
+    public class PostBLL : BaseBLL<PostCreateDTO, PostReadDTO, PostUpdateDTO>, IPostBLL
     {
         public PostBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
         {
@@ -24,25 +24,66 @@ namespace BusinessLogicLayer.BusinessObjects
             return dto;
         }
 
-        public async Task<IResponseListDTO<PostPendingToublishDTO>> GetAllPostsNotPublished(IPagerDTO pagerDTO)
+        public async Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublished(IPagerDTO pagerDTO)
+        {
+
+            return await ExecutePagedListAsync(new GetAllPostsNotPublished(UnitOfWork, Mapper, pagerDTO), pagerDTO);
+
+
+            //ResetValidations();
+            //try
+            //{
+            //    var queryStrategy = new GetAllPostsNotPublished(UnitOfWork, Mapper, pagerDTO);
+            //    return new ResponseListDTO<PostPendingToPublishDTO>(await queryStrategy.GetResultsAsync(), this._validate);
+            //}
+            //catch (Exception ex)
+            //{
+            //    string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+            //    _validate.IsValid = false;
+            //    _validate.AddError(friendlyError);
+            //    _logger.LogError(ex, "EXECUTE LIST ERROR GetAllPostsNotPublished");
+            //    return new ResponseListDTO<PostPendingToPublishDTO>(this._validate);
+            //}
+
+        }
+
+        public async Task<IResponseListDTO<PostListDTO>> GetPostsPublishedPaged(IPagerDTO pagerDTO)
+        {
+
+            return await ExecuteListAsync(new GetAllPublishedPostsPaged(UnitOfWork, Mapper, pagerDTO));
+            //ResetValidations();
+            //try
+            //{
+            //    var queryStrategy = new GetAllPublishedPostsPaged(UnitOfWork, Mapper, pagerDTO);
+            //    return new ResponseListDTO<PostListDTO>(await queryStrategy.GetResultsAsync(), this._validate);
+            //}
+            //catch (Exception ex)
+            //{
+            //    string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+            //    _validate.IsValid = false;
+            //    _validate.AddError(friendlyError);
+            //    _logger.LogError(ex, "EXECUTE LIST ERROR GetAllPublishedPostsPaged");
+            //    return new ResponseListDTO<PostListDTO>(this._validate);
+            //}
+        }
+
+        public async Task<IResponseListDTO<PostListDTO>> GetPostsPublishedByUserPaged(int UserID, IPagerDTO pagerDTO)
         {
             ResetValidations();
             try
             {
-                var queryStrategy = new GetAllPostsNotPublished(UnitOfWork, Mapper, pagerDTO);
-                return new ResponseListDTO<PostPendingToublishDTO>(await queryStrategy.GetResultsAsync(), this._validate);
+                var queryStrategy = new GetPostsPublishedByUserPaged(UserID, UnitOfWork, Mapper, pagerDTO);
+                return new ResponseListDTO<PostListDTO>(await queryStrategy.GetResultsAsync(), this._validate);
             }
             catch (Exception ex)
             {
                 string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
                 _validate.IsValid = false;
                 _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE LIST ERROR GetAllPostsNotPublished");
-                return new ResponseListDTO<PostPendingToublishDTO>(this._validate);
+                _logger.LogError(ex, "EXECUTE LIST ERROR GetPostsPublishedByUserPaged");
+                return new ResponseListDTO<PostListDTO>(this._validate);
             }
-
         }
-
 
         #region CREATE, UPDATE, DELETE BASE METHODS
         protected override async Task ExecuteDeleteAsync(int id)
@@ -116,6 +157,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 this._logger.LogWarning("VALIDATE UPDATE RETURNED FALSE: {validate}", _validate);
 
         }
+
 
         #endregion
 

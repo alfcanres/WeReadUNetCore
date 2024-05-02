@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataTransferObjects.DTO
 {
-    public record PostPendingToublishDTO
+    public record PostPendingToPublishDTO
     {
         public int Id { get; init; }
         public string ApplicationUserId { init; get; }

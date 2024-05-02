@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
-using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;

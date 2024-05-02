@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
-using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +88,8 @@ namespace BusinessLogicLayer.BusinessObjects
         protected override async Task ExecValidateInsertAsync(PostTypeCreateDTO createDTO)
         {
             bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Description == createDTO.Description).AnyAsync();
-            if (exists)
+            
+               if (exists)
             {
                 _validate.AddError(Helpers.ValidationErrorMessages.OnInsertAnItemAlreadyExists);
             }

@@ -2,11 +2,6 @@
 using DataAccessLayer.Entity;
 using DataTransferObjects.DTO;
 using DataTransferObjects.DTO.Post;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Helpers
 {
@@ -27,14 +22,12 @@ namespace BusinessLogicLayer.Helpers
                  .ForMember(t => t.PostCount, t => t.MapFrom(x => x.Posts.Count))
                  .ReverseMap();
 
-
-
             CreateMap<PostCreateDTO, Post>();
             CreateMap<PostUpdateDTO, Post>();
             CreateMap<Post, PostReadDTO>()
                  .ReverseMap();
 
-            CreateMap<Post, PostPendingToublishDTO>()
+            CreateMap<Post, PostPendingToPublishDTO>()
                 .ForMember(t => t.UserName, t => t.MapFrom(m => m.ApplicationUserInfo.UserName))
                 .ForMember(t => t.ProfilePic, t => t.MapFrom(m => m.ApplicationUserInfo.ProfilePicture))
                 .ForMember(t => t.PostType, t => t.MapFrom(m => m.PostType.Description))
@@ -49,6 +42,25 @@ namespace BusinessLogicLayer.Helpers
                 .ForMember(t => t.Comments, t => t.MapFrom(m => m.Comments.Count()));
 
 
+            CreateMap<ApplicationUserInfoCreateDTO, ApplicationUserInfo>();
+            CreateMap<ApplicationUserInfoUpdateDTO, ApplicationUserInfo>();
+            CreateMap<ApplicationUserInfo, ApplicationUserInfoReadDTO>()
+                .ReverseMap();
+
+
+            CreateMap<ApplicationUserInfo, ApplicationUserInfoListDTO>()
+                .ForMember(t => t.FullName, t => t.MapFrom(m => m.FirstName + " " + m.LastName))
+                .ForMember(t => t.PostsCount, t => t.MapFrom(m => m.Posts.Count))
+                .ForMember(t => t.PostsPedingForPublish, t => t.MapFrom(m => m.Posts.Where(w => !w.IsPublished).Count()))
+                .ForMember(t => t.CommentsCount, t => t.MapFrom(m => m.Comments.Count));
+
+
+            CreateMap<PostCommentCreateDTO, PostComment>();
+            CreateMap<PostCommentUpdateDTO, PostComment>();
+            CreateMap<PostComment, PostCommentReadDTO>()
+                .ForMember(t => t.ProfilePicture, t => t.MapFrom(m => m.ApplicationUserInfo.ProfilePicture))
+                .ForMember(t => t.UserName, t => t.MapFrom(m => m.ApplicationUserInfo.UserName))
+                .ReverseMap();
 
         }
     }

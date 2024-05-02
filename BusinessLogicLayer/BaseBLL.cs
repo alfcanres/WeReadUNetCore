@@ -3,10 +3,8 @@ using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using BusinessLogicLayer.Response;
 using DataTransferObjects;
-using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
 
 
 namespace BusinessLogicLayer
@@ -184,6 +182,42 @@ namespace BusinessLogicLayer
                 return new ResponseListDTO<ReadDTO>(this._validate);
             }
         }
+
+        protected async Task<IResponsePagedListDTO<T>> ExecutePagedListAsync<T>(QueryStrategyBase<T> queryStrategy, IPagerDTO pager)
+        {
+            ResetValidations();
+            try
+            {
+
+                return await ResponsePagedListDTO<T>.GetResponseFromQueryAsync(queryStrategy, pager, this._validate);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validate.IsValid = false;
+                _validate.AddError(friendlyError);
+                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
+                return new ResponsePagedListDTO<T>(this._validate);
+            }
+        }
+
+        protected async Task<IResponseListDTO<T>> ExecuteListAsync<T>(QueryStrategyBase<T> queryStrategy)
+        {
+            ResetValidations();
+            try
+            {
+                return await ResponseListDTO<T>.GetResponseFromQueryAsync(queryStrategy, this._validate);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validate.IsValid = false;
+                _validate.AddError(friendlyError);
+                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
+                return new ResponseListDTO<T>(this._validate);
+            }
+        }
+
 
         #endregion
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DataAccessLayer.Entity
 {
@@ -16,6 +12,8 @@ namespace DataAccessLayer.Entity
 
         public DateTime CommentDate { set; get; }
 
+        [Required]
+        [MaxLength(255)]
         public string CommentText { set; get; }
     }
 }

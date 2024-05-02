@@ -16,7 +16,6 @@ namespace DataTransferObjects.DTO.Post
         public string MoodType { get; init; }
         public string Title { init; get; }
         public int Votes { init; get; }
-
         public int Comments { init; get; }
 
     }

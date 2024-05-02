@@ -1,14 +1,5 @@
-﻿using BusinessLogicLayer.Interfaces;
-using DataAccessLayer.Entity;
-using DataTransferObjects;
-using DataTransferObjects.DTO;
+﻿using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.BusinessObjects
 {

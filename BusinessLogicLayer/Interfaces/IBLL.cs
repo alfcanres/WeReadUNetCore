@@ -1,5 +1,4 @@
-﻿using DataTransferObjects;
-using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects.Interfaces;
 
 namespace BusinessLogicLayer.Interfaces
 {
