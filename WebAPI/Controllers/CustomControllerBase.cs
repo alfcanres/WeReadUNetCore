@@ -66,11 +66,11 @@ namespace WebAPI.Controllers
 
         }
 
-        protected async Task<ActionResult> UpdateAsync(UpdateDTO updateDTO)
+        protected async Task<ActionResult> UpdateAsync(int id, UpdateDTO updateDTO)
         {
             try
             {
-                var response = await _BLL.UpdateAsync(updateDTO);
+                var response = await _BLL.UpdateAsync(id, updateDTO);
                 if (response.Validate.IsValid)
                 {
                     return Ok(response);

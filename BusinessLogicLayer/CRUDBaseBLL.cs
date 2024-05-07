@@ -1,37 +1,39 @@
 ﻿using AutoMapper;
+using BusinessLogicLayer.BusinessObjects;
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using BusinessLogicLayer.Response;
+using DataAccessLayer.Entity;
 using DataTransferObjects;
+using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
-
 namespace BusinessLogicLayer
 {
-    public abstract class BaseBLL<CreateDTO, ReadDTO, UpdateDTO> : IBLL<CreateDTO, ReadDTO, UpdateDTO>
+    public abstract class CRUDBaseBLL<TEntity, CreateDTO, ReadDTO, UpdateDTO> : IBLL<CreateDTO, ReadDTO, UpdateDTO>
         where CreateDTO : class
         where ReadDTO : class
         where UpdateDTO : class
     {
         #region Properties
-        private readonly IUnitOfWork _unitOfWork;
+        private IRepository<TEntity> _repository;
         private readonly IMapper _mapper;
         protected readonly IValidate _validate = new ValidateDTO();
         protected readonly ILogger _logger;
         private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
-        protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
+        protected IRepository<TEntity> Repository { get { return _repository; } }
         protected IMapper Mapper { get { return _mapper; } }
 
         #endregion
 
-        protected BaseBLL(
-            IUnitOfWork unitOfWork,
+        protected CRUDBaseBLL(
+            IRepository<TEntity> repository,
             IMapper mapper,
             ILogger logger,
             IDataAnnotationsValidator dataAnnotationsValidator)
         {
-            _unitOfWork = unitOfWork;
+            _repository = repository;
             _mapper = mapper;
             _logger = logger;
             _dataAnnotationsValidator = dataAnnotationsValidator;
@@ -53,7 +55,9 @@ namespace BusinessLogicLayer
                 await ValidateInsertAsync(createDTO);
                 if (this._validate.IsValid)
                 {
-                    readDTO = await ExecuteInsertAsync(createDTO);
+                    var entity = Mapper.Map<TEntity>(createDTO);
+                    await _repository.InsertAsync(entity);
+                    readDTO = Mapper.Map<ReadDTO>(entity);
                 }
             }
             catch (Exception ex)
@@ -76,7 +80,10 @@ namespace BusinessLogicLayer
                 await ValidateUpdateAsync(updateDTO);
                 if (this._validate.IsValid)
                 {
-                    readDTO = await ExecuteUpdateAsync(updateDTO);
+                    var entity = await _repository.GetByIdAsync(id);
+                    Mapper.Map(updateDTO, entity);
+                    await _repository.UpdateAsync(entity);
+                    readDTO = Mapper.Map<ReadDTO>(entity);
                 }
             }
             catch (Exception ex)
@@ -96,7 +103,7 @@ namespace BusinessLogicLayer
                 await ValidateDeleteAsync(id);
                 if (this._validate.IsValid)
                 {
-                    await ExecuteDeleteAsync(id);
+                    await _repository.DeleteAsync(id);
                 }
             }
             catch (Exception ex)
@@ -115,7 +122,8 @@ namespace BusinessLogicLayer
             ReadDTO readDTO = null;
             try
             {
-                readDTO = await ExecuteGetByIdAsync(id);
+                var entity = await _repository.GetByIdAsync(id);
+                readDTO = Mapper.Map<ReadDTO>(entity);
             }
             catch (Exception ex)
             {
@@ -127,10 +135,7 @@ namespace BusinessLogicLayer
 
             return new ResponseDTO<ReadDTO>(readDTO, this._validate);
         }
-        protected abstract Task<ReadDTO> ExecuteGetByIdAsync(int id);
-        protected abstract Task<ReadDTO> ExecuteInsertAsync(CreateDTO createDTO);
-        protected abstract Task ExecuteDeleteAsync(int id);
-        protected abstract Task<ReadDTO> ExecuteUpdateAsync(UpdateDTO updateDTO);
+
         protected async Task<int> CountListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
             ResetValidations();

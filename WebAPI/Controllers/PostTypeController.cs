@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<ActionResult> Put([FromBody] PostTypeUpdateDTO updateModel)
         {
-            return await UpdateAsync(updateModel);
+            return await UpdateAsync(updateModel.Id, updateModel);
         }
 
         [HttpDelete("{id}")]

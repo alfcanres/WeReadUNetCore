@@ -8,7 +8,7 @@ namespace BusinessLogicLayer.BusinessObjects
     {
         Task<IValidate> DeleteAsync(int id);
         Task<IResponseDTO<PostVoteResultDTO>> InsertAsync(PostVoteCreateDTO createDTO);
-        Task<IResponseDTO<PostVoteResultDTO>> UpdateAsync(PostVoteUpdateDTO updateDTO);
+        Task<IResponseDTO<PostVoteResultDTO>> UpdateAsync(int id, PostVoteUpdateDTO updateDTO);
         Task<IResponseDTO<PostVoteViewDTO>> GetVotesByPostIdAsync(int PostId);
     }
 }

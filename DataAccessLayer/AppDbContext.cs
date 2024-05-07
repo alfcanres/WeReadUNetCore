@@ -42,7 +42,7 @@ namespace DataAccessLayer
 
         }
 
-
+        public DbSet<MoodType> MoodTypes => Set<MoodType>();
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<PostType> PostTypes => Set<PostType>();
         public DbSet<PostVote> PostVotes => Set<PostVote>();
