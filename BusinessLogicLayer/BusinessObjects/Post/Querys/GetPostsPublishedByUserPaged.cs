@@ -13,7 +13,8 @@ namespace BusinessLogicLayer.BusinessObjects
         public GetPostsPublishedByUserPaged(int UserID, IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
         {
             query = unitOfWork.Posts
-                .Query();
+                .Query()
+                .AsNoTracking();
 
             if (String.IsNullOrEmpty(pager.SearchKeyWord))
             {
@@ -30,8 +31,7 @@ namespace BusinessLogicLayer.BusinessObjects
             query = query.Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage)
                 .OrderBy(t => t.CreationDate)
-                .Where(t => t.IsPublished && t.ApplicationUserInfoId == UserID)
-                .AsNoTracking();
+                .Where(t => t.IsPublished && t.ApplicationUserInfoId == UserID);
 
         }
 

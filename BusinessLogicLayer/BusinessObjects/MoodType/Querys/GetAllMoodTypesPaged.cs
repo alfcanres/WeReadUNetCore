@@ -11,14 +11,15 @@ namespace BusinessLogicLayer.BusinessObjects
     {
         private readonly IQueryable<MoodType> query;
 
-        public GetAllMoodTypesPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) 
+        public GetAllMoodTypesPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager)
             : base(unitOfWork, mapper)
         {
             query = unitOfWork.MoodTypes
                 .Query()
+                .AsNoTracking()
+                .Where(t => t.IsAvailable)
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
-                .Take(pager.RecordsPerPage)
-                .AsNoTracking();
+                .Take(pager.RecordsPerPage);
         }
 
         internal override async Task<int> CountResultsAsync()

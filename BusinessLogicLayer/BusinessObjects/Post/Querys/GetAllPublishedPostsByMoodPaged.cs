@@ -14,11 +14,13 @@ namespace BusinessLogicLayer.BusinessObjects
         {
             query = unitOfWork.Posts
                 .Query()
+                .AsNoTracking()
+                .Where(t => t.IsPublished && t.MoodTypeId == moodTypeId)
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage)
-                .OrderBy(t => t.CreationDate)
-                .Where(t => t.IsPublished && t.MoodTypeId == moodTypeId)
-                .AsNoTracking();
+                .OrderBy(t => t.CreationDate);
+
+
         }
 
         internal override async Task<int> CountResultsAsync()

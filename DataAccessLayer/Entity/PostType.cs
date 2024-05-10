@@ -14,7 +14,7 @@ namespace DataAccessLayer.Entity
         [MaxLength(255)]
         [Required(ErrorMessage ="Type of post must have a description")]
         public string Description { get; set; }
-
+        [Required]
         public bool IsAvailable { get; set; }
 
         public ICollection<Post> Posts { get; set;}

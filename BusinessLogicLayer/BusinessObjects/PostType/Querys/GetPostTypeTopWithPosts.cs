@@ -8,15 +8,25 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class GetPostTypeTopWithPosts : QueryStrategyBase<PostTypeReadDTO>
     {
-        private readonly IQueryable<PostType> query;
+        private readonly IQueryable<PostTypeReadDTO> query;
 
         public GetPostTypeTopWithPosts(IUnitOfWork unitOfWork, IMapper mapper, int top) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.PostTypes.Query()
-                .Include(t => t.Posts)
-                .OrderByDescending(t => t.Posts.Count())
+            query = unitOfWork.PostTypes
+                .Query()
+                .AsNoTracking()
+                .Include(m => m.Posts)
+                .AsNoTracking()
+                .Where(t => t.Posts.Count > 0 && t.IsAvailable == true)
                 .Take(top)
-                .AsNoTracking();
+                .Select(t => new PostTypeReadDTO
+                {
+                    Id = t.Id,
+                    IsAvailable = t.IsAvailable,
+                    Description = t.Description,
+                    PostCount = t.Posts.Count(p => p.IsPublished == true),
+                })
+                .OrderByDescending(t => t.PostCount);
         }
 
         internal override async Task<int> CountResultsAsync()
@@ -27,7 +37,8 @@ namespace BusinessLogicLayer.BusinessObjects
         internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
-            return Map(result);
+
+            return result;
         }
     }
 }

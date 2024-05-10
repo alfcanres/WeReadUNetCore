@@ -18,9 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BusinessObjects\PostType\Insert\" />
-    <Folder Include="BusinessObjects\PostType\Delete\" />
-    <Folder Include="BusinessObjects\PostType\Update\" />
     <Folder Include="Interfaces\Response\" />
   </ItemGroup>
 

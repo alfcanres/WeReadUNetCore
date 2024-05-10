@@ -13,7 +13,9 @@ namespace BusinessLogicLayer.BusinessObjects
         public GetAllPublishedPostsPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
         {
             query = unitOfWork.Posts
-                .Query();
+                .Query()
+                .AsNoTracking()
+                .Where(t => t.IsPublished); 
 
             if (String.IsNullOrEmpty(pager.SearchKeyWord))
             {
@@ -31,9 +33,8 @@ namespace BusinessLogicLayer.BusinessObjects
 
             query = query.Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage)
-                .OrderBy(t => t.CreationDate)
-                .Where(t => t.IsPublished)
-                .AsNoTracking();
+                .OrderBy(t => t.CreationDate);                
+
 
         }
 

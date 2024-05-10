@@ -9,14 +9,27 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class GetMoodTypesTopWithPosts : QueryStrategyBase<MoodTypeReadDTO>
     {
-        private readonly IQueryable<MoodType> query;
+        private readonly IQueryable<MoodTypeReadDTO> query;
         public GetMoodTypesTopWithPosts(IUnitOfWork unitOfWork, IMapper mapper, int top) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.MoodTypes
+
+            query = unitOfWork
+                .MoodTypes
                 .Query()
+                .AsNoTracking()
+                .Include(m => m.Posts)
+                .AsNoTracking()
+                .Where(t => t.Posts.Count > 0 && t.IsAvailable == true)
                 .Take(top)
-                .OrderByDescending(t => t.Mood)
-                .AsNoTracking();
+                .Select(t => new MoodTypeReadDTO
+                {
+                    Id = t.Id,
+                    IsAvailable = t.IsAvailable,
+                    Mood = t.Mood,
+                    PostCount = t.Posts.Count(p => p.IsPublished == true),
+                })
+                .OrderByDescending(t => t.PostCount);
+
         }
 
         internal override async Task<int> CountResultsAsync()
@@ -27,7 +40,7 @@ namespace BusinessLogicLayer.BusinessObjects
         internal override async Task<IEnumerable<MoodTypeReadDTO>> GetResultsAsync()
         {
             var result = await query.ToListAsync();
-            return Map(result);
+            return result;
         }
     }
 }

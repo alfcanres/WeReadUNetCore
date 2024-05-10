@@ -14,8 +14,9 @@ namespace BusinessLogicLayer.BusinessObjects
         {
             query = unitOfWork.MoodTypes
                 .Query()
-                .Where(t => t.IsAvailable == isAvailable)
-                .AsNoTracking();
+                .AsNoTracking()
+                .Where(t => t.IsAvailable == isAvailable);
+                
         }
 
         internal override async Task<int> CountResultsAsync()

@@ -12,11 +12,13 @@ namespace DataAccessLayer.Entity
         public int Id { get; set; }
         public int ApplicationUserInfoId { set; get; }
         public ApplicationUserInfo ApplicationUserInfo { get; set; }
+
         public int PostTypeId { get; set; }
+        [Required]
         public PostType PostType { get; set; }
 
         public int MoodTypeId { get; set; }
-
+        [Required]
         public MoodType MoodType { get; set; }
 
         [MaxLength(255, ErrorMessage = "Max chars 255")]
@@ -26,11 +28,11 @@ namespace DataAccessLayer.Entity
         [MaxLength(1024, ErrorMessage = "Avoid TDL!!! Max chars 1024")]
         [Required(ErrorMessage = "Need some text here!")]
         public string Text { get; set; }
-
+        [Required]
         public DateTime CreationDate { get; set; }
 
         public Nullable<DateTime> PublishDate { get; set; }
-
+        [Required]
         public bool IsPublished { get; set; }
 
         public ICollection<PostVote> Votes { set; get; }
