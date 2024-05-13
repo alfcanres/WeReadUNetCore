@@ -9,8 +9,8 @@ namespace BusinessLogicLayer.BusinessObjects
     {
         Task<IResponseDTO<PostReadDTO>> ApprovePostPublish(int postId);
         Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublished(IPagerDTO pagerDTO);
-        Task<IResponseListDTO<PostListDTO>> GetPostsPublishedPaged(IPagerDTO pagerDTO);
-        Task<IResponseListDTO<PostListDTO>> GetPostsPublishedByUserPaged(int UserID, IPagerDTO pagerDTO);
+        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPaged(IPagerDTO pagerDTO);
+        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPaged(int UserID, IPagerDTO pagerDTO);
 
 
     }

@@ -9,17 +9,28 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class GetAllPublishedPostsPaged : QueryStrategyBase<PostListDTO>
     {
-        private readonly IQueryable<Post> query;
+        private readonly IQueryable<Post> queryCount;
+        private readonly IQueryable<Post> queryList;
         public GetAllPublishedPostsPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.Posts
+            var baseQuery = unitOfWork.Posts
                 .Query()
-                .AsNoTracking()
-                .Where(t => t.IsPublished); 
+                .Include(t => t.MoodType)
+                .Include(t => t.PostType)
+                .Include(t => t.ApplicationUserInfo)
+                .Include(t => t.Comments)
+                .Include(t => t.Votes)
+                .Where(t =>
+                t.IsPublished == true
+                &&
+                t.MoodType.IsAvailable == true
+                &&
+                t.PostType.IsAvailable == true
+                );
 
-            if (String.IsNullOrEmpty(pager.SearchKeyWord))
+            if (!String.IsNullOrWhiteSpace(pager.SearchKeyWord))
             {
-                query = query
+                baseQuery = baseQuery
                     .Where(t =>
                     t.Title.Contains(pager.SearchKeyWord)
                     ||
@@ -31,21 +42,23 @@ namespace BusinessLogicLayer.BusinessObjects
                     );
             }
 
-            query = query.Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
+            queryList = baseQuery.Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage)
-                .OrderBy(t => t.CreationDate);                
+                .AsNoTracking()
+                .OrderBy(t => t.CreationDate);
 
+            queryCount = baseQuery.OrderBy(t => t.CreationDate);
 
         }
 
         internal override async Task<int> CountResultsAsync()
         {
-            return await query.CountAsync();
+            return await queryCount.CountAsync();
         }
 
         internal override async Task<IEnumerable<PostListDTO>> GetResultsAsync()
         {
-            var result = await query.ToListAsync();
+            var result = await queryList.ToListAsync();
             return Map(result);
         }
     }
