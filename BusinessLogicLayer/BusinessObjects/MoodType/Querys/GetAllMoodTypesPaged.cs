@@ -9,27 +9,34 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class GetAllMoodTypesPaged : QueryStrategyBase<MoodTypeReadDTO>
     {
-        private readonly IQueryable<MoodType> query;
+        private readonly IQueryable<MoodType> queryCount;
+        private readonly IQueryable<MoodType> queryList;
 
         public GetAllMoodTypesPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager)
             : base(unitOfWork, mapper)
         {
-            query = unitOfWork.MoodTypes
+            var queryBase = unitOfWork.MoodTypes
                 .Query()
+                .Include(t => t.Posts)
                 .AsNoTracking()
-                .Where(t => t.IsAvailable)
+                .Where(t => t.IsAvailable);
+
+            queryList = queryBase
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage);
+
+            queryCount = queryBase.OrderByDescending(t => t.Id);
+
         }
 
         internal override async Task<int> CountResultsAsync()
         {
-            return await unitOfWork.MoodTypes.Query().CountAsync();
+            return await queryCount.CountAsync();
         }
 
         internal override async Task<IEnumerable<MoodTypeReadDTO>> GetResultsAsync()
         {
-            var result = await query.ToListAsync();
+            var result = await queryList.ToListAsync();
             return Map(result);
         }
     }

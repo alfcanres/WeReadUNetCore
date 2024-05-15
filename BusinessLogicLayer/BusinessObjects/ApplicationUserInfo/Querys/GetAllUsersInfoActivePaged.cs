@@ -11,27 +11,36 @@ namespace BusinessLogicLayer.BusinessObject
     public class GetAllUsersInfoActivePaged : QueryStrategyBase<ApplicationUserInfoListDTO>
     {
 
-        private readonly IQueryable<ApplicationUserInfo> query;
+        private readonly IQueryable<ApplicationUserInfo> queryCount;
+        private readonly IQueryable<ApplicationUserInfo> queryList;
 
         public GetAllUsersInfoActivePaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager)
             : base(unitOfWork, mapper)
         {
-            query = unitOfWork.UsersInfo
-                .Query()
-                .Where(t => t.IsActive)
+            var queryBase = unitOfWork.UsersInfo
+                 .Query()
+                 .Include(t => t.Posts)
+                 .Include(t => t.Comments)
+                 .AsNoTracking()
+                 .Where(t => t.IsActive);
+
+
+
+            queryList = queryBase
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
-                .Take(pager.RecordsPerPage)
-                .AsNoTracking();
+                .Take(pager.RecordsPerPage);
+
+            queryCount = queryBase;
         }
 
         internal override async Task<int> CountResultsAsync()
         {
-            return await query.CountAsync();
+            return await queryCount.CountAsync();
         }
 
         internal override async Task<IEnumerable<ApplicationUserInfoListDTO>> GetResultsAsync()
         {
-            var result = await query.ToListAsync();
+            var result = await queryList.ToListAsync();
             return Map(result);
         }
     }

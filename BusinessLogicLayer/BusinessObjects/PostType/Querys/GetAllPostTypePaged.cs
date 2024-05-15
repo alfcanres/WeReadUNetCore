@@ -10,24 +10,31 @@ namespace BusinessLogicLayer.BusinessObjects
     public class GetAllPostTypePaged : QueryStrategyBase<PostTypeReadDTO>
     {
 
-        private readonly IQueryable<PostType> query;
+        private readonly IQueryable<PostType> queryCount;
+        private readonly IQueryable<PostType> queryList;
 
         public GetAllPostTypePaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
         {
-            query = unitOfWork.PostTypes
+            var query = unitOfWork.PostTypes
                 .Query()
-                .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
-                .Take(pager.RecordsPerPage)
+                .Include(t => t.Posts)
                 .AsNoTracking();
+
+            queryList =
+                query.Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
+                .Take(pager.RecordsPerPage);
+
+            queryCount = unitOfWork.PostTypes.Query();
+
         }
         internal override async Task<int> CountResultsAsync()
         {
-            return await unitOfWork.PostTypes.Query().CountAsync();
+            return await queryCount.CountAsync();
         }
 
         internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
         {
-            var result = await query.ToListAsync();
+            var result = await queryList.ToListAsync();
             return Map(result);
         }
     }

@@ -14,7 +14,6 @@ namespace BusinessLogicLayer.BusinessObjects
         {
             query = unitOfWork.PostTypes
                 .Query()
-                .AsNoTracking()
                 .Include(m => m.Posts)
                 .AsNoTracking()
                 .Where(t => t.Posts.Count > 0 && t.IsAvailable == true)
