@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
-using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

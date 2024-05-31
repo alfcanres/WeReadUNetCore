@@ -3,7 +3,6 @@ using BusinessLogicLayer.BusinessObjects;
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer;
-using DataAccessLayer.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

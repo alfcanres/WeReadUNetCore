@@ -1,8 +1,5 @@
-﻿
-using DataTransferObjects;
-using DataTransferObjects.DTO;
+﻿using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

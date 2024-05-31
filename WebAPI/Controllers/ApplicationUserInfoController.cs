@@ -11,34 +11,27 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class MoodTypeController : BaseController<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>
+    public class ApplicationUserInfoController : BaseController<ApplicationUserInfoCreateDTO, ApplicationUserInfoReadDTO, ApplicationUserInfoUpdateDTO>
     {
-        private readonly IMoodTypeBLL _BLL;
-        private readonly ILogger<MoodTypeController> _logger;
+        private readonly IApplicationUserInfoBLL _BLL;
+        private readonly ILogger<ApplicationUserInfoController> _logger;
 
-        public MoodTypeController(IMoodTypeBLL BLL, ILogger<MoodTypeController> logger) : base(BLL, logger)
+        public ApplicationUserInfoController(IApplicationUserInfoBLL BLL, ILogger<ApplicationUserInfoController> logger) : base(BLL, logger)
         {
             _BLL = BLL;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] MoodTypeCreateDTO createModel)
+        public async Task<ActionResult> Post([FromBody] ApplicationUserInfoCreateDTO createModel)
         {
             return await CreateAsync(createModel);
         }
 
         [HttpPut]
-        public async Task<ActionResult> Put([FromBody] MoodTypeUpdateDTO updateModel)
+        public async Task<ActionResult> Put([FromBody] ApplicationUserInfoUpdateDTO updateModel)
         {
             return await UpdateAsync(updateModel.Id, updateModel);
-        }
-
-        [ResponseCache(Duration = 10)]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MoodTypeReadDTO>> Get(int id)
-        {
-            return await GetByIdAsync(id);
         }
 
         [HttpDelete("{id}")]
@@ -47,21 +40,8 @@ namespace WebAPI.Controllers
             return await DeleteAsync(id);
         }
 
-        [ResponseCache(Duration = 10)]
-        [HttpGet("Available/{isAvalable}")]
-        public async Task<ActionResult> GetIsAvailable(bool isAvalable)
-        {
-            var result = await _BLL.GetAllByIsAvailableAsync(isAvalable);
-
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
-        }
-
-
         [HttpGet("Paged")]
-        public async Task<ActionResult<IResponsePagedListDTO<MoodTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult<IResponsePagedListDTO<ApplicationUserInfoListDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
@@ -72,6 +52,18 @@ namespace WebAPI.Controllers
 
         }
 
+
+        [HttpGet("PagedByActive")]
+        public async Task<ActionResult<IResponsePagedListDTO<ApplicationUserInfoListDTO>>> GetPagedByActive([FromQuery] PagerDTO pagerDTO)
+        {
+            var result = await _BLL.GetAllActivePagedAsync(pagerDTO);
+
+            if (result.Validate.IsValid)
+                return Ok(result);
+            else
+                return BadRequest(result);
+
+        }
 
         [ResponseCache(Duration = 10)]
         [HttpGet("Top/{top}")]
@@ -85,7 +77,5 @@ namespace WebAPI.Controllers
             else
                 return BadRequest(result);
         }
-
-
     }
 }

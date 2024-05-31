@@ -8,70 +8,52 @@ using Microsoft.Extensions.Logging;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class MoodTypeBLL : BaseBLL<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>, IBLL<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>, IMoodTypeBLL
+    public class MoodTypeBLL : CRUDBaseBLL<MoodType, MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>, IBLL<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>, IMoodTypeBLL
     {
-        public MoodTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
+        private readonly IUnitOfWork _unitOfWork;
+        public MoodTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork.MoodTypes, mapper, logger, dataAnnotationsValidator)
         {
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> CountAllAsync()
         {
-            return await UnitOfWork.PostTypes.Query().CountAsync();
+            return await _unitOfWork.PostTypes.Query().CountAsync();
         }
 
         public async Task<IResponseListDTO<MoodTypeReadDTO>> GetAllAsync()
         {
-            return await ExecuteListAsync(new GetAllMoodTypes(UnitOfWork, Mapper));
+            return await ExecuteListAsync(new GetAllMoodTypes(_unitOfWork, Mapper));
         }
 
         public async Task<IResponsePagedListDTO<MoodTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
         {
-            return await ExecutePagedListAsync(new GetAllMoodTypesPaged(UnitOfWork, Mapper, pagerDTO), pagerDTO);
+            return await ExecutePagedListAsync(new GetAllMoodTypesPaged(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
         public async Task<IResponseListDTO<MoodTypeReadDTO>> GetTopWithPostsAsync(int top)
         {
-            return await ExecuteListAsync(new GetMoodTypesTopWithPosts(UnitOfWork, Mapper, top));
+            return await ExecuteListAsync(new GetMoodTypesTopWithPosts(_unitOfWork, Mapper, top));
 
         }
 
         public async Task<IResponseListDTO<MoodTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
         {
-            return await ExecuteListAsync(new GetAllMoodTypeByIsAvailable(UnitOfWork, Mapper, isAvailable));
-        }
-
-        protected override async Task<MoodTypeReadDTO> ExecuteGetByIdAsync(int id)
-        {
-            var entity = await UnitOfWork.MoodTypes.GetByIdAsync(id);
-            var dto = Mapper.Map<MoodTypeReadDTO>(entity);
-            return dto;
-        }
-
-        protected override async Task<MoodTypeReadDTO> ExecuteInsertAsync(MoodTypeCreateDTO createDTO)
-        {
-            MoodType entity = Mapper.Map<MoodType>(createDTO);
-            await UnitOfWork.MoodTypes.InsertAsync(entity);
-            var dto = Mapper.Map<MoodTypeReadDTO>(entity);
-            return dto;
-        }
-
-        protected override async Task<MoodTypeReadDTO> ExecuteUpdateAsync(MoodTypeUpdateDTO updateDTO)
-        {
-            var entity = await UnitOfWork.MoodTypes.GetByIdAsync(updateDTO.Id);
-            Mapper.Map(updateDTO, entity);
-            await UnitOfWork.MoodTypes.UpdateAsync(entity);
-            var dto = Mapper.Map<MoodTypeReadDTO>(entity);
-            return dto;
+            return await ExecuteListAsync(new GetAllMoodTypeByIsAvailable(_unitOfWork, Mapper, isAvailable));
         }
 
         protected override async Task ExecValidateDeleteAsync(int id)
         {
-            await UnitOfWork.MoodTypes.DeleteAsync(id);
+            bool exists = await _unitOfWork.MoodTypes.Query().Where(t => t.Id == id).AnyAsync();
+            if (!exists)
+            {
+                _validate.AddError(Helpers.ValidationErrorMessages.OnDeleteNoRecordWasFound);
+            }
         }
 
         protected override async Task ExecValidateInsertAsync(MoodTypeCreateDTO createDTO)
         {
-            bool exists = await UnitOfWork.MoodTypes.Query().Where(t => t.Mood == createDTO.Mood).AnyAsync();
+            bool exists = await _unitOfWork.MoodTypes.Query().Where(t => t.Mood == createDTO.Mood).AnyAsync();
             if (exists)
             {
                 _validate.AddError(Helpers.ValidationErrorMessages.OnInsertAnItemAlreadyExists);
@@ -80,20 +62,13 @@ namespace BusinessLogicLayer.BusinessObjects
 
         protected override async Task ExecValidateUpdateAsync(MoodTypeUpdateDTO updateDTO)
         {
-            bool exists = await UnitOfWork.PostTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
+            bool exists = await _unitOfWork.PostTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)
             {
                 _validate.AddError(Helpers.ValidationErrorMessages.OnUpdateNoRecordWasFound);
             }
         }
 
-        protected override async Task ExecuteDeleteAsync(int id)
-        {
-            bool exists = await UnitOfWork.MoodTypes.Query().Where(t => t.Id == id).AnyAsync();
-            if (!exists)
-            {
-                _validate.AddError(Helpers.ValidationErrorMessages.OnDeleteNoRecordWasFound);
-            }
-        }
+
     }
 }

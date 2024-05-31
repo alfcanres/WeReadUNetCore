@@ -1,7 +1,6 @@
 ﻿using DataTransferObjects;
 using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Runtime.CompilerServices;
 
 namespace WebAPI.ExtensionMethods
 {

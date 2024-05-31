@@ -11,7 +11,7 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class PostTypeController : CustomControllerBase<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
+    public class PostTypeController : BaseController<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
     {
         private readonly IPostTypeBLL _BLL;
         private readonly ILogger<PostTypeController> _logger;
@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("Paged")]
-        public override async Task<ActionResult<IResponsePagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult<IResponsePagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
