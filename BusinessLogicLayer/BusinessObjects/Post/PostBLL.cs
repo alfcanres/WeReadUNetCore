@@ -14,7 +14,7 @@ namespace BusinessLogicLayer.BusinessObjects
     public class PostBLL : CRUDBaseBLL<Post, PostCreateDTO, PostReadDTO, PostUpdateDTO>, IPostBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        public PostBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork.Posts, mapper, logger, dataAnnotationsValidator)
+        public PostBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<PostBLL> logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork.Posts, mapper, logger, dataAnnotationsValidator)
         {
             _unitOfWork = unitOfWork;
         }

@@ -11,7 +11,7 @@ namespace BusinessLogicLayer.BusinessObjects
     public class MoodTypeBLL : CRUDBaseBLL<MoodType, MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>, IBLL<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>, IMoodTypeBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        public MoodTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork.MoodTypes, mapper, logger, dataAnnotationsValidator)
+        public MoodTypeBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<MoodTypeBLL> logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork.MoodTypes, mapper, logger, dataAnnotationsValidator)
         {
             _unitOfWork = unitOfWork;
         }

@@ -14,7 +14,7 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class PostVoteBLL : BaseBLL<PostVoteCreateDTO, PostVoteResultDTO, PostVoteUpdateDTO>, IPostVoteBLL
     {
-        public PostVoteBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
+        public PostVoteBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<PostVoteBLL> logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
         {
         }
 

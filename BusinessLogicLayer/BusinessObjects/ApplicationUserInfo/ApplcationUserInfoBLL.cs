@@ -11,7 +11,7 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public class ApplcationUserInfoBLL : BaseBLL<ApplicationUserInfoCreateDTO, ApplicationUserInfoReadDTO, ApplicationUserInfoUpdateDTO>, IApplicationUserInfoBLL
     {
-        public ApplcationUserInfoBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
+        public ApplcationUserInfoBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ApplcationUserInfoBLL> logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
         {
         }
 

@@ -51,7 +51,7 @@ namespace BusinessLogicLayerTest
 
             var mapper = mapperConfiguration.CreateMapper();
             IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
-            var logger = new Mock<ILogger<MoodTypeBLL>>();
+            var logger = new Mock<ILogger<PostBLL>>();
 
             PostBLL postBLL = new PostBLL(
                 unitOfWork,
@@ -104,7 +104,7 @@ namespace BusinessLogicLayerTest
 
             var mapper = mapperConfiguration.CreateMapper();
             IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
-            var logger = new Mock<ILogger<MoodTypeBLL>>();
+            var logger = new Mock<ILogger<PostBLL>>();
 
             PostBLL postBLL = new PostBLL(
                 unitOfWork,
@@ -159,7 +159,7 @@ namespace BusinessLogicLayerTest
 
             var mapper = mapperConfiguration.CreateMapper();
             IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
-            var logger = new Mock<ILogger<MoodTypeBLL>>();
+            var logger = new Mock<ILogger<PostBLL>>();
 
             PostBLL postBLL = new PostBLL(
                 unitOfWork,
@@ -221,7 +221,7 @@ namespace BusinessLogicLayerTest
 
             var mapper = mapperConfiguration.CreateMapper();
             IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
-            var logger = new Mock<ILogger<MoodTypeBLL>>();
+            var logger = new Mock<ILogger<PostBLL>>();
 
             PostBLL postBLL = new PostBLL(
                 unitOfWork,

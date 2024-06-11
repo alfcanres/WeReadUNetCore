@@ -31,8 +31,6 @@ builder.Services.Configure<ApiBehaviorOptions>(op =>
 // Add services to the container.
 
 
-
-
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 #region Business Objects
@@ -43,10 +41,17 @@ builder.Services.AddScoped<IDataAnnotationsValidator, DataAnnotationsValidatorHe
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<IAccountBLL,AccountBLL>();
+
+builder.Services.AddScoped<IMoodTypeBLL, MoodTypeBLL>();
+
+builder.Services.AddScoped<IPostBLL, PostBLL>();
+
+builder.Services.AddScoped<IPostCommentBLL, PostCommentBLL>();
+
 builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
 
-builder.Services.AddScoped<IAccountBLL, AccountBLL>();
-
+builder.Services.AddScoped<IPostVoteBLL, PostVoteBLL>();
 
 #endregion
 
