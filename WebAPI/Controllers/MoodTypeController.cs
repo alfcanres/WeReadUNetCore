@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<MoodTypeReadDTO>> Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
             return await GetByIdAsync(id);
         }
@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("Paged")]
-        public async Task<ActionResult<IResponsePagedListDTO<MoodTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPagedAsync(pagerDTO);
 

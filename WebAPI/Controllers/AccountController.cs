@@ -25,6 +25,7 @@ namespace WebAPI.Controllers
             _configuration = configuration;
         }
 
+
         [AllowAnonymous]
         [HttpPost("Register")]
         public async Task<ActionResult> Post([FromBody] UserCreateDTO createModel)

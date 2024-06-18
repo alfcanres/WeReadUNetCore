@@ -18,9 +18,7 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        //public abstract Task<ActionResult<IResponsePagedListDTO<ReadDTO>>> GetPaged(PagerDTO pagerDTO);
-
-        protected async Task<ActionResult<ReadDTO>> GetByIdAsync(int id)
+        protected async Task<ActionResult> GetByIdAsync(int id)
         {
 
             var response = await _BLL.GetByIdAsync(id);

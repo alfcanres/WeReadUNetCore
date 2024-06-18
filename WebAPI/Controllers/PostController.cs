@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("Approve")]
-        public async Task<ActionResult<IResponseDTO<PostReadDTO>>> Put(int id)
+        public async Task<ActionResult> Put(int id)
         {
 
             var response = await _BLL.ApprovePostPublish(id);
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostReadDTO>> Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
             return await GetByIdAsync(id);
         }
@@ -75,7 +75,7 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         [ResponseCache(Duration = 10)]
         [HttpGet("PublishedPaged")]
-        public async Task<ActionResult<IResponsePagedListDTO<PostReadDTO>>> GetPublishedPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPublishedPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetPostsPublishedPaged(pagerDTO);
 
@@ -89,7 +89,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("PublishedPagedByUser/{id}")]
-        public async Task<ActionResult<IResponsePagedListDTO<PostReadDTO>>> GetPaged(int id, [FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPaged(int id, [FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetPostsPublishedByUserPaged(id, pagerDTO);
 
@@ -102,7 +102,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("PendingPublishPaged")]
-        public async Task<ActionResult<IResponsePagedListDTO<PostReadDTO>>> GetNotPublished([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetNotPublished([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPostsNotPublished(pagerDTO);
 
@@ -115,7 +115,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("{id}/Comments")]
-        public async Task<ActionResult<IResponsePagedListDTO<PostCommentReadDTO>>> GetCommentsPaged(int id, [FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetCommentsPaged(int id, [FromQuery] PagerDTO pagerDTO)
         {
             var result = await _postCommentBLL.GetPagedByPostId(id, pagerDTO);
 
@@ -127,7 +127,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}/Votes")]
-        public async Task<ActionResult<IResponseDTO<PostVoteViewDTO>>> GetVotes(int id)
+        public async Task<ActionResult> GetVotes(int id)
         {
             var result = await _postVoteBLL.GetVotesByPostIdAsync(id);
 

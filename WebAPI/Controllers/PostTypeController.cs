@@ -54,7 +54,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("Paged")]
-        public async Task<ActionResult<IResponsePagedListDTO<PostTypeReadDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
             var result = await _BLL.GetAllPagedAsync(pagerDTO);
 

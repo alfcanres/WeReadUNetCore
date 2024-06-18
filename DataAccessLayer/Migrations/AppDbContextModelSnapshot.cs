@@ -35,11 +35,16 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
@@ -49,7 +54,8 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -73,7 +79,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MoodType");
+                    b.ToTable("MoodTypes");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entity.Post", b =>
@@ -139,7 +145,8 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("CommentText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
@@ -404,7 +411,7 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entity.Post", b =>
                 {
                     b.HasOne("DataAccessLayer.Entity.ApplicationUserInfo", "ApplicationUserInfo")
-                        .WithMany()
+                        .WithMany("Posts")
                         .HasForeignKey("ApplicationUserInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -431,7 +438,7 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entity.PostComment", b =>
                 {
                     b.HasOne("DataAccessLayer.Entity.ApplicationUserInfo", "ApplicationUserInfo")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("ApplicationUserInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -450,7 +457,7 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entity.PostVote", b =>
                 {
                     b.HasOne("DataAccessLayer.Entity.ApplicationUserInfo", "ApplicationUserInfo")
-                        .WithMany()
+                        .WithMany("Votes")
                         .HasForeignKey("ApplicationUserInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -515,6 +522,15 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entity.ApplicationUserInfo", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Posts");
+
+                    b.Navigation("Votes");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entity.MoodType", b =>

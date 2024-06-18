@@ -85,8 +85,14 @@ namespace BusinessLogicLayer.BusinessObjects
                         {
                             FirstName = createDTO.UserName,
                             LastName = createDTO.LastName,
-                            UserID = user.Id
+                            UserID = user.Id,
+                            UserName = createDTO.UserName,
+                            ProfilePicture = "Default",
+                            DateOfBirth = DateTime.Now,
+                            IsActive = true
                         };
+
+
 
                         await _unitOfWork.UsersInfo.InsertAsync(applicationUserInfo);
 

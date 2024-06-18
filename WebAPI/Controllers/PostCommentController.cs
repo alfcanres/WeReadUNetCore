@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostCommentReadDTO>> Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
             var response = await _BLL.GetByIdAsync(id);
             if (response.Validate.IsValid)
