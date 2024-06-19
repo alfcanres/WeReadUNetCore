@@ -5,11 +5,10 @@ namespace BusinessLogicLayer.Response
     public class ResponseDTO<T> : IResponseDTO<T> where T : class
     {
         private readonly T _DTO;
-        private readonly IValidate _validate;
-        public ResponseDTO(T DTO, IValidate validate)
+        public ResponseDTO(T DTO)
         {
             _DTO = DTO;
-            _validate = validate;
+
         }
 
         public T Data
@@ -20,12 +19,5 @@ namespace BusinessLogicLayer.Response
             }
         }
 
-        public IValidate Validate
-        {
-            get
-            {
-                return _validate;
-            }
-        }
     }
 }

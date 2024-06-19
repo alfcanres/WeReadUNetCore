@@ -62,7 +62,7 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
-        protected override async Task ExecValidateUpdateAsync(PostTypeUpdateDTO updateDTO)
+        protected override async Task ExecValidateUpdateAsync(int id, PostTypeUpdateDTO updateDTO)
         {
             bool exists = await _unitOfWork.PostTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)

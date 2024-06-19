@@ -8,6 +8,7 @@ using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 
 namespace BusinessLogicLayer.BusinessObjects
@@ -33,7 +34,7 @@ namespace BusinessLogicLayer.BusinessObjects
             _unitOfWork = unitOfWork;
         }
 
-        private async Task ValidateInsertAsync(UserCreateDTO createDTO)
+        public async Task<IValidate> ValidateInsertAsync(UserCreateDTO createDTO)
         {
             _validate.Clear();
 
@@ -61,119 +62,85 @@ namespace BusinessLogicLayer.BusinessObjects
                     _logger.LogWarning("VALIDATE INSERT RETURNED FALSE: {validate}", _validate);
 
             }
+
+            return this._validate;
         }
         public async Task<IResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO)
         {
             UserReadDTO userReadDTO = null;
-            try
-            {
-                await ValidateInsertAsync(createDTO);
 
-                if (this._validate.IsValid)
+            var user = new IdentityUser
+            {
+                UserName = createDTO.UserName,
+                Email = createDTO.Email,
+            };
+
+            var result = await _userManager.CreateAsync(user, createDTO.Password);
+            if (result.Succeeded)
+            {
+
+                ApplicationUserInfo applicationUserInfo = new ApplicationUserInfo()
                 {
-                    var user = new IdentityUser
-                    {
-                        UserName = createDTO.UserName,
-                        Email = createDTO.Email,
-                    };
-
-                    var result = await _userManager.CreateAsync(user, createDTO.Password);
-                    if (result.Succeeded)
-                    {
-
-                        ApplicationUserInfo applicationUserInfo = new ApplicationUserInfo()
-                        {
-                            FirstName = createDTO.UserName,
-                            LastName = createDTO.LastName,
-                            UserID = user.Id,
-                            UserName = createDTO.UserName,
-                            ProfilePicture = "Default",
-                            DateOfBirth = DateTime.Now,
-                            IsActive = true
-                        };
+                    FirstName = createDTO.UserName,
+                    LastName = createDTO.LastName,
+                    UserID = user.Id,
+                    UserName = createDTO.UserName,
+                    ProfilePicture = "Default",
+                    DateOfBirth = DateTime.Now,
+                    IsActive = true
+                };
 
 
 
-                        await _unitOfWork.UsersInfo.InsertAsync(applicationUserInfo);
+                await _unitOfWork.UsersInfo.InsertAsync(applicationUserInfo);
 
 
-                        userReadDTO = new UserReadDTO
-                        {
-                            Email = createDTO.Email,
-                            UserName = createDTO.UserName,
-                            FirstName = createDTO.FirstName,
-                            LastName = createDTO.LastName,
-                            FullName = $"{createDTO.FirstName} {createDTO.LastName}"
-                        };
-                    }
-                    else
-                    {
-                        foreach (var item in result.Errors)
-                        {
-                            _validate.AddError(item.Description);
-                        }
-                    }
-                }
+                userReadDTO = new UserReadDTO
+                {
+                    Email = createDTO.Email,
+                    UserName = createDTO.UserName,
+                    FirstName = createDTO.FirstName,
+                    LastName = createDTO.LastName,
+                    FullName = $"{createDTO.FirstName} {createDTO.LastName}"
+                };
             }
-            catch (Exception ex)
+            else
             {
-                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createDTO);
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in result.Errors)
+                {
+                    sb.AppendLine(item.Description);
+                }
+
+                throw new Exception(sb.ToString());
             }
 
-
-            return new ResponseDTO<UserReadDTO>(userReadDTO, this._validate);
+            return new ResponseDTO<UserReadDTO>(userReadDTO);
         }
-        public async Task<IResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO)
+        public async Task<IValidate> SignInAsync(UserSignInDTO userSignInDTO)
         {
             _validate.Clear();
-            UserReadDTO userReadDTO = null;
-            try
+
+            var user = await _userManager.FindByEmailAsync(userSignInDTO.Email);
+            if (user == null)
             {
-                var user = await _userManager.FindByEmailAsync(userSignInDTO.Email);
-                if (user == null)
+                _validate.AddError(ValidationAccountErrorMessages.OnLoginIncorrectUserNameOrPassword);
+            }
+            else
+            {
+                if (await _userManager.CheckPasswordAsync(user, userSignInDTO.Password))
                 {
-                    _validate.AddError(ValidationAccountErrorMessages.OnLoginIncorrectUserNameOrPassword);
+                    this._validate.IsValid = true;
                 }
                 else
                 {
-                    if (await _userManager.CheckPasswordAsync(user, userSignInDTO.Password))
-                    {
-
-
-                        var userInfo = await GetUserInfoAsync(user);
-
-
-                        userReadDTO = new UserReadDTO
-                        {
-                            Email = userSignInDTO.Email,
-                            UserName = user.UserName,
-                            FirstName = userInfo.FirstName,
-                            LastName = userInfo.LastName,
-                            FullName = $"{userInfo.FirstName} {userInfo.LastName}",
-                            ProfilePicture = userInfo.ProfilePicture
-                        };
-
-                    }
-                    else
-                    {
-                        _validate.AddError(ValidationAccountErrorMessages.OnLoginIncorrectUserNameOrPassword);
-                    }
+                    _validate.AddError(ValidationAccountErrorMessages.OnLoginIncorrectUserNameOrPassword);
                 }
             }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "SINGIN OPERATION : {createDTO}", userSignInDTO);
-            }
 
-            return new ResponseDTO<UserReadDTO>(userReadDTO, this._validate);
+            return this._validate;
         }
-        private async Task ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        public async Task<IValidate> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
         {
             _validate.Clear();
 
@@ -201,41 +168,14 @@ namespace BusinessLogicLayer.BusinessObjects
                     _logger.LogWarning("VALIDATE UPDATE PASSWORD RETURNED FALSE: {validate}", _validate);
 
             }
+
+            return this._validate;
         }
-        public async Task<IValidate> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        public async Task UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
         {
-            try
-            {
-                await ValidateUpdatePasswordAsync(updateDTO);
+            var applicationUser = await _userManager.FindByEmailAsync(updateDTO.Email);
 
-                if (this._validate.IsValid)
-                {
-
-                    var applicationUser = await _userManager.FindByEmailAsync(updateDTO.Email);
-
-                    var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
-                    if (!result.Succeeded)
-                    {
-                        foreach (var item in result.Errors)
-                        {
-                            _validate.AddError(item.Description);
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "CHANGE PASSWORD OPERATION : {createDTO}", updateDTO);
-
-            }
-
-            return _validate;
-
-
+            var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
         }
         public async Task<IResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
         {
@@ -261,7 +201,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.AddError("Incorrect user or the user doesn't exists");
             }
 
-            return new ResponseDTO<UserReadDTO>(userDTO, this._validate);
+            return new ResponseDTO<UserReadDTO>(userDTO);
         }
         private async Task<(string UserName, string FirstName, string LastName, string ProfilePicture)> GetUserInfoAsync(IdentityUser user)
         {

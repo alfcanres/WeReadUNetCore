@@ -7,8 +7,11 @@ namespace BusinessLogicLayer.BusinessObjects
     {
         Task<IResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO);
         Task<IResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail);
-        public Task<IResponseDTO<UserReadDTO>> SignInAsync(UserSignInDTO userSignInDTO);
-        Task<IValidate> UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
+        public Task<IValidate> SignInAsync(UserSignInDTO userSignInDTO);
+        Task UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
+        Task<IValidate> ValidateInsertAsync(UserCreateDTO createDTO);
+        Task<IValidate> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
+        
 
     }
 }

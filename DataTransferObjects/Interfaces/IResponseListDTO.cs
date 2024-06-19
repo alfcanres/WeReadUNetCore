@@ -4,6 +4,5 @@
     {
         IEnumerable<T> List { get; }
         int RecordCount { get; }
-        IValidate Validate { get; }
     }
 }

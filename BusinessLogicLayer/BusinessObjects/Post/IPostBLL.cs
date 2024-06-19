@@ -7,10 +7,12 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IPostBLL : IBLL<PostCreateDTO, PostReadDTO, PostUpdateDTO>
     {
-        Task<IResponseDTO<PostReadDTO>> ApprovePostPublish(int postId);
-        Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublished(IPagerDTO pagerDTO);
-        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPaged(IPagerDTO pagerDTO);
-        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPaged(int UserID, IPagerDTO pagerDTO);
+
+        Task<IValidate> ValidateApprovePostPublishAsync(int postId);
+        Task ApprovePostPublishAsync(int postId);
+        Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(IPagerDTO pagerDTO);
+        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPagedAsync(IPagerDTO pagerDTO);
+        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, IPagerDTO pagerDTO);
 
 
     }

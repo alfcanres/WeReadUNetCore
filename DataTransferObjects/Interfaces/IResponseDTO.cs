@@ -3,6 +3,5 @@
     public interface IResponseDTO<DTO> where DTO : class
     {
         DTO Data { get; }
-        IValidate Validate { get; }
     }
 }

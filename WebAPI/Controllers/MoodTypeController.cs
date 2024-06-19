@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
@@ -51,24 +52,44 @@ namespace WebAPI.Controllers
         [HttpGet("Available/{isAvalable}")]
         public async Task<ActionResult> GetIsAvailable(bool isAvalable)
         {
-            var result = await _BLL.GetAllByIsAvailableAsync(isAvalable);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+            try
+            {
+                var response = await _BLL.GetAllByIsAvailableAsync(isAvalable);
+
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET BY Available : {isAvalable}", isAvalable);
+
+                return StatusCode(500, _validateDTO);
+            }
         }
 
 
         [HttpGet("Paged")]
         public async Task<ActionResult> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+            try
+            {
+                var response = await _BLL.GetAllPagedAsync(pagerDTO);
+
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET PAGED : {pagerDTO}", pagerDTO);
+
+                return StatusCode(500, _validateDTO);
+            }
 
         }
 
@@ -78,12 +99,22 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> GetTop(int top)
         {
-            var result = await _BLL.GetTopWithPostsAsync(top);
+            try
+            {
+                var response = await _BLL.GetTopWithPostsAsync(top);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET TOP : {pagerDTO}", top);
+
+                return StatusCode(500, _validateDTO);
+            }
+
         }
 
 

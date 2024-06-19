@@ -1,4 +1,6 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,24 +16,36 @@ namespace WebAPI.Controllers
     {
         private readonly IPostCommentBLL _BLL;
         private readonly ILogger<PostCommentController> _logger;
+        private readonly ValidateDTO _validateDTO;
 
         public PostCommentController(IPostCommentBLL BLL, ILogger<PostCommentController> logger)
         {
             _BLL = BLL;
             _logger = logger;
+            _validateDTO = new ValidateDTO();   
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] PostCommentCreateDTO createModel)
         {
-            var response = await _BLL.InsertAsync(createModel);
-            if (response.Validate.IsValid)
+
+            try
             {
+                var validate = await _BLL.ValidateInsertAsync(createModel);
+                if (!validate.IsValid)
+                {
+                    return BadRequest(validate);
+                }
+                var response = await _BLL.InsertAsync(createModel);
                 return Ok(response);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createModel);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 
@@ -39,28 +53,50 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id)
         {
-            var response = await _BLL.GetByIdAsync(id);
-            if (response.Validate.IsValid)
+            try
             {
-                return Ok(response);
+                var response = await _BLL.GetByIdAsync(id);
+                if (response != null)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return NotFound(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET BY ID OPERATION : {id}", id);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            IValidate response = await _BLL.DeleteAsync(id);
-            if (response.IsValid)
+            try
             {
-                return Ok(response);
+                var validate = await _BLL.ValidateDeleteAsync(id);
+                if (!validate.IsValid)
+                {
+                    return BadRequest(validate);
+                }
+
+                await _BLL.DeleteAsync(id);
+
+                return NoContent();
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "DELETE OPERATION : {ID}", id);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 

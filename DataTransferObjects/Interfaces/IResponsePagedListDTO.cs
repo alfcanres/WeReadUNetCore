@@ -8,7 +8,6 @@ namespace DataTransferObjects.Interfaces
 {
     public interface IResponsePagedListDTO<T>
     {
-        IValidate Validate { get; }
         IEnumerable<T> List { get; }
         int RecordCount { get; }
         int CurrentPage { get; }

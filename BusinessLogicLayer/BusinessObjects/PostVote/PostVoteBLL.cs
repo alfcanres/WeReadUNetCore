@@ -35,7 +35,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 };
 
 
-                ResponseDTO<PostVoteViewDTO> response = new ResponseDTO<PostVoteViewDTO>(postview, this._validate);
+                ResponseDTO<PostVoteViewDTO> response = new ResponseDTO<PostVoteViewDTO>(postview);
 
                 return response;
             }
@@ -45,7 +45,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.IsValid = false;
                 _validate.AddError(friendlyError);
                 _logger.LogError(ex, "EXECUTE LIST ERROR GetVotesByPostIdAsync");
-                return new ResponseDTO<PostVoteViewDTO>(null, this._validate);
+                return new ResponseDTO<PostVoteViewDTO>(null);
             }
 
         }
@@ -121,7 +121,7 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
-        protected override async Task ExecValidateUpdateAsync(PostVoteUpdateDTO updateDTO)
+        protected override async Task ExecValidateUpdateAsync(int id, PostVoteUpdateDTO updateDTO)
         {
             bool exists = await UnitOfWork.PostVotes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)

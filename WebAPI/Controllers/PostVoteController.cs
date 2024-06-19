@@ -1,4 +1,6 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,52 +16,86 @@ namespace WebAPI.Controllers
     {
         private readonly IPostVoteBLL _BLL;
         private readonly ILogger<PostVoteController> _logger;
+        private readonly IValidate _validateDTO;
 
         public PostVoteController(IPostVoteBLL BLL, ILogger<PostVoteController> logger)
         {
             _BLL = BLL;
             _logger = logger;
+            _validateDTO = new ValidateDTO();
         }
+
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] PostVoteCreateDTO createModel)
         {
-            var response = await _BLL.InsertAsync(createModel);
-            if (response.Validate.IsValid)
+            try
             {
+                var validate = await _BLL.ValidateInsertAsync(createModel);
+                if (!validate.IsValid)
+                {
+                    return BadRequest(validate);
+                }
+                var response = await _BLL.InsertAsync(createModel);
                 return Ok(response);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createModel);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 
         [HttpPut]
         public async Task<ActionResult> Put([FromBody] PostVoteUpdateDTO updateModel)
         {
-            var response = await _BLL.UpdateAsync(updateModel.Id, updateModel);
-            if (response.Validate.IsValid)
+            try
             {
+                var validate = await _BLL.ValidateUpdateAsync(updateModel.Id, updateModel);
+                if (!validate.IsValid)
+                {
+                    return BadRequest(validate);
+                }
+
+                var response = await _BLL.UpdateAsync(updateModel.Id, updateModel);
+
                 return Ok(response);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "UPDATE OPERATION : {updateDTO}", updateModel);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            IValidate response = await _BLL.DeleteAsync(id);
-            if (response.IsValid)
+            try
             {
-                return Ok(response);
+                var validate = await _BLL.ValidateDeleteAsync(id);
+                if (!validate.IsValid)
+                {
+                    return BadRequest(validate);
+                }
+
+                await _BLL.DeleteAsync(id);
+
+                return NoContent();
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "DELETE OPERATION : {ID}", id);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 

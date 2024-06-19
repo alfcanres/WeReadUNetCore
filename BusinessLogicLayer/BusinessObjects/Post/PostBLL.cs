@@ -20,50 +20,30 @@ namespace BusinessLogicLayer.BusinessObjects
         }
 
 
-        public async Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublished(IPagerDTO pagerDTO)
+        public async Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(IPagerDTO pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllPostsNotPublished(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPaged(IPagerDTO pagerDTO)
+        public async Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPagedAsync(IPagerDTO pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllPublishedPostsPaged(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPaged(int UserID, IPagerDTO pagerDTO)
+        public async Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, IPagerDTO pagerDTO)
         {
             return await ExecutePagedListAsync(new GetPostsPublishedByUserPaged(UserID, _unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
-     
-        public async Task<IResponseDTO<PostReadDTO>> ApprovePostPublish(int postId)
+
+        public async Task ApprovePostPublishAsync(int postId)
         {
+            var entity = await _unitOfWork.Posts.GetByIdAsync(postId);
+            entity.PublishDate = DateTime.Now;
+            entity.IsPublished = true;
 
-            try
-            {
-                await ValidateApprovePostPublish(postId);
-                if (this._validate.IsValid)
-                {
-                    var entity = await _unitOfWork.Posts.GetByIdAsync(postId);
-
-                    entity.PublishDate = DateTime.Now;
-                    entity.IsPublished = true;
-
-                    await _unitOfWork.Posts.UpdateAsync(entity);
-                }
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnUpdateOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "PUBLISH OPERATION : Post with ID {id}", postId);
-            }
-
-
-            return await GetByIdAsync(postId);
-
+            await _unitOfWork.Posts.UpdateAsync(entity);
         }
-        private async Task ValidateApprovePostPublish(int postId)
+        public async Task<IValidate> ValidateApprovePostPublishAsync(int postId)
         {
 
             ResetValidations();
@@ -85,6 +65,8 @@ namespace BusinessLogicLayer.BusinessObjects
             if (!_validate.IsValid)
                 this._logger.LogWarning("VALIDATE UPDATE RETURNED FALSE: {validate}", _validate);
 
+
+            return this._validate;
         }
 
 
@@ -107,7 +89,7 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
-        protected override async Task ExecValidateUpdateAsync(PostUpdateDTO updateDTO)
+        protected override async Task ExecValidateUpdateAsync(int id, PostUpdateDTO updateDTO)
         {
             bool exists = await _unitOfWork.Posts.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)
@@ -116,6 +98,6 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
-  
+
     }
 }

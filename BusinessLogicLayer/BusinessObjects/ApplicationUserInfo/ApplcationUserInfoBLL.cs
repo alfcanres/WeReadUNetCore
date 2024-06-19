@@ -78,7 +78,7 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
-        protected override async Task ExecValidateUpdateAsync(ApplicationUserInfoUpdateDTO updateDTO)
+        protected override async Task ExecValidateUpdateAsync(int id, ApplicationUserInfoUpdateDTO updateDTO)
         {
             bool exists = await UnitOfWork.UsersInfo.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)

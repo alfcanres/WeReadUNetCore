@@ -15,7 +15,7 @@ namespace BusinessLogicLayer.BusinessObjects
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IResponsePagedListDTO<PostCommentReadDTO>> GetPagedByPostId(int postID, IPagerDTO pagerDTO)
+        public Task<IResponsePagedListDTO<PostCommentReadDTO>> GetPagedByPostIdAsync(int postID, IPagerDTO pagerDTO)
         {
             throw new NotImplementedException();
         }
@@ -38,7 +38,7 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
-        protected override async Task ExecValidateUpdateAsync(PostCommentUpdateDTO updateDTO)
+        protected override async Task ExecValidateUpdateAsync(int id, PostCommentUpdateDTO updateDTO)
         {
             bool exists = await _unitOfWork.PostComments.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)

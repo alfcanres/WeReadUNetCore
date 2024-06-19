@@ -216,14 +216,14 @@ namespace BusinessLogicLayerTest
                 );
 
             //Act
-            var response = await moodTypeBLL.InsertAsync(moodTypeDTO);
+            var response = await moodTypeBLL.ValidateInsertAsync(moodTypeDTO);
 
 
             //Assert
 
-            Assert.Equal(response.Validate.IsValid, isValidExpected);
+            Assert.Equal(response.IsValid, isValidExpected);
 
-            Assert.True(response.Validate.MessageList.Contains(expectedErrorMessage));
+            Assert.True(response.MessageList.Contains(expectedErrorMessage));
         }
 
 
@@ -270,6 +270,8 @@ namespace BusinessLogicLayerTest
                 );
 
             //Act
+            var validation = await moodTypeBLL.ValidateInsertAsync(moodTypeDTO);
+
             var response = await moodTypeBLL.InsertAsync(moodTypeDTO);
 
             int insertedRecordId = response.Data.Id;
@@ -279,7 +281,7 @@ namespace BusinessLogicLayerTest
 
             //Assert
 
-            Assert.Equal(response.Validate.IsValid, isValidExpected);
+            Assert.Equal(validation.IsValid, isValidExpected);
 
             Assert.Equal(responseGetInserted.Data.Id, insertedRecordId);
 

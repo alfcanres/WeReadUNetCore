@@ -61,7 +61,7 @@ namespace BusinessLogicLayerTest
                 );
 
             //Act
-            var response = await postBLL.GetPostsPublishedPaged(pagerDTO);
+            var response = await postBLL.GetPostsPublishedPagedAsync(pagerDTO);
 
 
             int totalPagesActual = response.PageCount;
@@ -114,7 +114,7 @@ namespace BusinessLogicLayerTest
                 );
 
             //Act
-            var response = await postBLL.GetPostsPublishedPaged(pagerDTO);
+            var response = await postBLL.GetPostsPublishedPagedAsync(pagerDTO);
 
 
             int currentPageActual = response.CurrentPage;
@@ -169,7 +169,7 @@ namespace BusinessLogicLayerTest
                 );
 
             //Act
-            var response = await postBLL.GetPostsPublishedPaged(pagerDTO);
+            var response = await postBLL.GetPostsPublishedPagedAsync(pagerDTO);
 
 
             int currentPageActual = response.CurrentPage;
@@ -231,7 +231,7 @@ namespace BusinessLogicLayerTest
                 );
 
             //Act
-            var response = await postBLL.GetPostsPublishedPaged(pagerDTO);
+            var response = await postBLL.GetPostsPublishedPagedAsync(pagerDTO);
 
             var firstPost = response.List.FirstOrDefault(t => t.Title == "Happy 1");
 

@@ -13,24 +13,14 @@ namespace WebAPI.Model
         private readonly DateTime _expires;
         private readonly IResponseDTO<UserReadDTO> _resultResponseDTO;
         private readonly IConfiguration _configuration;
-        private readonly IValidate _validate;
-
 
         public TokenResponseModel(IResponseDTO<UserReadDTO> resultResponseDTO, DateTime expires, IConfiguration configuration)
         {
             _resultResponseDTO = resultResponseDTO;
             _configuration = configuration;
-            _validate = resultResponseDTO.Validate;
-            if (_validate.IsValid)
-            {
-                _token = GenerateToken(_resultResponseDTO.Data);
-                _expires = expires;
-            }
-            else
-            {
-                _token = "";
-                _expires = DateTime.Now.AddDays(-1);
-            }
+
+            _token = GenerateToken(_resultResponseDTO.Data);
+            _expires = expires;
 
         }
 
@@ -38,7 +28,6 @@ namespace WebAPI.Model
 
         public DateTime Expires => _expires;
 
-        public IValidate Validate => _validate;
 
         private string GenerateToken(UserReadDTO userReadDTO)
         {

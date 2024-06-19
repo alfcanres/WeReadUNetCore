@@ -1,13 +1,8 @@
 ﻿using AutoMapper;
-using BusinessLogicLayer.BusinessObjects;
-using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using BusinessLogicLayer.Response;
-using DataAccessLayer.Entity;
 using DataTransferObjects;
-using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 namespace BusinessLogicLayer
 {
@@ -39,197 +34,79 @@ namespace BusinessLogicLayer
             _dataAnnotationsValidator = dataAnnotationsValidator;
         }
 
+
+        #region Public Methods
+        public async Task<IResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO)
+        {
+            var entity = Mapper.Map<TEntity>(createDTO);
+            await _repository.InsertAsync(entity);
+            ReadDTO readDTO = Mapper.Map<ReadDTO>(entity);
+
+            return new ResponseDTO<ReadDTO>(readDTO);
+        }
+        public async Task<IResponseDTO<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO)
+        {
+
+            var entity = await _repository.GetByIdAsync(id);
+            Mapper.Map(updateDTO, entity);
+            await _repository.UpdateAsync(entity);
+            ReadDTO readDTO = Mapper.Map<ReadDTO>(entity);
+
+            return new ResponseDTO<ReadDTO>(readDTO);
+        }
+        public async Task DeleteAsync(int id)
+        {
+            await _repository.DeleteAsync(id);
+        }
+        public async Task<IResponseDTO<ReadDTO>> GetByIdAsync(int id)
+        {
+            var entity = await _repository.GetByIdAsync(id);
+            ReadDTO readDTO = Mapper.Map<ReadDTO>(entity);
+
+            return new ResponseDTO<ReadDTO>(readDTO);
+        }
+        #endregion
+
+        #region Protected Methods
         protected void ResetValidations()
         {
             _validate.Clear();
         }
 
-        #region CRUDS
-        public async Task<IResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO)
-        {
-
-            ReadDTO readDTO = null;
-
-            try
-            {
-                await ValidateInsertAsync(createDTO);
-                if (this._validate.IsValid)
-                {
-                    var entity = Mapper.Map<TEntity>(createDTO);
-                    await _repository.InsertAsync(entity);
-                    readDTO = Mapper.Map<ReadDTO>(entity);
-                }
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnInsertOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createDTO);
-
-            }
-
-            return new ResponseDTO<ReadDTO>(readDTO, this._validate);
-        }
-        public async Task<IResponseDTO<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO)
-        {
-            ReadDTO readDTO = null;
-
-            try
-            {
-                await ValidateUpdateAsync(updateDTO);
-                if (this._validate.IsValid)
-                {
-                    var entity = await _repository.GetByIdAsync(id);
-                    Mapper.Map(updateDTO, entity);
-                    await _repository.UpdateAsync(entity);
-                    readDTO = Mapper.Map<ReadDTO>(entity);
-                }
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnUpdateOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "UPDATE OPERATION : {updateDTO}", updateDTO);
-            }
-
-            return new ResponseDTO<ReadDTO>(readDTO, this._validate);
-        }
-        public async Task<IValidate> DeleteAsync(int id)
-        {
-            try
-            {
-                await ValidateDeleteAsync(id);
-                if (this._validate.IsValid)
-                {
-                    await _repository.DeleteAsync(id);
-                }
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnDeleteOperation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "DELETE OPERATION : {id}", id);
-            }
-
-            return this._validate;
-        }
-        public async Task<IResponseDTO<ReadDTO>> GetByIdAsync(int id)
-        {
-            ResetValidations();
-            ReadDTO readDTO = null;
-            try
-            {
-                var entity = await _repository.GetByIdAsync(id);
-                readDTO = Mapper.Map<ReadDTO>(entity);
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.MessageList.Add(friendlyError);
-                _logger.LogError(ex, "GET BY ID OPERATION : {id}", id);
-            }
-
-            return new ResponseDTO<ReadDTO>(readDTO, this._validate);
-        }
-
         protected async Task<int> CountListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
-            ResetValidations();
-            try
-            {
-                return await queryStrategy.CountResultsAsync();
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE COUNT ERROR {queryStrategy}", queryStrategy);
-                return 0;
-            }
+            return await queryStrategy.CountResultsAsync();
         }
 
         protected async Task<IResponsePagedListDTO<ReadDTO>> ExecutePagedListAsync(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager)
         {
-            ResetValidations();
-            try
-            {
-
-                return await ResponsePagedListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy, pager, this._validate);
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
-                return new ResponsePagedListDTO<ReadDTO>(this._validate);
-            }
+            return await ResponsePagedListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy, pager);
         }
 
         protected async Task<IResponseListDTO<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
-            ResetValidations();
-            try
-            {
-                return await ResponseListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy, this._validate);
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
-                return new ResponseListDTO<ReadDTO>(this._validate);
-            }
+            return await ResponseListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy);
         }
 
         protected async Task<IResponsePagedListDTO<T>> ExecutePagedListAsync<T>(QueryStrategyBase<T> queryStrategy, IPagerDTO pager)
         {
-            ResetValidations();
-            try
-            {
-
-                return await ResponsePagedListDTO<T>.GetResponseFromQueryAsync(queryStrategy, pager, this._validate);
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
-                return new ResponsePagedListDTO<T>(this._validate);
-            }
+            return await ResponsePagedListDTO<T>.GetResponseFromQueryAsync(queryStrategy, pager);
         }
 
         protected async Task<IResponseListDTO<T>> ExecuteListAsync<T>(QueryStrategyBase<T> queryStrategy)
         {
-            ResetValidations();
-            try
-            {
-                return await ResponseListDTO<T>.GetResponseFromQueryAsync(queryStrategy, this._validate);
-            }
-            catch (Exception ex)
-            {
-                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
-                _validate.IsValid = false;
-                _validate.AddError(friendlyError);
-                _logger.LogError(ex, "EXECUTE LIST ERROR {queryStrategy}", queryStrategy);
-                return new ResponseListDTO<T>(this._validate);
-            }
+            return await ResponseListDTO<T>.GetResponseFromQueryAsync(queryStrategy);
         }
 
+        protected abstract Task ExecValidateInsertAsync(CreateDTO createDTO);
+        protected abstract Task ExecValidateDeleteAsync(int id);
+        protected abstract Task ExecValidateUpdateAsync(int id, UpdateDTO updateDTO);
 
         #endregion
 
         #region Model Validations
 
-        protected abstract Task ExecValidateInsertAsync(CreateDTO createDTO);
-        private async Task ValidateInsertAsync(CreateDTO createDTO)
+        public async Task<IValidate> ValidateInsertAsync(CreateDTO createDTO)
         {
             ResetValidations();
 
@@ -242,9 +119,10 @@ namespace BusinessLogicLayer
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE INSERT RETURNED FALSE: {validate}", _validate);
             }
+
+            return this._validate;
         }
-        protected abstract Task ExecValidateDeleteAsync(int id);
-        private async Task ValidateDeleteAsync(int id)
+        public async Task<IValidate> ValidateDeleteAsync(int id)
         {
             ResetValidations();
 
@@ -253,25 +131,29 @@ namespace BusinessLogicLayer
             if (!_validate.IsValid)
                 _logger.LogWarning("VALIDATE DELETE RETURNED FALSE: {id} {validate}", id, _validate);
 
+            return this._validate;
+
         }
-        protected abstract Task ExecValidateUpdateAsync(UpdateDTO updateDTO);
-        private async Task ValidateUpdateAsync(UpdateDTO updateDTO)
+        public async Task<IValidate> ValidateUpdateAsync(int id, UpdateDTO updateDTO)
         {
 
             ResetValidations();
 
             _dataAnnotationsValidator.ValidateModel(updateDTO, this._validate);
 
+            if (id == 0)
+                _validate.AddError("Id is required.");
+
             if (this._validate.IsValid)
             {
-                await ExecValidateUpdateAsync(updateDTO);
+                await ExecValidateUpdateAsync(id, updateDTO);
 
                 if (!_validate.IsValid)
                     _logger.LogWarning("VALIDATE UPDATE RETURNED FALSE: {validate}", _validate);
             }
 
+            return this._validate;
         }
-
 
         #endregion
 

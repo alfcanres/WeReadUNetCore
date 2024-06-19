@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
@@ -41,27 +42,47 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("Paged")]
-        public async Task<ActionResult<IResponsePagedListDTO<ApplicationUserInfoListDTO>>> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPaged([FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _BLL.GetAllPagedAsync(pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+            try
+            {
+                var response = await _BLL.GetAllPagedAsync(pagerDTO);
 
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                base._validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET PAGED", pagerDTO);
+
+                return StatusCode(500, _validateDTO);
+            }
         }
 
 
         [HttpGet("PagedByActive")]
-        public async Task<ActionResult<IResponsePagedListDTO<ApplicationUserInfoListDTO>>> GetPagedByActive([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPagedByActive([FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _BLL.GetAllActivePagedAsync(pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+
+            try
+            {
+                var response = await _BLL.GetAllActivePagedAsync(pagerDTO);
+
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                base._validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET PagedByActive", pagerDTO);
+
+                return StatusCode(500, _validateDTO);
+            }
 
         }
 
@@ -72,10 +93,21 @@ namespace WebAPI.Controllers
         {
             var result = await _BLL.GetTopWithPostsAsync(top);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+            try
+            {
+                var response = await _BLL.GetTopWithPostsAsync(top);
+
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                base._validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET Top", top);
+
+                return StatusCode(500, _validateDTO);
+            }
         }
     }
 }

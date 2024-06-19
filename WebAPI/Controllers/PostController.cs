@@ -1,12 +1,10 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-
 
 namespace WebAPI.Controllers
 {
@@ -45,18 +43,30 @@ namespace WebAPI.Controllers
         public async Task<ActionResult> Put(int id)
         {
 
-            var response = await _BLL.ApprovePostPublish(id);
-
-            if (response.Validate.IsValid)
+            try
             {
+                var validate = await _BLL.ValidateApprovePostPublishAsync(id);
+                if (!validate.IsValid)
+                {
+                    return BadRequest(validate);
+                }
+
+                var response = await _BLL.ValidateApprovePostPublishAsync(id);
+
                 return Ok(response);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "Approve OPERATION : {id}", id);
+
+                return StatusCode(500, _validateDTO);
             }
 
         }
+
+
 
         [ResponseCache(Duration = 10)]
         [HttpGet("{id}")]
@@ -77,12 +87,21 @@ namespace WebAPI.Controllers
         [HttpGet("PublishedPaged")]
         public async Task<ActionResult> GetPublishedPaged([FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _BLL.GetPostsPublishedPaged(pagerDTO);
+            try
+            {
+                var response = await _BLL.GetPostsPublishedPagedAsync(pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET PublishedPaged : {pagerDTO}", pagerDTO);
+
+                return StatusCode(500, _validateDTO);
+            }
 
         }
 
@@ -91,12 +110,19 @@ namespace WebAPI.Controllers
         [HttpGet("PublishedPagedByUser/{id}")]
         public async Task<ActionResult> GetPaged(int id, [FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _BLL.GetPostsPublishedByUserPaged(id, pagerDTO);
+            try
+            {
+                var response = await _BLL.GetPostsPublishedByUserPagedAsync(id, pagerDTO);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET PublishedPagedByUser : {pagerDTO}", pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+                return StatusCode(500, _validateDTO);
+            }
 
         }
 
@@ -104,37 +130,57 @@ namespace WebAPI.Controllers
         [HttpGet("PendingPublishPaged")]
         public async Task<ActionResult> GetNotPublished([FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _BLL.GetAllPostsNotPublished(pagerDTO);
+            try
+            {
+                var response = await _BLL.GetAllPostsNotPublishedAsync(pagerDTO);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET PendingPublishPaged : {pagerDTO}", pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
-
+                return StatusCode(500, _validateDTO);
+            }
         }
 
 
         [HttpGet("{id}/Comments")]
         public async Task<ActionResult> GetCommentsPaged(int id, [FromQuery] PagerDTO pagerDTO)
         {
-            var result = await _postCommentBLL.GetPagedByPostId(id, pagerDTO);
+            try
+            {
+                var response = await _postCommentBLL.GetPagedByPostIdAsync(id, pagerDTO);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET Comments : {pagerDTO}", pagerDTO);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+                return StatusCode(500, _validateDTO);
+            }
 
         }
 
         [HttpGet("{id}/Votes")]
         public async Task<ActionResult> GetVotes(int id)
         {
-            var result = await _postVoteBLL.GetVotesByPostIdAsync(id);
+            try
+            {
+                var response = await _postVoteBLL.GetVotesByPostIdAsync(id);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET Votes : {id}", id);
 
-            if (result.Validate.IsValid)
-                return Ok(result);
-            else
-                return BadRequest(result);
+                return StatusCode(500, _validateDTO);
+            }
 
         }
 

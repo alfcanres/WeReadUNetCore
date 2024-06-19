@@ -1,9 +1,13 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
+using BusinessLogicLayer.Helpers;
+using BusinessLogicLayer.Interfaces;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 using WebAPI.Model;
 
 namespace WebAPI.Controllers
@@ -17,12 +21,14 @@ namespace WebAPI.Controllers
         private readonly IAccountBLL _accountBLL;
         private readonly ILogger<AccountController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IValidate _validateDTO;
 
         public AccountController(IAccountBLL accountBLL, ILogger<AccountController> logger, IConfiguration configuration)
         {
             _accountBLL = accountBLL;
             _logger = logger;
             _configuration = configuration;
+            _validateDTO = new ValidateDTO();
         }
 
 
@@ -32,21 +38,21 @@ namespace WebAPI.Controllers
         {
             try
             {
-                IResponseDTO<UserReadDTO> responseDTO = await _accountBLL.InsertAsync(createModel);
-
-                if (responseDTO.Validate.IsValid)
+                var validate = await _accountBLL.ValidateInsertAsync(createModel);
+                if (!validate.IsValid)
                 {
-                    return Ok(responseDTO);
+                    return BadRequest(validate);
                 }
-                else
-                {
-                    return BadRequest(responseDTO);
-                }
+                var response = await _accountBLL.InsertAsync(createModel);
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode(500, "Something whent wrong, please try again later");
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "INSERT OPERATION : {createDTO}", createModel);
+
+                return StatusCode(500, _validateDTO);
             }
 
         }
@@ -55,27 +61,37 @@ namespace WebAPI.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login([FromBody] UserSignInDTO userSignInDTO)
         {
+
             try
             {
-                TokenResponseModel tokenResponse = new TokenResponseModel(
-                await _accountBLL.SignInAsync(userSignInDTO),
-                DateTime.Now,
-                _configuration);
 
-                if (tokenResponse.Validate.IsValid)
+                var response = await _accountBLL.SignInAsync(userSignInDTO);
+                if(response.IsValid)
                 {
+
+                    var userResponse = await _accountBLL.GetByUserNameOrEmail(userSignInDTO.Email);
+
+                    TokenResponseModel tokenResponse = new TokenResponseModel(
+                    userResponse,
+                    DateTime.Now,
+                    _configuration);
+
+
                     return Ok(tokenResponse);
                 }
                 else
                 {
-                    return BadRequest(tokenResponse);
-
+                    return BadRequest(response);
                 }
+
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode(500, "Something whent wrong, please try again later");
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "Login OPERATION : {userSignInDTO}", userSignInDTO);
+
+                return StatusCode(500, _validateDTO);
             }
         }
 
@@ -84,22 +100,23 @@ namespace WebAPI.Controllers
         {
             try
             {
-
-                IValidate response = await _accountBLL.UpdatePasswordAsync(updateModel);
-
-                if (response.IsValid)
+                var validate = await _accountBLL.ValidateUpdatePasswordAsync(updateModel);
+                if (!validate.IsValid)
                 {
-                    return Ok(response);
+                    return BadRequest(validate);
                 }
-                else
-                {
-                    return BadRequest(response);
-                }
+
+                await _accountBLL.UpdatePasswordAsync(updateModel);
+
+                return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-                return StatusCode(500, "Something whent wrong, please try again later");
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "ChangePassword OPERATION : {updateDTO}", updateModel);
+
+                return StatusCode(500, _validateDTO);
             }
         }
     }

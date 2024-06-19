@@ -7,9 +7,12 @@ namespace BusinessLogicLayer.Interfaces
         where ReadDTO : class
         where UpdateDTO : class
     {
-        Task<IValidate> DeleteAsync(int id);
+        Task DeleteAsync(int id);
         Task<IResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO);
         Task<IResponseDTO<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO);
         Task<IResponseDTO<ReadDTO>> GetByIdAsync(int id);
+        Task<IValidate> ValidateInsertAsync(CreateDTO createDTO);
+        Task<IValidate> ValidateDeleteAsync(int id);
+        Task<IValidate> ValidateUpdateAsync(int id, UpdateDTO updateDTO);
     }
 }
