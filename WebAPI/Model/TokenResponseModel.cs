@@ -7,7 +7,7 @@ using System.Text;
 
 namespace WebAPI.Model
 {
-    public class TokenResponseModel
+    public class TokenResponseModel : ITokenResponse
     {
         private readonly string _token;
         private readonly DateTime _expires;

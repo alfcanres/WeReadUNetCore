@@ -6,10 +6,18 @@
 
 <h2>Login</h2>
 
-@if (ViewData["ErrorMessage"] != null)
+@if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
-        @ViewData["ErrorMessage"]
+        <ul>
+            @foreach (var key in ViewData.ModelState.Keys)
+            {
+                foreach (var error in ViewData.ModelState[key].Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
     </div>
 }
 

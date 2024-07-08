@@ -1,0 +1,91 @@
+﻿@model ResponseViewModel<IResponsePagedListDTO<MoodTypeReadDTO>>
+@{
+    ViewData["Title"] = "Mood Type";
+}
+<div class="container">
+    @if (Model.Validate.IsValid)
+    {
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Mood</th>
+                    <th scope="col">Is Available</th>
+                    <th scope="col">Post Count</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Content.List)
+                {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.Mood</td>
+                        <td>@item.IsAvailable</td>
+                        <td>@item.PostCount</td>
+                        <td>Edit</td>
+                        <td>Delete</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation ">
+            <ul class="pagination">
+
+                @if(Model.Content.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link">Previous</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                }
+
+
+                @for (int i= 1; i < Model.Content.PageCount; i++)
+                {
+                    if(i == Model.Content.CurrentPage)
+                    {
+                        <li class="page-item active" aria-current="page">
+                            <a class="page-link" href="#">@i</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" href="#">@i</a></li>
+                    }
+                }
+                
+                @if(Model.Content.CurrentPage == Model.Content.PageCount)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                }
+
+            </ul>
+        </nav>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in Model.Validate.MessageList)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+
+</div>

@@ -1,24 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using WebApp.Models;
-using System.Text.Json;
 using DataTransferObjects.DTO;
+using WebAPI.Client.Repository.Account;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+
 
 namespace WebApp.Controllers
 {
     public class AccountController : Controller
     {
 
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<AccountController> _logger;
-        private readonly IConfiguration _configuration;
+        private readonly IAccountRepository _accountRepository;
 
 
-        public AccountController(IHttpClientFactory httpClientFactory, ILogger<AccountController> logger, IConfiguration configuration)
+        public AccountController(ILogger<AccountController> logger, IAccountRepository accountRepository)
         {
-            _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _configuration = configuration;
+            _accountRepository = accountRepository;
         }
 
         public IActionResult Login()
@@ -34,45 +34,39 @@ namespace WebApp.Controllers
                 return View(loginViewModel);
             }
 
-            string clientName = _configuration["HttpClientName"];   
+            var response = await _accountRepository.LoginAsync(loginViewModel);
 
-            var client = _httpClientFactory.CreateClient(clientName);
-            var content = new StringContent(JsonSerializer.Serialize(loginViewModel), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("api/account/login", content);
-
-            if (response.IsSuccessStatusCode)
+            if (response.Content != null && response.Validate.IsValid)
             {
-                var tokenResponse = await JsonSerializer.DeserializeAsync<TokenResponseViewModel>(
-                    await response.Content.ReadAsStreamAsync(), 
-                    new JsonSerializerOptions 
-                    { 
-                        PropertyNameCaseInsensitive = true }
-                    );
 
-                
-                if(!tokenResponse.Validate.IsValid)
+
+                var claims = new List<Claim>
                 {
-                    foreach(var message in tokenResponse.Validate.MessageList)
-                    {
-                        ModelState.AddModelError(string.Empty, message);
-                    }
-    
-                    return View(loginViewModel);
-                }
-                else
+                    new Claim(ClaimTypes.Name, loginViewModel.Email)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
                 {
+                    IsPersistent = true
+                };
 
-                    HttpContext.Response.Cookies.Append("AuthToken", tokenResponse.Token, new CookieOptions { HttpOnly = true, Secure = true });
-                    return RedirectToAction("Index", "Home");
-                }
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
+                HttpContext.Response.Cookies.Append("AuthToken", response.Content.Token, new CookieOptions { HttpOnly = true, Secure = true });
+
+                return RedirectToAction("Index", "Home");
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                foreach (var error in response.Validate.MessageList)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
                 return View(loginViewModel);
             }
-
         }
 
         public IActionResult Register()
@@ -80,14 +74,46 @@ namespace WebApp.Controllers
             return View();
         }
 
-        public IActionResult ForgotPassword()
+
+
+        [HttpPost]
+        public async Task<IActionResult> Register(UserCreateDTO userCreateDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(userCreateDTO);
+            }
+
+            var response = await _accountRepository.RegisterAsync(userCreateDTO);
+
+            if (response.Content && response.Validate.IsValid)
+            {
+                return RedirectToAction("RegisterSucess", "Account");
+            }
+            else
+            {
+                foreach (var error in response.Validate.MessageList)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
+                return View(userCreateDTO);
+            }
+        }
+
+
+        public IActionResult RegisterSucess()
         {
             return View();
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            return View();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            HttpContext.Response.Cookies.Delete("AuthToken");
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -45,7 +45,8 @@ namespace DataTransferObjects
         public void AddError(string error)
         {
             errorList.Add(error);
-            IsValid = false;
+            if (IsValid)
+                IsValid = false;
         }
 
         public void Clear()

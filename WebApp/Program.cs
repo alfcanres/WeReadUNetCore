@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WebAPI.Client.Repository.Account;
+using WebAPI.Client.Repository.MoodType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,33 +13,27 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IMoodTypeRepository,MoodTypeRepository>();
+
+
 builder.Services.AddHttpClient(builder.Configuration["HttpClientName"], client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["BaseUrl"]);
 }
 );
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+
+// Configure Cookie Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = configuration.GetSection("jwt:Issuer").Value, // Replace with your issuer
-        ValidAudience = configuration.GetSection("jwt:Audience").Value, // Replace with your audience
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("jwt:Key").Value)) // Replace with your secret key
-    };
-}).AddCookie(options =>
-{
-    options.LoginPath = "/Account/Login";
-});
+        options.LoginPath = "/Account/Login"; // Path to the login page
+        options.LogoutPath = "/Account/Logout"; // Path to the logout page
+        options.AccessDeniedPath = "/Account/Login"; // Path to the access denied page
+        options.ExpireTimeSpan = TimeSpan.FromDays(1); // Cookie expiration time
+        options.SlidingExpiration = true; // Enable sliding expiration
+    });
 
 
 var app = builder.Build();

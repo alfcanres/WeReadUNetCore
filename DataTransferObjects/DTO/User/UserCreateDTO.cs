@@ -25,7 +25,7 @@ namespace DataTransferObjects.DTO
         [Required(ErrorMessage = "Type a valid last name")]
         public string LastName { init; get; }
 
-        [MinLength(150)]
+        [MinLength(5)]
         [Required(ErrorMessage = "Type a valid password")]
         [Compare("ComfirmPassword", ErrorMessage = "Password does not match")]
         [DataType(DataType.Password)]

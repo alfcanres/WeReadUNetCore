@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace DataTransferObjects.Interfaces
 {
-    public interface IPagerDTO
+    public interface ITokenResponse
     {
-        int CurrentPage { get; }
-        int RecordsPerPage { get; }
-        string SearchKeyWord { get; }
+        string Token { get; }
+        DateTime Expires { get; }
 
-        string ToQueryString();
     }
 }

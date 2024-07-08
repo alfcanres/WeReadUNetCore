@@ -49,12 +49,14 @@ namespace BusinessLogicLayer.BusinessObjects
                 {
                     _validate.AddError(ValidationAccountErrorMessages.OnInsertEmailAlreadyInUse);
                 }
-
-                appUser = await _userManager.FindByNameAsync(createDTO.UserName);
-
-                if (appUser != null)
+                else
                 {
-                    _validate.AddError(ValidationAccountErrorMessages.OnInsertUserNameAlreadyInUse);
+                    appUser = await _userManager.FindByNameAsync(createDTO.UserName);
+
+                    if (appUser != null)
+                    {
+                        _validate.AddError(ValidationAccountErrorMessages.OnInsertUserNameAlreadyInUse);
+                    }
                 }
 
 
@@ -65,9 +67,16 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return this._validate;
         }
-        public async Task<IResponseDTO<UserReadDTO>> InsertAsync(UserCreateDTO createDTO)
+        public async Task<UserRegisteredDTO> InsertAsync(UserCreateDTO createDTO)
         {
-            UserReadDTO userReadDTO = null;
+
+            UserRegisteredDTO registeredUser = new UserRegisteredDTO();
+
+            ValidateDTO validateDTO = new ValidateDTO();
+            validateDTO.IsValid = true;
+            validateDTO.MessageList = new List<string>();
+
+            registeredUser.ValidateDTO = validateDTO;
 
             var user = new IdentityUser
             {
@@ -90,32 +99,17 @@ namespace BusinessLogicLayer.BusinessObjects
                     IsActive = true
                 };
 
-
-
                 await _unitOfWork.UsersInfo.InsertAsync(applicationUserInfo);
 
-
-                userReadDTO = new UserReadDTO
-                {
-                    Email = createDTO.Email,
-                    UserName = createDTO.UserName,
-                    FirstName = createDTO.FirstName,
-                    LastName = createDTO.LastName,
-                    FullName = $"{createDTO.FirstName} {createDTO.LastName}"
-                };
+                registeredUser.Email = createDTO.Email;
+                registeredUser.UserName = createDTO.UserName;
             }
             else
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (var item in result.Errors)
-                {
-                    sb.AppendLine(item.Description);
-                }
-
-                throw new Exception(sb.ToString());
+                result.Errors.ToList().ForEach(t => _validate.AddError(t.Description));
             }
 
-            return new ResponseDTO<UserReadDTO>(userReadDTO);
+            return registeredUser;
         }
         public async Task<IValidate> SignInAsync(UserSignInDTO userSignInDTO)
         {

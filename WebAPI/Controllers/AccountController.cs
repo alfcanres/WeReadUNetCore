@@ -44,7 +44,17 @@ namespace WebAPI.Controllers
                     return BadRequest(validate);
                 }
                 var response = await _accountBLL.InsertAsync(createModel);
-                return Ok(response);
+
+                if(!response.ValidateDTO.IsValid)
+                {
+                    return BadRequest(response.ValidateDTO);
+                }
+                else
+                {
+                    return Ok(response);
+                }
+
+                
             }
             catch (Exception ex)
             {
