@@ -1,13 +1,9 @@
-﻿using DataTransferObjects.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace DataTransferObjects
 {
-    public class PagerDTO : IPagerDTO
+    public class PagerParams 
     {
         private string searchKeyWord = "";
         public string SearchKeyWord
@@ -28,7 +24,7 @@ namespace DataTransferObjects
         private int recordsPerPage = 10;
         private readonly int maxRecordsPerPage = 50;
 
-        public PagerDTO()
+        public PagerParams()
         {
             RecordsPerPage = maxRecordsPerPage;
         }

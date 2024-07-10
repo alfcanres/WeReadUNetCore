@@ -1,4 +1,4 @@
-﻿using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
 
 namespace BusinessLogicLayer.Interfaces
 {
@@ -8,11 +8,11 @@ namespace BusinessLogicLayer.Interfaces
         where UpdateDTO : class
     {
         Task DeleteAsync(int id);
-        Task<IResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO);
-        Task<IResponseDTO<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO);
-        Task<IResponseDTO<ReadDTO>> GetByIdAsync(int id);
-        Task<IValidate> ValidateInsertAsync(CreateDTO createDTO);
-        Task<IValidate> ValidateDeleteAsync(int id);
-        Task<IValidate> ValidateUpdateAsync(int id, UpdateDTO updateDTO);
+        Task<Response<ReadDTO>> InsertAsync(CreateDTO createDTO);
+        Task<Response<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO);
+        Task<Response<ReadDTO>> GetByIdAsync(int id);
+        Task<ValidatorResponse> ValidateInsertAsync(CreateDTO createDTO);
+        Task<ValidatorResponse> ValidateDeleteAsync(int id);
+        Task<ValidatorResponse> ValidateUpdateAsync(int id, UpdateDTO updateDTO);
     }
 }

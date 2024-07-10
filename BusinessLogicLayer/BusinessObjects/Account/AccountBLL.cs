@@ -1,21 +1,17 @@
 ﻿using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Text;
-
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public class AccountBLL : IAccountBLL
     {
-        protected readonly IValidate _validate = new ValidateDTO();
+        protected readonly ValidatorResponse _validate = new ValidatorResponse();
         private readonly ILogger<AccountBLL> _logger;
         private readonly IUserManagerWrapper _userManager;
         private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
@@ -34,7 +30,7 @@ namespace BusinessLogicLayer.BusinessObjects
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IValidate> ValidateInsertAsync(UserCreateDTO createDTO)
+        public async Task<ValidatorResponse> ValidateInsertAsync(UserCreateDTO createDTO)
         {
             _validate.Clear();
 
@@ -72,7 +68,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             UserRegisteredDTO registeredUser = new UserRegisteredDTO();
 
-            ValidateDTO validateDTO = new ValidateDTO();
+            ValidatorResponse validateDTO = new ValidatorResponse();
             validateDTO.IsValid = true;
             validateDTO.MessageList = new List<string>();
 
@@ -111,7 +107,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return registeredUser;
         }
-        public async Task<IValidate> SignInAsync(UserSignInDTO userSignInDTO)
+        public async Task<ValidatorResponse> SignInAsync(UserSignInDTO userSignInDTO)
         {
             _validate.Clear();
 
@@ -134,7 +130,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return this._validate;
         }
-        public async Task<IValidate> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        public async Task<ValidatorResponse> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
         {
             _validate.Clear();
 
@@ -171,7 +167,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
         }
-        public async Task<IResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
+        public async Task<Response<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
         {
             _validate.Clear();
             UserReadDTO userDTO = null;
@@ -195,7 +191,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.AddError("Incorrect user or the user doesn't exists");
             }
 
-            return new ResponseDTO<UserReadDTO>(userDTO);
+            return new Response<UserReadDTO>(userDTO);
         }
         private async Task<(string UserName, string FirstName, string LastName, string ProfilePicture)> GetUserInfoAsync(IdentityUser user)
         {

@@ -1,5 +1,5 @@
-﻿using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
+using DataTransferObjects.DTO;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -7,14 +7,14 @@ using System.Text;
 
 namespace WebAPI.Model
 {
-    public class TokenResponseModel : ITokenResponse
+    public class TokenResponseModel 
     {
         private readonly string _token;
         private readonly DateTime _expires;
-        private readonly IResponseDTO<UserReadDTO> _resultResponseDTO;
+        private readonly Response<UserReadDTO> _resultResponseDTO;
         private readonly IConfiguration _configuration;
 
-        public TokenResponseModel(IResponseDTO<UserReadDTO> resultResponseDTO, DateTime expires, IConfiguration configuration)
+        public TokenResponseModel(Response<UserReadDTO> resultResponseDTO, DateTime expires, IConfiguration configuration)
         {
             _resultResponseDTO = resultResponseDTO;
             _configuration = configuration;

@@ -1,15 +1,16 @@
 ﻿using BusinessLogicLayer.Interfaces;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
+
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IMoodTypeBLL : IBLL<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>
     {
         Task<int> CountAllAsync();
-        Task<IResponseListDTO<MoodTypeReadDTO>> GetAllAsync();
-        Task<IResponseListDTO<MoodTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable);
-        Task<IResponsePagedListDTO<MoodTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO);
-        Task<IResponseListDTO<MoodTypeReadDTO>> GetTopWithPostsAsync(int top);
+        Task<ResponseList<MoodTypeReadDTO>> GetAllAsync();
+        Task<ResponseList<MoodTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable);
+        Task<ResponsePagedList<MoodTypeReadDTO>> GetAllPagedAsync(PagerParams pagerDTO);
+        Task<ResponseList<MoodTypeReadDTO>> GetTopWithPostsAsync(int top);
     }
 }

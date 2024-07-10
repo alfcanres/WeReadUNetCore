@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
-using DataAccessLayer.Entity;
 using DataTransferObjects.DTO;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.BusinessObjects
@@ -13,7 +13,7 @@ namespace BusinessLogicLayer.BusinessObjects
         private readonly IQueryable<PostType> queryCount;
         private readonly IQueryable<PostType> queryList;
 
-        public GetAllPostTypePaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
+        public GetAllPostTypePaged(IUnitOfWork unitOfWork, IMapper mapper, PagerParams pager) : base(unitOfWork, mapper)
         {
             var query = unitOfWork.PostTypes
                 .Query()

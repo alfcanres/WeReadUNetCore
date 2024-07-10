@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.DTO.Post;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +15,7 @@ namespace BusinessLogicLayer.BusinessObjects
         {
         }
 
-        public async Task<IResponseDTO<PostVoteViewDTO>> GetVotesByPostIdAsync(int PostId)
+        public async Task<Response<PostVoteViewDTO>> GetVotesByPostIdAsync(int PostId)
         {
             ResetValidations();
 
@@ -35,7 +32,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 };
 
 
-                ResponseDTO<PostVoteViewDTO> response = new ResponseDTO<PostVoteViewDTO>(postview);
+                Response<PostVoteViewDTO> response = new Response<PostVoteViewDTO>(postview);
 
                 return response;
             }
@@ -45,7 +42,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.IsValid = false;
                 _validate.AddError(friendlyError);
                 _logger.LogError(ex, "EXECUTE LIST ERROR GetVotesByPostIdAsync");
-                return new ResponseDTO<PostVoteViewDTO>(null);
+                return new Response<PostVoteViewDTO>(null);
             }
 
         }

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.BusinessObjects
@@ -11,7 +11,7 @@ namespace BusinessLogicLayer.BusinessObjects
     {
         private readonly IQueryable<Post> queryCount;
         private readonly IQueryable<Post> queryList;
-        public GetAllPublishedPostsByMoodPaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager, int moodTypeId) : base(unitOfWork, mapper)
+        public GetAllPublishedPostsByMoodPaged(IUnitOfWork unitOfWork, IMapper mapper, PagerParams pager, int moodTypeId) : base(unitOfWork, mapper)
         {
             var query = unitOfWork.Posts
                  .Query()

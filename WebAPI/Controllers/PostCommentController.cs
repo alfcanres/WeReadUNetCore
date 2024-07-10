@@ -2,7 +2,6 @@
 using BusinessLogicLayer.Helpers;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +15,13 @@ namespace WebAPI.Controllers
     {
         private readonly IPostCommentBLL _BLL;
         private readonly ILogger<PostCommentController> _logger;
-        private readonly ValidateDTO _validateDTO;
+        private readonly ValidatorResponse _validateDTO;
 
         public PostCommentController(IPostCommentBLL BLL, ILogger<PostCommentController> logger)
         {
             _BLL = BLL;
             _logger = logger;
-            _validateDTO = new ValidateDTO();   
+            _validateDTO = new ValidatorResponse();   
         }
 
         [HttpPost]

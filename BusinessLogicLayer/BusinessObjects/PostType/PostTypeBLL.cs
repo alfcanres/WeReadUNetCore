@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -22,22 +22,22 @@ namespace BusinessLogicLayer.BusinessObjects
             return await _unitOfWork.PostTypes.Query().CountAsync();
         }
 
-        public async Task<IResponseListDTO<PostTypeReadDTO>> GetAllAsync()
+        public async Task<ResponseList<PostTypeReadDTO>> GetAllAsync()
         {
             return await ExecuteListAsync(new GetAllPostTypes(_unitOfWork, Mapper));
         }
 
-        public async Task<IResponsePagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<PostTypeReadDTO>> GetAllPagedAsync(PagerParams pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllPostTypePaged(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponseListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
+        public async Task<ResponseList<PostTypeReadDTO>> GetTopWithPostsAsync(int top)
         {
             return await ExecuteListAsync(new GetPostTypeTopWithPosts(_unitOfWork, Mapper, top));
         }
 
-        public async Task<IResponseListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
+        public async Task<ResponseList<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
         {
             return await ExecuteListAsync(new GetAllPostTypeByIsAvailable(_unitOfWork, Mapper, isAvailable));
         }

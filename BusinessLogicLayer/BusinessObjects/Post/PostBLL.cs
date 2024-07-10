@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Response;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.DTO.Post;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,17 +18,17 @@ namespace BusinessLogicLayer.BusinessObjects
         }
 
 
-        public async Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(PagerParams pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllPostsNotPublished(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPagedAsync(IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<PostListDTO>> GetPostsPublishedPagedAsync(PagerParams pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllPublishedPostsPaged(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, PagerParams pagerDTO)
         {
             return await ExecutePagedListAsync(new GetPostsPublishedByUserPaged(UserID, _unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
@@ -43,7 +41,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             await _unitOfWork.Posts.UpdateAsync(entity);
         }
-        public async Task<IValidate> ValidateApprovePostPublishAsync(int postId)
+        public async Task<ValidatorResponse> ValidateApprovePostPublishAsync(int postId)
         {
 
             ResetValidations();

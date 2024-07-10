@@ -34,7 +34,7 @@ namespace BusinessLogicLayerTest
 
             int totalPagesExpected = 3;
 
-            var pagerDTO = new PagerDTO()
+            var pagerDTO = new PagerParams()
             {
                 RecordsPerPage = 10,
                 CurrentPage = 1,
@@ -87,7 +87,7 @@ namespace BusinessLogicLayerTest
 
             int currentPageExpected = 2;
 
-            var pagerDTO = new PagerDTO()
+            var pagerDTO = new PagerParams()
             {
                 RecordsPerPage = 10,
                 CurrentPage = 2,
@@ -142,7 +142,7 @@ namespace BusinessLogicLayerTest
             int totalRecordsExpected = 10;
             int totalPagesExpected = 1;
 
-            var pagerDTO = new PagerDTO()
+            var pagerDTO = new PagerParams()
             {
                 RecordsPerPage = 10,
                 CurrentPage = 1,
@@ -200,7 +200,7 @@ namespace BusinessLogicLayerTest
 
 
 
-            var pagerDTO = new PagerDTO()
+            var pagerDTO = new PagerParams()
             {
                 RecordsPerPage = 10,
                 CurrentPage = 1,

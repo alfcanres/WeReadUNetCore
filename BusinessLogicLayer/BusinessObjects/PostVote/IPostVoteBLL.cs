@@ -1,17 +1,18 @@
-﻿using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
+using DataTransferObjects.DTO;
+
 
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IPostVoteBLL 
     {
-        Task<IValidate> ValidateDeleteAsync(int id);
+        Task<ValidatorResponse> ValidateDeleteAsync(int id);
         Task DeleteAsync(int id);
-        Task<IValidate> ValidateInsertAsync(PostVoteCreateDTO createDTO);
-        Task<IResponseDTO<PostVoteResultDTO>> InsertAsync(PostVoteCreateDTO createDTO);
-        Task<IValidate> ValidateUpdateAsync(int id, PostVoteUpdateDTO updateDTO);
-        Task<IResponseDTO<PostVoteResultDTO>> UpdateAsync(int id, PostVoteUpdateDTO updateDTO);
-        Task<IResponseDTO<PostVoteViewDTO>> GetVotesByPostIdAsync(int PostId);
+        Task<ValidatorResponse> ValidateInsertAsync(PostVoteCreateDTO createDTO);
+        Task<Response<PostVoteResultDTO>> InsertAsync(PostVoteCreateDTO createDTO);
+        Task<ValidatorResponse> ValidateUpdateAsync(int id, PostVoteUpdateDTO updateDTO);
+        Task<Response<PostVoteResultDTO>> UpdateAsync(int id, PostVoteUpdateDTO updateDTO);
+        Task<Response<PostVoteViewDTO>> GetVotesByPostIdAsync(int PostId);
     }
 }

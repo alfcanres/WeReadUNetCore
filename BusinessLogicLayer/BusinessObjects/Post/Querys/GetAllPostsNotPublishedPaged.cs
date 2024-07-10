@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -13,7 +13,7 @@ namespace BusinessLogicLayer.BusinessObjects
         private readonly IQueryable<Post> queryCount;
         private readonly IQueryable<Post> queryList;
 
-        public GetAllPostsNotPublished(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager) : base(unitOfWork, mapper)
+        public GetAllPostsNotPublished(IUnitOfWork unitOfWork, IMapper mapper, PagerParams pager) : base(unitOfWork, mapper)
         {
             var basQuery = unitOfWork.Posts
                  .Query()

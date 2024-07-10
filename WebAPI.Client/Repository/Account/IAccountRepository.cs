@@ -1,5 +1,4 @@
 ﻿using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.Account

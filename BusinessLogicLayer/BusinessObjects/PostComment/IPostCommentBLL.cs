@@ -1,16 +1,16 @@
-﻿using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
+using DataTransferObjects.DTO;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IPostCommentBLL 
     {
-        Task<IValidate> ValidateDeleteAsync(int id);
+        Task<ValidatorResponse> ValidateDeleteAsync(int id);
         Task DeleteAsync(int id);
-        Task<IResponseDTO<PostCommentReadDTO>> InsertAsync(PostCommentCreateDTO createDTO);
-        Task<IValidate> ValidateInsertAsync(PostCommentCreateDTO createDTO);        
-        Task<IResponseDTO<PostCommentReadDTO>> GetByIdAsync(int id);
-        Task<IResponsePagedListDTO<PostCommentReadDTO>> GetPagedByPostIdAsync(int postID, IPagerDTO pagerDTO);
+        Task<Response<PostCommentReadDTO>> InsertAsync(PostCommentCreateDTO createDTO);
+        Task<ValidatorResponse> ValidateInsertAsync(PostCommentCreateDTO createDTO);        
+        Task<Response<PostCommentReadDTO>> GetByIdAsync(int id);
+        Task<ResponsePagedList<PostCommentReadDTO>> GetPagedByPostIdAsync(int postID, PagerParams pagerDTO);
 
 
 

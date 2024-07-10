@@ -2,7 +2,6 @@
 using BusinessLogicLayer.Helpers;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +15,13 @@ namespace WebAPI.Controllers
     {
         private readonly IPostVoteBLL _BLL;
         private readonly ILogger<PostVoteController> _logger;
-        private readonly IValidate _validateDTO;
+        private readonly ValidatorResponse _validateDTO;
 
         public PostVoteController(IPostVoteBLL BLL, ILogger<PostVoteController> logger)
         {
             _BLL = BLL;
             _logger = logger;
-            _validateDTO = new ValidateDTO();
+            _validateDTO = new ValidatorResponse();
         }
 
 

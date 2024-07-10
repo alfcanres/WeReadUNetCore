@@ -2,8 +2,8 @@
 using BusinessLogicLayer.BusinessObject;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,18 +15,18 @@ namespace BusinessLogicLayer.BusinessObjects
         {
         }
 
-        public async Task<IResponsePagedListDTO<ApplicationUserInfoListDTO>> GetAllActivePagedAsync(IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<ApplicationUserInfoListDTO>> GetAllActivePagedAsync(PagerParams pagerDTO)
         {
 
             return await ExecutePagedListAsync(new GetAllUsersInfoActivePaged(UnitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponsePagedListDTO<ApplicationUserInfoListDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<ApplicationUserInfoListDTO>> GetAllPagedAsync(PagerParams pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllUsersInfoPaged(UnitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponseListDTO<ApplicationUserInfoListDTO>> GetTopWithPostsAsync(int top)
+        public async Task<ResponseList<ApplicationUserInfoListDTO>> GetTopWithPostsAsync(int top)
         {
             return await ExecuteListAsync(new GetTopUsersInfoWithPosts(UnitOfWork, Mapper, top));
         }

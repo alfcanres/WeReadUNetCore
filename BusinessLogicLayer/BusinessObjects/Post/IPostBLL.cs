@@ -1,18 +1,18 @@
 ﻿using BusinessLogicLayer.Interfaces;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
 using DataTransferObjects.DTO.Post;
-using DataTransferObjects.Interfaces;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IPostBLL : IBLL<PostCreateDTO, PostReadDTO, PostUpdateDTO>
     {
 
-        Task<IValidate> ValidateApprovePostPublishAsync(int postId);
+        Task<ValidatorResponse> ValidateApprovePostPublishAsync(int postId);
         Task ApprovePostPublishAsync(int postId);
-        Task<IResponsePagedListDTO<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(IPagerDTO pagerDTO);
-        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedPagedAsync(IPagerDTO pagerDTO);
-        Task<IResponsePagedListDTO<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, IPagerDTO pagerDTO);
+        Task<ResponsePagedList<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(PagerParams pagerDTO);
+        Task<ResponsePagedList<PostListDTO>> GetPostsPublishedPagedAsync(PagerParams pagerDTO);
+        Task<ResponsePagedList<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, PagerParams pagerDTO);
 
 
     }

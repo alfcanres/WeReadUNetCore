@@ -12,13 +12,13 @@ namespace WebAPI.Controllers
     {
         protected readonly IBLL<CreateDTO, ReadDTO, UpdateDTO> _BLL;
         private readonly ILogger _logger;
-        protected readonly ValidateDTO _validateDTO;
+        protected readonly ValidatorResponse _validateDTO;
 
         protected BaseController(IBLL<CreateDTO, ReadDTO, UpdateDTO> BLL, ILogger logger)
         {
             _BLL = BLL;
             _logger = logger;
-            _validateDTO = new ValidateDTO();
+            _validateDTO = new ValidatorResponse();
         }
 
         protected async Task<ActionResult> GetByIdAsync(int id)

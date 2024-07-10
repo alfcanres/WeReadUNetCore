@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,23 +21,23 @@ namespace BusinessLogicLayer.BusinessObjects
             return await _unitOfWork.PostTypes.Query().CountAsync();
         }
 
-        public async Task<IResponseListDTO<MoodTypeReadDTO>> GetAllAsync()
+        public async Task<ResponseList<MoodTypeReadDTO>> GetAllAsync()
         {
             return await ExecuteListAsync(new GetAllMoodTypes(_unitOfWork, Mapper));
         }
 
-        public async Task<IResponsePagedListDTO<MoodTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO)
+        public async Task<ResponsePagedList<MoodTypeReadDTO>> GetAllPagedAsync(PagerParams pagerDTO)
         {
             return await ExecutePagedListAsync(new GetAllMoodTypesPaged(_unitOfWork, Mapper, pagerDTO), pagerDTO);
         }
 
-        public async Task<IResponseListDTO<MoodTypeReadDTO>> GetTopWithPostsAsync(int top)
+        public async Task<ResponseList<MoodTypeReadDTO>> GetTopWithPostsAsync(int top)
         {
             return await ExecuteListAsync(new GetMoodTypesTopWithPosts(_unitOfWork, Mapper, top));
 
         }
 
-        public async Task<IResponseListDTO<MoodTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
+        public async Task<ResponseList<MoodTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable)
         {
             return await ExecuteListAsync(new GetAllMoodTypeByIsAvailable(_unitOfWork, Mapper, isAvailable));
         }

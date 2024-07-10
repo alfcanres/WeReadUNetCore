@@ -2,7 +2,6 @@
 using BusinessLogicLayer.Helpers;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("Paged")]
-        public async Task<ActionResult> GetPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPaged([FromQuery] PagerParams pagerDTO)
         {
 
             try
@@ -64,7 +63,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("PagedByActive")]
-        public async Task<ActionResult> GetPagedByActive([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPagedByActive([FromQuery] PagerParams pagerDTO)
         {
 
 

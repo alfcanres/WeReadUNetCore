@@ -25,7 +25,7 @@ namespace BusinessLogicLayer.Response
         }
 
 
-        public static async Task<IResponsePagedListDTO<ReadDTO>> GetResponseFromQueryAsync<ReadDTO>(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager) 
+        public static async Task<ResponsePagedListDTO<ReadDTO>> GetResponseFromQueryAsync<ReadDTO>(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager) 
         {
             var list = await queryStrategy.GetResultsAsync();
             var recordCount = await queryStrategy.CountResultsAsync();
@@ -33,7 +33,7 @@ namespace BusinessLogicLayer.Response
             double pageCountDoub = Math.Ceiling(Convert.ToDouble((recordCount / Convert.ToDouble(pager.RecordsPerPage))));
             var pageCount = Convert.ToInt32(pageCountDoub);
 
-            IResponsePagedListDTO<ReadDTO> newList = new ResponsePagedListDTO<ReadDTO>(list, recordCount, pager);
+            ResponsePagedListDTO<ReadDTO> newList = new ResponsePagedListDTO<ReadDTO>(list, recordCount, pager);
 
             return newList;
 

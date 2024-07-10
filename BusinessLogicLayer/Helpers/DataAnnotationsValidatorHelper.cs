@@ -1,12 +1,12 @@
 ﻿using BusinessLogicLayer.Interfaces;
-using DataTransferObjects.Interfaces;
+using DataTransferObjects;
 using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLogicLayer.Helpers
 {
     public class DataAnnotationsValidatorHelper : IDataAnnotationsValidator
     {
-        public void ValidateModel(object model, IValidate validate)
+        public void ValidateModel(object model, ValidatorResponse validate)
         {
             if (model != null)
             {

@@ -1,20 +1,13 @@
-﻿using DataTransferObjects.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace DataTransferObjects
 {
-    public class ValidateDTO : IValidate
+    public class ValidatorResponse
     {
         bool isValid = true;
         List<string> errorList = new List<string>();
 
-        public ValidateDTO()
+        public ValidatorResponse()
         {
         }
 

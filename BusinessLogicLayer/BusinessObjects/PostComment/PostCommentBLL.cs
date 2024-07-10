@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +15,7 @@ namespace BusinessLogicLayer.BusinessObjects
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IResponsePagedListDTO<PostCommentReadDTO>> GetPagedByPostIdAsync(int postID, IPagerDTO pagerDTO)
+        public Task<ResponsePagedList<PostCommentReadDTO>> GetPagedByPostIdAsync(int postID, PagerParams pagerDTO)
         {
             throw new NotImplementedException();
         }

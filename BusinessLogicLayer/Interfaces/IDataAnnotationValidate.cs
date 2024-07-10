@@ -1,9 +1,9 @@
-﻿using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
 
 namespace BusinessLogicLayer.Interfaces
 {
     public interface IDataAnnotationsValidator
     {
-        void ValidateModel(object model, IValidate validate);
+        void ValidateModel(object model, ValidatorResponse validate);
     }
 }

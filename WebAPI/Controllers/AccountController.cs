@@ -1,13 +1,10 @@
 ﻿using BusinessLogicLayer.BusinessObjects;
 using BusinessLogicLayer.Helpers;
-using BusinessLogicLayer.Interfaces;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 using WebAPI.Model;
 
 namespace WebAPI.Controllers
@@ -21,14 +18,14 @@ namespace WebAPI.Controllers
         private readonly IAccountBLL _accountBLL;
         private readonly ILogger<AccountController> _logger;
         private readonly IConfiguration _configuration;
-        private readonly IValidate _validateDTO;
+        private readonly ValidatorResponse _validateDTO;
 
         public AccountController(IAccountBLL accountBLL, ILogger<AccountController> logger, IConfiguration configuration)
         {
             _accountBLL = accountBLL;
             _logger = logger;
             _configuration = configuration;
-            _validateDTO = new ValidateDTO();
+            _validateDTO = new ValidatorResponse();
         }
 
 

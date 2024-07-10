@@ -1,14 +1,9 @@
 ﻿using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.Account
@@ -62,7 +57,7 @@ namespace WebAPI.Client.Repository.Account
                 }
                 else
                 {
-                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidateDTO>(
+                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidatorResponse>(
                         await response.Content.ReadAsStreamAsync(),
                         new JsonSerializerOptions
                         {
@@ -75,7 +70,7 @@ namespace WebAPI.Client.Repository.Account
             }
             catch (Exception ex)
             {
-                ValidateDTO validateDTO = new ValidateDTO();
+                ValidatorResponse validateDTO = new ValidatorResponse();
                 validateDTO.IsValid = false;
                 validateDTO.MessageList = new List<string>() { ex.Message };
                 responseView.Validate = validateDTO;
@@ -110,7 +105,7 @@ namespace WebAPI.Client.Repository.Account
                 else
                 {
 
-                    var validateDTO = await JsonSerializer.DeserializeAsync<ValidateDTO>(
+                    var validateDTO = await JsonSerializer.DeserializeAsync<ValidatorResponse>(
                         await response.Content.ReadAsStreamAsync(),
                         new JsonSerializerOptions
                         {
@@ -124,7 +119,7 @@ namespace WebAPI.Client.Repository.Account
             }
             catch (Exception ex)
             {
-                ValidateDTO validateResponse = new ValidateDTO();
+                ValidatorResponse validateResponse = new ValidatorResponse();
                 validateResponse.IsValid = false;
                 validateResponse.MessageList = new List<string>() { ex.Message };
                 responseViewModel.Validate = validateResponse;

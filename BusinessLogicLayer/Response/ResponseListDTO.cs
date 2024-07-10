@@ -23,7 +23,7 @@ namespace BusinessLogicLayer.Response
         }
 
 
-        public static async Task<IResponseListDTO<ReadDTO>> GetResponseFromQueryAsync(QueryStrategyBase<ReadDTO> queryStrategyBase)
+        public static async Task<ResponseListDTO<ReadDTO>> GetResponseFromQueryAsync(QueryStrategyBase<ReadDTO> queryStrategyBase)
         {
             var list = await queryStrategyBase.GetResultsAsync();
             var recordCount = await queryStrategyBase.CountResultsAsync();

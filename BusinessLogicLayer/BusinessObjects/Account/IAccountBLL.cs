@@ -1,16 +1,16 @@
-﻿using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
+﻿using DataTransferObjects;
+using DataTransferObjects.DTO;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IAccountBLL
     {
         Task<UserRegisteredDTO> InsertAsync(UserCreateDTO createDTO);
-        Task<IResponseDTO<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail);
-        public Task<IValidate> SignInAsync(UserSignInDTO userSignInDTO);
+        Task<Response<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail);
+        public Task<ValidatorResponse> SignInAsync(UserSignInDTO userSignInDTO);
         Task UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
-        Task<IValidate> ValidateInsertAsync(UserCreateDTO createDTO);
-        Task<IValidate> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
+        Task<ValidatorResponse> ValidateInsertAsync(UserCreateDTO createDTO);
+        Task<ValidatorResponse> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
         
 
     }

@@ -1,11 +1,9 @@
-﻿using DataTransferObjects.Interfaces;
-using DataTransferObjects;
+﻿using DataTransferObjects;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using WebAPI.Client.Helpers;
 using WebAPI.Client.ViewModels;
-using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -55,22 +53,22 @@ namespace WebAPI.Client.Repository
             }
         }
 
-        public async Task<ResponseViewModel<IResponseDTO<ReadDTO>>> CreateAsync(CreateDTO createModel)
+        public async Task<ResponseViewModel<Response<ReadDTO>>> CreateAsync(CreateDTO createModel)
         {
-            return await GetResponse<IResponseDTO<ReadDTO>, CreateDTO>(createModel, HttpVerbsEnum.POST);
+            return await GetResponse<Response<ReadDTO>, CreateDTO>(createModel, HttpVerbsEnum.POST);
         }
 
-        public async Task<ResponseViewModel<IResponseDTO<ReadDTO>>> UpdateAsync(UpdateDTO createModel)
+        public async Task<ResponseViewModel<Response<ReadDTO>>> UpdateAsync(UpdateDTO createModel)
         {
-            return await GetResponse<IResponseDTO<ReadDTO>, UpdateDTO>(createModel, HttpVerbsEnum.PUT);
+            return await GetResponse<Response<ReadDTO>, UpdateDTO>(createModel, HttpVerbsEnum.PUT);
         }
 
-        public async Task<ResponseViewModel<IResponseDTO<ReadDTO>>> GetByIdAsync(int id)
+        public async Task<ResponseViewModel<Response<ReadDTO>>> GetByIdAsync(int id)
         {
-            return await GetResponse<IResponseDTO<ReadDTO>, int>(id, HttpVerbsEnum.GET, $"/{id}");
+            return await GetResponse<Response<ReadDTO>, int>(id, HttpVerbsEnum.GET, $"/{id}");
         }
 
-        public async Task<IValidate> DeleteAsync(int id)
+        public async Task<ValidatorResponse> DeleteAsync(int id)
         {
             return await GetValidateResponse(id, HttpVerbsEnum.DELETE, $"/{id}");
         }
@@ -106,26 +104,30 @@ namespace WebAPI.Client.Repository
 
                 //responseView.StatusCode = response.StatusCode;
 
+                string contentString = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    var moodTypeReadDTO = await JsonSerializer.DeserializeAsync<RetDTO>(await response.Content.ReadAsStreamAsync(),
+
+
+                    var responseDTO = await JsonSerializer.DeserializeAsync<RetDTO>(await response.Content.ReadAsStreamAsync(),
                         new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true
                         });
 
-                    responseView.Content = moodTypeReadDTO;
+                    responseView.Content = responseDTO;
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    ValidateDTO validateDTO = new ValidateDTO();
+                    ValidatorResponse validateDTO = new ValidatorResponse();
                     validateDTO.IsValid = false;
                     validateDTO.MessageList = new List<string>() { "Unauthorized" };
                     responseView.Validate = validateDTO;
                 }
                 else
                 {
-                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidateDTO>(
+                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidatorResponse>(
                         await response.Content.ReadAsStreamAsync(),
                         new JsonSerializerOptions
                         {
@@ -137,7 +139,7 @@ namespace WebAPI.Client.Repository
             }
             catch (Exception ex)
             {
-                ValidateDTO validateDTO = new ValidateDTO();
+                ValidatorResponse validateDTO = new ValidatorResponse();
                 validateDTO.IsValid = false;
                 validateDTO.MessageList = new List<string>() { ex.Message };
                 responseView.Validate = validateDTO;
@@ -149,7 +151,7 @@ namespace WebAPI.Client.Repository
 
         }
 
-        protected async Task<IValidate> GetValidateResponse<T>(T input, HttpVerbsEnum HttpVerb, string endPoint = "")
+        protected async Task<ValidatorResponse> GetValidateResponse<T>(T input, HttpVerbsEnum HttpVerb, string endPoint = "")
         {
             var content = new StringContent(JsonSerializer.Serialize(input), Encoding.UTF8, "application/json");
             HttpResponseMessage response = null;
@@ -177,18 +179,18 @@ namespace WebAPI.Client.Repository
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return new ValidateDTO() { IsValid = true };
+                    return new ValidatorResponse() { IsValid = true };
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    ValidateDTO validateDTO = new ValidateDTO();
+                    ValidatorResponse validateDTO = new ValidatorResponse();
                     validateDTO.IsValid = false;
                     validateDTO.MessageList = new List<string>() { "Unauthorized" };
                     return validateDTO;
                 }
                 else
                 {
-                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidateDTO>(
+                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidatorResponse>(
                         await response.Content.ReadAsStreamAsync(),
                         new JsonSerializerOptions
                         {
@@ -200,7 +202,7 @@ namespace WebAPI.Client.Repository
             }
             catch (Exception ex)
             {
-                ValidateDTO validateDTO = new ValidateDTO();
+                ValidatorResponse validateDTO = new ValidatorResponse();
                 validateDTO.IsValid = false;
                 validateDTO.MessageList = new List<string>() { ex.Message };
                 _logger.LogError(ex, "An error occurred while processing the request.");

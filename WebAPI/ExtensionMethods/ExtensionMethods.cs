@@ -1,14 +1,13 @@
 ﻿using DataTransferObjects;
-using DataTransferObjects.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace WebAPI.ExtensionMethods
 {
     public static class ExtensionMethods
     {
-        public static IValidate ToValidate(this ModelStateDictionary modelState)
+        public static ValidatorResponse ToValidate(this ModelStateDictionary modelState)
         {
-            IValidate validate = new ValidateDTO(); 
+            ValidatorResponse validate = new ValidatorResponse(); 
             if (!modelState.IsValid)
             {
                 validate.IsValid = false;

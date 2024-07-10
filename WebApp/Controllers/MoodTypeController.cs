@@ -1,8 +1,8 @@
 ﻿using DataTransferObjects;
-using DataTransferObjects.Interfaces;
+using DataTransferObjects.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebAPI.Client.Repository.MoodType;
 
 namespace WebApp.Controllers
@@ -22,21 +22,97 @@ namespace WebApp.Controllers
 
         }
 
-        public async Task<IActionResult> Index(PagerDTO pagerDTO = null)
+        public async Task<IActionResult> Index(PagerParams pager = null)
         {
             string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
 
             _repository.SetBearerToken(token);
 
-            if (pagerDTO == null)
+            if (pager == null)
             {
-                pagerDTO = new PagerDTO() { CurrentPage = 1, RecordsPerPage = 10, SearchKeyWord = "" };
+                pager = new PagerParams() { CurrentPage = 1, RecordsPerPage = 10, SearchKeyWord = "" };
             }
 
 
-            var response = await _repository.GetPagedAsync(pagerDTO);
+            var response = await _repository.GetPagedAsync(pager);
 
             return View(response);
+        }
+
+        public IActionResult Create()
+        {
+            return View(new MoodTypeCreateDTO());
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Create(MoodTypeCreateDTO createModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(createModel);
+            }
+
+            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
+
+            _repository.SetBearerToken(token);
+
+            var response = await _repository.CreateAsync(createModel);
+
+            if (response.Validate.IsValid)
+            {
+                return RedirectToAction("Index", "MoodType");
+            }
+            else
+            {
+                foreach (var error in response.Validate.MessageList)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
+                return View(createModel);
+            }
+        }
+
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
+
+            _repository.SetBearerToken(token);
+
+            var response = await _repository.GetByIdAsync(id);
+
+            return View(response);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Edit(MoodTypeUpdateDTO editModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(editModel);
+            }
+
+            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
+
+            _repository.SetBearerToken(token);
+
+            var response = await _repository.UpdateAsync(editModel);
+
+            if (response.Validate.IsValid)
+            {
+                return RedirectToAction("Index", "MoodType");
+            }
+            else
+            {
+                foreach (var error in response.Validate.MessageList)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
+                return View(editModel);
+            }
         }
 
 

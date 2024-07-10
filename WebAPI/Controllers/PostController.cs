@@ -85,7 +85,7 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         [ResponseCache(Duration = 10)]
         [HttpGet("PublishedPaged")]
-        public async Task<ActionResult> GetPublishedPaged([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPublishedPaged([FromQuery] PagerParams pagerDTO)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("PublishedPagedByUser/{id}")]
-        public async Task<ActionResult> GetPaged(int id, [FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetPaged(int id, [FromQuery] PagerParams pagerDTO)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace WebAPI.Controllers
 
         [ResponseCache(Duration = 10)]
         [HttpGet("PendingPublishPaged")]
-        public async Task<ActionResult> GetNotPublished([FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetNotPublished([FromQuery] PagerParams pagerDTO)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("{id}/Comments")]
-        public async Task<ActionResult> GetCommentsPaged(int id, [FromQuery] PagerDTO pagerDTO)
+        public async Task<ActionResult> GetCommentsPaged(int id, [FromQuery] PagerParams pagerDTO)
         {
             try
             {

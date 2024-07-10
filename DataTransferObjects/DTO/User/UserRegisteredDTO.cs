@@ -11,6 +11,6 @@ namespace DataTransferObjects.DTO
         public string UserName { set; get; }
         public string Email { set; get; }
 
-        public ValidateDTO ValidateDTO { set; get; }
+        public ValidatorResponse ValidateDTO { set; get; }
     }
 }

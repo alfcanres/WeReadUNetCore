@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Response;
 using DataTransferObjects;
-using DataTransferObjects.Interfaces;
 using Microsoft.Extensions.Logging;
 
 
@@ -17,7 +14,7 @@ namespace BusinessLogicLayer
         #region Properties
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        protected readonly IValidate _validate = new ValidateDTO();
+        protected readonly ValidatorResponse _validate = new ValidatorResponse();
         protected readonly ILogger _logger;
         private readonly IDataAnnotationsValidator _dataAnnotationsValidator;
         protected IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
@@ -40,27 +37,27 @@ namespace BusinessLogicLayer
 
 
         #region Public Methods
-        public async Task<IResponseDTO<ReadDTO>> InsertAsync(CreateDTO createDTO)
+        public async Task<Response<ReadDTO>> InsertAsync(CreateDTO createDTO)
         {
             ReadDTO readDTO = await ExecuteInsertAsync(createDTO);
 
-            return new ResponseDTO<ReadDTO>(readDTO);
+            return new Response<ReadDTO>(readDTO);
         }
-        public async Task<IResponseDTO<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO)
+        public async Task<Response<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO)
         {
             ReadDTO readDTO = await ExecuteUpdateAsync(updateDTO);
 
-            return new ResponseDTO<ReadDTO>(readDTO);
+            return new Response<ReadDTO>(readDTO);
         }
         public async Task DeleteAsync(int id)
         {
             await ExecuteDeleteAsync(id);
         }
-        public async Task<IResponseDTO<ReadDTO>> GetByIdAsync(int id)
+        public async Task<Response<ReadDTO>> GetByIdAsync(int id)
         {
             ReadDTO readDTO = await ExecuteGetByIdAsync(id);
 
-            return new ResponseDTO<ReadDTO>(readDTO);
+            return new Response<ReadDTO>(readDTO);
         }
 
         #endregion
@@ -79,28 +76,30 @@ namespace BusinessLogicLayer
             return await queryStrategy.CountResultsAsync();
         }
 
-        protected async Task<IResponsePagedListDTO<ReadDTO>> ExecutePagedListAsync(QueryStrategyBase<ReadDTO> queryStrategy, IPagerDTO pager)
+        protected async Task<ResponsePagedList<ReadDTO>> ExecutePagedListAsync(QueryStrategyBase<ReadDTO> queryStrategy, PagerParams pager)
         {
-            return await ResponsePagedListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy, pager);
+            return await GetPagedResponseFromQueryAsync(queryStrategy, pager);
         }
 
-        protected async Task<IResponseListDTO<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
+        protected async Task<ResponseList<ReadDTO>> ExecuteListAsync(QueryStrategyBase<ReadDTO> queryStrategy)
         {
-            return await ResponseListDTO<ReadDTO>.GetResponseFromQueryAsync(queryStrategy);
+            return await GetResponseFromQueryAsync(queryStrategy);
         }
 
-        protected async Task<IResponsePagedListDTO<T>> ExecutePagedListAsync<T>(QueryStrategyBase<T> queryStrategy, IPagerDTO pager)
+        protected async Task<ResponsePagedList<T>> ExecutePagedListAsync<T>(QueryStrategyBase<T> queryStrategy, PagerParams pager)
+            where T : class
         {
-            return await ResponsePagedListDTO<T>.GetResponseFromQueryAsync(queryStrategy, pager);
+          return await GetPagedResponseFromQueryAsync<T>(queryStrategy, pager);
 
         }
 
-        protected async Task<IResponseListDTO<T>> ExecuteListAsync<T>(QueryStrategyBase<T> queryStrategy)
+        protected async Task<ResponseList<T>> ExecuteListAsync<T>(QueryStrategyBase<T> queryStrategy)
+            where T : class
         {
-            return await ResponseListDTO<T>.GetResponseFromQueryAsync(queryStrategy);
+            return await GetResponseFromQueryAsync<T>(queryStrategy);
         }
 
-        public async Task<IValidate> ValidateInsertAsync(CreateDTO createDTO)
+        public async Task<ValidatorResponse> ValidateInsertAsync(CreateDTO createDTO)
         {
             ResetValidations();
 
@@ -117,7 +116,7 @@ namespace BusinessLogicLayer
             return this._validate;
         }
 
-        public async Task<IValidate> ValidateDeleteAsync(int id)
+        public async Task<ValidatorResponse> ValidateDeleteAsync(int id)
         {
             ResetValidations();
 
@@ -130,7 +129,7 @@ namespace BusinessLogicLayer
             return this._validate;
         }
 
-        public async Task<IValidate> ValidateUpdateAsync(int id, UpdateDTO updateDTO)
+        public async Task<ValidatorResponse> ValidateUpdateAsync(int id, UpdateDTO updateDTO)
         {
 
             ResetValidations();
@@ -162,5 +161,28 @@ namespace BusinessLogicLayer
 
         #endregion
 
+        private async Task<ResponseList<T>> GetResponseFromQueryAsync<T>(QueryStrategyBase<T> queryStrategyBase)
+            where T : class
+        {
+            var list = await queryStrategyBase.GetResultsAsync();
+            var recordCount = await queryStrategyBase.CountResultsAsync();
+
+            return new ResponseList<T>(list, recordCount);
+
+        }
+
+        private async Task<ResponsePagedList<T>> GetPagedResponseFromQueryAsync<T>(QueryStrategyBase<T> queryStrategy, PagerParams pager)
+            where T : class
+        {
+            var list = await queryStrategy.GetResultsAsync();
+            var recordCount = await queryStrategy.CountResultsAsync();
+            var currentPage = pager.CurrentPage;
+            double pageCountDoub = Math.Ceiling(Convert.ToDouble((recordCount / Convert.ToDouble(pager.RecordsPerPage))));
+            var pageCount = Convert.ToInt32(pageCountDoub);
+
+            ResponsePagedList<T> newList = new ResponsePagedList<T>(list, recordCount, pager);
+
+            return newList;
+        }
     }
 }

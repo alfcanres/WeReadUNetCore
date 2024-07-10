@@ -1,16 +1,16 @@
 ﻿using BusinessLogicLayer.Interfaces;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IPostTypeBLL : IBLL<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>
     {
-        Task<IResponsePagedListDTO<PostTypeReadDTO>> GetAllPagedAsync(IPagerDTO pagerDTO);
+        Task<ResponsePagedList<PostTypeReadDTO>> GetAllPagedAsync(PagerParams pagerDTO);
         Task<int> CountAllAsync();
-        Task<IResponseListDTO<PostTypeReadDTO>> GetAllAsync();
-        Task<IResponseListDTO<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable);
-        Task<IResponseListDTO<PostTypeReadDTO>> GetTopWithPostsAsync(int top);
+        Task<ResponseList<PostTypeReadDTO>> GetAllAsync();
+        Task<ResponseList<PostTypeReadDTO>> GetAllByIsAvailableAsync(bool isAvailable);
+        Task<ResponseList<PostTypeReadDTO>> GetTopWithPostsAsync(int top);
 
 
     }

@@ -1,5 +1,4 @@
-﻿using DataTransferObjects.Interfaces;
-using DataTransferObjects;
+﻿using DataTransferObjects;
 
 
 namespace WebAPI.Client.ViewModels
@@ -9,11 +8,11 @@ namespace WebAPI.Client.ViewModels
     {
         public ResponseViewModel()
         {
-            Validate = new ValidateDTO() { IsValid = true, MessageList = new List<string>() };
+            Validate = new ValidatorResponse() { IsValid = true, MessageList = new List<string>() };
         }
 
         public T Content { set; get; }
-        public ValidateDTO Validate { set; get; }
+        public ValidatorResponse Validate { set; get; }
 
     }
 

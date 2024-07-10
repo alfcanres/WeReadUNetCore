@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
+using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -14,7 +14,7 @@ namespace BusinessLogicLayer.BusinessObject
         private readonly IQueryable<ApplicationUserInfo> queryCount;
         private readonly IQueryable<ApplicationUserInfo> queryList;
 
-        public GetAllUsersInfoActivePaged(IUnitOfWork unitOfWork, IMapper mapper, IPagerDTO pager)
+        public GetAllUsersInfoActivePaged(IUnitOfWork unitOfWork, IMapper mapper, PagerParams pager)
             : base(unitOfWork, mapper)
         {
             var queryBase = unitOfWork.UsersInfo

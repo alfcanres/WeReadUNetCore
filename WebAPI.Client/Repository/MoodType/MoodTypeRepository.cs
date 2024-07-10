@@ -1,6 +1,5 @@
 ﻿using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebAPI.Client.Helpers;
@@ -28,20 +27,20 @@ namespace WebAPI.Client.Repository.MoodType
 
         }
 
-        public Task<ResponseViewModel<IResponseListDTO<MoodTypeReadDTO>>> GetIsAvailableAsync(bool isAvailable)
+        public Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetIsAvailableAsync(bool isAvailable)
         {
 
-            return GetResponse<IResponseListDTO<MoodTypeReadDTO>, bool>(isAvailable, HttpVerbsEnum.GET, $"/isavailable/{isAvailable}");
+            return GetResponse<ResponseList<MoodTypeReadDTO>, bool>(isAvailable, HttpVerbsEnum.GET, $"/isavailable/{isAvailable}");
         }
 
-        public Task<ResponseViewModel<IResponsePagedListDTO<MoodTypeReadDTO>>> GetPagedAsync(PagerDTO pagerDTO)
+        public Task<ResponseViewModel<ResponsePagedList<MoodTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
         {
-            return GetResponse<IResponsePagedListDTO<MoodTypeReadDTO>, PagerDTO>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return GetResponse<ResponsePagedList<MoodTypeReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
         }
 
-        public Task<ResponseViewModel<IResponseListDTO<MoodTypeReadDTO>>> GetTopTen()
+        public Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTen()
         {
-            return GetResponse<IResponseListDTO<MoodTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
+            return GetResponse<ResponseList<MoodTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
         }
     }
 }
