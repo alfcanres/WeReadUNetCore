@@ -8,12 +8,19 @@ namespace WebAPI.Client.ViewModels
     {
         public ResponseViewModel()
         {
-            Validate = new ValidatorResponse() { IsValid = true, MessageList = new List<string>() };
+            MessageList = new List<string>();
         }
 
         public T Content { set; get; }
-        public ValidatorResponse Validate { set; get; }
+        public List<string> MessageList { set; get; }
 
+        public ResponseStatus Status { set; get; }
     }
 
+    public enum ResponseStatus
+    {
+        Success,
+        Error,
+        Unauthorized
+    }
 }

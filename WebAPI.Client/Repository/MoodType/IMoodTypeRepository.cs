@@ -7,7 +7,7 @@ namespace WebAPI.Client.Repository.MoodType
     public interface IMoodTypeRepository : IBaseRepository
     {
         Task<ResponseViewModel<Response<MoodTypeReadDTO>>> CreateAsync(MoodTypeCreateDTO createModel);
-        Task<ValidatorResponse> DeleteAsync(int id);
+        Task<ResponseViewModel<bool>> DeleteAsync(int id);
         Task<ResponseViewModel<Response<MoodTypeReadDTO>>> GetByIdAsync(int id);
         Task<ResponseViewModel<Response<MoodTypeReadDTO>>> UpdateAsync(MoodTypeUpdateDTO updateModel);
 

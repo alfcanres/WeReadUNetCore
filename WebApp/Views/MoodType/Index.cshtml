@@ -8,7 +8,7 @@
 <a asp-controller="MoodType" asp-action="Create" class="btn btn-primary">Create new</a>
 
 <div class="container">
-    @if (Model.Validate.IsValid)
+    @if (Model.Status == ResponseStatus.Success)
     {
 
         <table class="table table-hover">
@@ -90,7 +90,7 @@
     {
         <div class="alert alert-danger">
             <ul>
-                @foreach (var error in Model.Validate.MessageList)
+                @foreach (var error in Model.MessageList)
                 {
                     <li>@error</li>
                 }

@@ -4,6 +4,7 @@ using WebAPI.Client.Repository.Account;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using WebAPI.Client.ViewModels;
 
 
 namespace WebApp.Controllers
@@ -36,7 +37,7 @@ namespace WebApp.Controllers
 
             var response = await _accountRepository.LoginAsync(loginViewModel);
 
-            if (response.Content != null && response.Validate.IsValid)
+            if (response.Status == ResponseStatus.Success)
             {
 
 
@@ -58,9 +59,9 @@ namespace WebApp.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            else
+            else 
             {
-                foreach (var error in response.Validate.MessageList)
+                foreach (var error in response.MessageList)
                 {
                     ModelState.AddModelError(string.Empty, error);
                 }
@@ -86,13 +87,13 @@ namespace WebApp.Controllers
 
             var response = await _accountRepository.RegisterAsync(userCreateDTO);
 
-            if (response.Content && response.Validate.IsValid)
+            if (response.Status == ResponseStatus.Success)
             {
                 return RedirectToAction("RegisterSucess", "Account");
             }
             else
             {
-                foreach (var error in response.Validate.MessageList)
+                foreach (var error in response.MessageList)
                 {
                     ModelState.AddModelError(string.Empty, error);
                 }

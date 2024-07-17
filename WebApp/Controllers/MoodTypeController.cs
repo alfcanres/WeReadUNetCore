@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebAPI.Client.Repository.MoodType;
+using WebAPI.Client.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -24,17 +25,19 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Index(PagerParams pager = null)
         {
-            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
-
-            _repository.SetBearerToken(token);
+            SetBearerToken();
 
             if (pager == null)
             {
-                pager = new PagerParams() { CurrentPage = 1, RecordsPerPage = 10, SearchKeyWord = "" };
+                pager = new PagerParams() { CurrentPage = 1, RecordsPerPage = 2, SearchKeyWord = "" };
             }
 
-
             var response = await _repository.GetPagedAsync(pager);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
 
             return View(response);
         }
@@ -53,19 +56,22 @@ namespace WebApp.Controllers
                 return View(createModel);
             }
 
-            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
-
-            _repository.SetBearerToken(token);
+            SetBearerToken();
 
             var response = await _repository.CreateAsync(createModel);
 
-            if (response.Validate.IsValid)
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            if (response.Status == ResponseStatus.Success)
             {
                 return RedirectToAction("Index", "MoodType");
             }
             else
             {
-                foreach (var error in response.Validate.MessageList)
+                foreach (var error in response.MessageList)
                 {
                     ModelState.AddModelError(string.Empty, error);
                 }
@@ -77,11 +83,14 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
-
-            _repository.SetBearerToken(token);
+            SetBearerToken();
 
             var response = await _repository.GetByIdAsync(id);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
 
             return View(response);
         }
@@ -94,19 +103,80 @@ namespace WebApp.Controllers
                 return View(editModel);
             }
 
-            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
-
-            _repository.SetBearerToken(token);
+            SetBearerToken();
 
             var response = await _repository.UpdateAsync(editModel);
 
-            if (response.Validate.IsValid)
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            if (response.Status == ResponseStatus.Success)
             {
                 return RedirectToAction("Index", "MoodType");
             }
             else
             {
-                foreach (var error in response.Validate.MessageList)
+                foreach (var error in response.MessageList)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
+                return View(editModel);
+            }
+        }
+
+        public async Task<IActionResult> View(int id)
+        {
+
+            SetBearerToken();
+
+            var response = await _repository.GetByIdAsync(id);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            return View(response);
+        }
+
+
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            SetBearerToken();
+
+            var response = await _repository.GetByIdAsync(id);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            return View(response);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Delete(MoodTypeUpdateDTO editModel)
+        {
+            SetBearerToken();
+
+            var response = await _repository.DeleteAsync(editModel.Id);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            if (response.Status == ResponseStatus.Success)
+            {
+                return RedirectToAction("Index", "MoodType");
+            }
+            else
+            {
+                foreach (var error in response.MessageList)
                 {
                     ModelState.AddModelError(string.Empty, error);
                 }
@@ -116,6 +186,14 @@ namespace WebApp.Controllers
         }
 
 
+
+        private void SetBearerToken()
+        {
+
+            string token = Convert.ToString(HttpContext.Request.Cookies["AuthToken"]);
+
+            _repository.SetBearerToken(token);
+        }
 
     }
 }

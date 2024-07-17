@@ -5,43 +5,42 @@ namespace DataTransferObjects
 {
     public class PagerParams 
     {
-        private string searchKeyWord = "";
+        private string _searchKeyWord = "";
         public string SearchKeyWord
         {
             set
             {
-                searchKeyWord = value;
+                _searchKeyWord = value;
             }
             get
             {
-                return searchKeyWord;
+                return _searchKeyWord;
             }
         }
 
-        private int currentPage = 1;    
+        private int _currentPage = 1;    
 
 
-        private int recordsPerPage = 10;
-        private readonly int maxRecordsPerPage = 50;
+        private int _recordsPerPage = 50;
 
         public PagerParams()
         {
-            RecordsPerPage = maxRecordsPerPage;
+            
         }
 
         public int RecordsPerPage
         {
             get
             {
-                return recordsPerPage;
+                return _recordsPerPage;
             }
             set
             {
-                recordsPerPage = (value > maxRecordsPerPage) ? maxRecordsPerPage : value;
+                _recordsPerPage = value;
             }
         }
 
-        public int CurrentPage { get => currentPage; set => currentPage = value; }
+        public int CurrentPage { get => _currentPage; set => _currentPage = value; }
 
         public string ToQueryString()
         {

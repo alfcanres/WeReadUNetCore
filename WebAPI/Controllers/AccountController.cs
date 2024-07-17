@@ -5,7 +5,11 @@ using DataTransferObjects.DTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Model;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
 
 namespace WebAPI.Controllers
 {
@@ -42,7 +46,7 @@ namespace WebAPI.Controllers
                 }
                 var response = await _accountBLL.InsertAsync(createModel);
 
-                if(!response.ValidateDTO.IsValid)
+                if (!response.ValidateDTO.IsValid)
                 {
                     return BadRequest(response.ValidateDTO);
                 }
@@ -51,7 +55,7 @@ namespace WebAPI.Controllers
                     return Ok(response);
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -73,15 +77,12 @@ namespace WebAPI.Controllers
             {
 
                 var response = await _accountBLL.SignInAsync(userSignInDTO);
-                if(response.IsValid)
+                if (response.IsValid)
                 {
 
                     var userResponse = await _accountBLL.GetByUserNameOrEmail(userSignInDTO.Email);
 
-                    TokenResponseModel tokenResponse = new TokenResponseModel(
-                    userResponse,
-                    DateTime.Now,
-                    _configuration);
+                    TokenResponse tokenResponse = GenerateToken(userResponse.Data);
 
 
                     return Ok(tokenResponse);
@@ -97,6 +98,38 @@ namespace WebAPI.Controllers
                 string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
                 _validateDTO.AddError(friendlyError);
                 _logger.LogError(ex, "Login OPERATION : {userSignInDTO}", userSignInDTO);
+
+                return StatusCode(500, _validateDTO);
+            }
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("RefreshToken")]
+        public async Task<ActionResult> RefreshToken([FromBody] string expiredToken)
+        {
+            try
+            {
+                (bool IsValid, string UserEmail) = ValidateExpiredToken(expiredToken);
+
+                if (IsValid)
+                {
+                    var userResponse = await _accountBLL.GetByUserNameOrEmail(UserEmail);
+
+                    TokenResponse tokenResponse = GenerateToken(userResponse.Data);
+
+                    return Ok(tokenResponse);
+                }
+                else
+                {
+                    return BadRequest(new ValidatorResponse() { IsValid = false, MessageList = new List<string> { "Invalid Token" } });
+                }
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "Login OPERATION : {expiredToken}", expiredToken);
 
                 return StatusCode(500, _validateDTO);
             }
@@ -126,5 +159,78 @@ namespace WebAPI.Controllers
                 return StatusCode(500, _validateDTO);
             }
         }
+
+        private TokenResponse GenerateToken(UserReadDTO userReadDTO)
+        {
+
+            IEnumerable<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Email, userReadDTO.Email),
+            };
+
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration.GetSection("jwt:Key").Value)
+                );
+
+            SigningCredentials signingCredentials =
+                new SigningCredentials(
+                    securityKey,
+                    SecurityAlgorithms.HmacSha256
+            );
+
+            DateTime tokenExpire = DateTime.Now.AddDays(Convert.ToInt32(_configuration.GetSection("jwt:ExpireDays").Value));
+
+            var securityToken = new JwtSecurityToken(
+            claims: claims,
+                expires: tokenExpire,
+                issuer: _configuration.GetSection("jwt:Issuer").Value,
+                audience: _configuration.GetSection("jwt:Audience").Value,
+                signingCredentials: signingCredentials
+                );
+
+
+            var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
+
+            return new TokenResponse() { Token = token, Expires = tokenExpire };
+        }
+        private (bool IsValid, string UserEmail) ValidateExpiredToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration.GetSection("jwt:Key").Value);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = false, // Disable lifetime validation
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _configuration.GetSection("jwt:Issuer").Value,
+                ValidAudience = _configuration.GetSection("jwt:Audience").Value,
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+                var emailClaim = principal.FindFirst(ClaimTypes.Email)?.Value;
+
+                return (true, emailClaim);
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                // Token is expired but was valid
+                var principal = tokenHandler.ReadToken(token) as JwtSecurityToken;
+                var emailClaim = principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+                return (true, emailClaim);
+            }
+            catch (Exception)
+            {
+                // Token is invalid
+                return (false, null);
+            }
+        }
+
     }
 }

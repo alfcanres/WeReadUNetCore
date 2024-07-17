@@ -17,6 +17,7 @@ namespace WebAPI.Client.Repository.Account
         private readonly HttpClient _client;
         private const string _loginEndpoint = "/login";
         private const string _registerEndpoint = "/register";
+        private const string _refreshTokenEndpoint = "/refreshtoken";
         private const string _changePasswordEndPoint = "/changepassword";
         private readonly ILogger<AccountRepository> _logger;
 
@@ -54,6 +55,7 @@ namespace WebAPI.Client.Repository.Account
                         }
                         );
                     responseView.Content = tokenResponse;
+                    responseView.Status = ResponseStatus.Success;
                 }
                 else
                 {
@@ -65,15 +67,15 @@ namespace WebAPI.Client.Repository.Account
                         }
                         );
 
-                    responseView.Validate = validateResponse;
+                    responseView.MessageList = validateResponse.MessageList;
+                    responseView.Status = ResponseStatus.Unauthorized;
                 }
             }
             catch (Exception ex)
             {
-                ValidatorResponse validateDTO = new ValidatorResponse();
-                validateDTO.IsValid = false;
-                validateDTO.MessageList = new List<string>() { ex.Message };
-                responseView.Validate = validateDTO;
+
+                responseView.MessageList = new List<string>() { ex.Message };
+                responseView.Status = ResponseStatus.Error;
                 _logger.LogError(ex, "An error occurred while processing the request.");
             }
 
@@ -100,7 +102,8 @@ namespace WebAPI.Client.Repository.Account
                         );
 
                     responseViewModel.Content = true;
-                    responseViewModel.Validate = userRegistered.ValidateDTO;
+                    responseViewModel.Status = ResponseStatus.Success;  
+
                 }
                 else
                 {
@@ -113,20 +116,65 @@ namespace WebAPI.Client.Repository.Account
                         }
                         );
                     responseViewModel.Content = false;
-                    responseViewModel.Validate = validateDTO;
+                    responseViewModel.MessageList = validateDTO.MessageList;
+                    responseViewModel.Status = ResponseStatus.Error;
                 }
 
             }
             catch (Exception ex)
             {
-                ValidatorResponse validateResponse = new ValidatorResponse();
-                validateResponse.IsValid = false;
-                validateResponse.MessageList = new List<string>() { ex.Message };
-                responseViewModel.Validate = validateResponse;
+                responseViewModel.Content = false;
+                responseViewModel.MessageList = new List<string>() { ex.Message };
+                responseViewModel.Status = ResponseStatus.Error;
                 _logger.LogError(ex, "An error occurred while processing the request.");
             }
 
             return responseViewModel;
+        }
+        public async Task<ResponseViewModel<TokenResponse>> RefreshToken(string expiredToken)
+        {
+            var content = new StringContent(JsonSerializer.Serialize(expiredToken), Encoding.UTF8, "application/json");
+            ResponseViewModel<TokenResponse> responseView = new ResponseViewModel<TokenResponse>();
+
+            try
+            {
+                var response = await _client.PostAsync($"{_baseEndpoint}{_refreshTokenEndpoint}", content);
+
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var tokenResponse = await JsonSerializer.DeserializeAsync<TokenResponse>(
+                        await response.Content.ReadAsStreamAsync(),
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }
+                        );
+                    responseView.Content = tokenResponse;
+                    responseView.Status = ResponseStatus.Success;
+                }
+                else
+                {
+                    var validateResponse = await JsonSerializer.DeserializeAsync<ValidatorResponse>(
+                        await response.Content.ReadAsStreamAsync(),
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }
+                        );
+
+                    responseView.MessageList = validateResponse.MessageList;
+                    responseView.Status = ResponseStatus.Unauthorized;
+                }
+            }
+            catch (Exception ex)
+            {
+                responseView.MessageList = new List<string>() { ex.Message };
+                responseView.Status = ResponseStatus.Error;
+                _logger.LogError(ex, "An error occurred while processing the request.");
+            }
+
+            return responseView;
         }
     }
 }

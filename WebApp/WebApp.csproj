@@ -17,4 +17,11 @@
     <ProjectReference Include="..\WebAPI.Client\WebAPI.Client.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\MoodType\Edit.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

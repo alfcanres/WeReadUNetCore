@@ -1,7 +1,6 @@
-﻿
-namespace DataTransferObjects.DTO
+﻿namespace DataTransferObjects
 {
-    public record TokenResponse 
+    public record TokenResponse
     {
         public string Token { init; get; }
         public DateTime Expires { init; get; }
