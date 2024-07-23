@@ -7,6 +7,8 @@
         private int _recordCount;
         private int _currentPage;
         private int _pageCount;
+        private int _recordsPerPage;
+        private string _searchKeyWord;
 
         public ResponsePagedList()
         {
@@ -17,6 +19,8 @@
             this.List = list;
             this.RecordCount = recordCount;
             this.CurrentPage = pagerDTO.CurrentPage;
+            this.RecordsPerPage = pagerDTO.RecordsPerPage;
+            this.SearchKeyWord = pagerDTO.SearchKeyWord;
             double pageCountDoub = Math.Ceiling(Convert.ToDouble((recordCount / Convert.ToDouble(pagerDTO.RecordsPerPage))));
             this.PageCount = Convert.ToInt32(pageCountDoub);
         }
@@ -25,5 +29,7 @@
         public int RecordCount { get => _recordCount; set => _recordCount = value; }
         public int CurrentPage { get => _currentPage; set => _currentPage = value; }
         public int PageCount { get => _pageCount; set => _pageCount = value; }
+        public int RecordsPerPage { get => _recordsPerPage; set => _recordsPerPage = value; }
+        public string SearchKeyWord { get => _searchKeyWord; set => _searchKeyWord = value; }
     }
 }

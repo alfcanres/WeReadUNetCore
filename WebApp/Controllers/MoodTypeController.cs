@@ -27,11 +27,6 @@ namespace WebApp.Controllers
         {
             SetBearerToken();
 
-            if (pager == null)
-            {
-                pager = new PagerParams() { CurrentPage = 1, RecordsPerPage = 2, SearchKeyWord = "" };
-            }
-
             var response = await _repository.GetPagedAsync(pager);
 
             if (response.Status == ResponseStatus.Unauthorized)
@@ -139,7 +134,8 @@ namespace WebApp.Controllers
                 return RedirectToAction("Logout", "Account");
             }
 
-            return View(response);
+
+            return View(response.Content.Data);
         }
 
 

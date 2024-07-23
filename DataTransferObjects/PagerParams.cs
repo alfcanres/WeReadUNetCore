@@ -21,7 +21,7 @@ namespace DataTransferObjects
         private int _currentPage = 1;    
 
 
-        private int _recordsPerPage = 50;
+        private int _recordsPerPage = 2;
 
         public PagerParams()
         {
@@ -44,7 +44,8 @@ namespace DataTransferObjects
 
         public string ToQueryString()
         {
-            return $"?currentPage={CurrentPage}&recordsPerPage={RecordsPerPage}&searchKeyWord={SearchKeyWord}"; 
+            return $"?CurrentPage={CurrentPage}&RecordsPerPage={RecordsPerPage}&SearchKeyWord={SearchKeyWord}"
+                .ToLower(); 
         }
     }
 }
