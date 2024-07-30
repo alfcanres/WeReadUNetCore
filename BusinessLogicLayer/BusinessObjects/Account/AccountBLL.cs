@@ -167,7 +167,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
         }
-        public async Task<Response<UserReadDTO>> GetByUserNameOrEmail(string userNameOrEmail)
+        public async Task<UserReadDTO> GetByUserNameOrEmail(string userNameOrEmail)
         {
             _validate.Clear();
             UserReadDTO userDTO = null;
@@ -191,7 +191,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.AddError("Incorrect user or the user doesn't exists");
             }
 
-            return new Response<UserReadDTO>(userDTO);
+            return userDTO;
         }
         private async Task<(string UserName, string FirstName, string LastName, string ProfilePicture)> GetUserInfoAsync(IdentityUser user)
         {

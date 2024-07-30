@@ -15,7 +15,7 @@ namespace BusinessLogicLayer.BusinessObjects
         {
         }
 
-        public async Task<Response<PostVoteViewDTO>> GetVotesByPostIdAsync(int PostId)
+        public async Task<PostVoteViewDTO> GetVotesByPostIdAsync(int PostId)
         {
             ResetValidations();
 
@@ -32,9 +32,8 @@ namespace BusinessLogicLayer.BusinessObjects
                 };
 
 
-                Response<PostVoteViewDTO> response = new Response<PostVoteViewDTO>(postview);
 
-                return response;
+                return postview;
             }
             catch (Exception ex)
             {
@@ -42,7 +41,7 @@ namespace BusinessLogicLayer.BusinessObjects
                 _validate.IsValid = false;
                 _validate.AddError(friendlyError);
                 _logger.LogError(ex, "EXECUTE LIST ERROR GetVotesByPostIdAsync");
-                return new Response<PostVoteViewDTO>(null);
+                return null;
             }
 
         }

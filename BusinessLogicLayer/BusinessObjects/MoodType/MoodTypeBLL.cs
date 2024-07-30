@@ -62,7 +62,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
         protected override async Task ExecValidateUpdateAsync(int id, MoodTypeUpdateDTO updateDTO)
         {
-            bool exists = await _unitOfWork.PostTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
+            bool exists = await _unitOfWork.MoodTypes.Query().Where(t => t.Id == updateDTO.Id).AnyAsync();
             if (!exists)
             {
                 _validate.AddError(Helpers.ValidationErrorMessages.OnUpdateNoRecordWasFound);

@@ -21,6 +21,11 @@ namespace BusinessLogicLayer.BusinessObjects
                 .AsNoTracking()
                 .Where(t => t.IsAvailable);
 
+            if(pager.SearchKeyWord != null)
+            {
+                queryBase = queryBase.Where(t => t.Mood.Contains(pager.SearchKeyWord));
+            }
+
             queryList = queryBase
                 .Skip((pager.CurrentPage - 1) * pager.RecordsPerPage)
                 .Take(pager.RecordsPerPage);

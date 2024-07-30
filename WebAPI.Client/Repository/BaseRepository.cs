@@ -81,19 +81,19 @@ namespace WebAPI.Client.Repository
             return false;
         }
 
-        public async Task<ResponseViewModel<Response<ReadDTO>>> CreateAsync(CreateDTO createModel)
+        public async Task<ResponseViewModel<ReadDTO>> CreateAsync(CreateDTO createModel)
         {
-            return await GetResponse<Response<ReadDTO>, CreateDTO>(createModel, HttpVerbsEnum.POST);
+            return await GetResponse<ReadDTO, CreateDTO>(createModel, HttpVerbsEnum.POST);
         }
 
-        public async Task<ResponseViewModel<Response<ReadDTO>>> UpdateAsync(UpdateDTO createModel)
+        public async Task<ResponseViewModel<ReadDTO>> UpdateAsync(UpdateDTO createModel)
         {
-            return await GetResponse<Response<ReadDTO>, UpdateDTO>(createModel, HttpVerbsEnum.PUT);
+            return await GetResponse<ReadDTO, UpdateDTO>(createModel, HttpVerbsEnum.PUT);
         }
 
-        public async Task<ResponseViewModel<Response<ReadDTO>>> GetByIdAsync(int id)
+        public async Task<ResponseViewModel<ReadDTO>> GetByIdAsync(int id)
         {
-            return await GetResponse<Response<ReadDTO>, int>(id, HttpVerbsEnum.GET, $"/{id}");
+            return await GetResponse<ReadDTO, int>(id, HttpVerbsEnum.GET, $"/{id}");
         }
 
         public async Task<ResponseViewModel<bool>> DeleteAsync(int id)

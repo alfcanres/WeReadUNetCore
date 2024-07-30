@@ -274,7 +274,7 @@ namespace BusinessLogicLayerTest
 
             var response = await moodTypeBLL.InsertAsync(moodTypeDTO);
 
-            int insertedRecordId = response.Data.Id;
+            int insertedRecordId = response.Id;
 
             var responseGetInserted = await moodTypeBLL.GetByIdAsync(insertedRecordId);
 
@@ -283,7 +283,7 @@ namespace BusinessLogicLayerTest
 
             Assert.Equal(validation.IsValid, isValidExpected);
 
-            Assert.Equal(responseGetInserted.Data.Id, insertedRecordId);
+            Assert.Equal(responseGetInserted.Id, insertedRecordId);
 
         }
 

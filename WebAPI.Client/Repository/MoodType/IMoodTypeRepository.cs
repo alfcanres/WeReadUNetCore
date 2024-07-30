@@ -6,10 +6,10 @@ namespace WebAPI.Client.Repository.MoodType
 {
     public interface IMoodTypeRepository : IBaseRepository
     {
-        Task<ResponseViewModel<Response<MoodTypeReadDTO>>> CreateAsync(MoodTypeCreateDTO createModel);
+        Task<ResponseViewModel<MoodTypeReadDTO>> CreateAsync(MoodTypeCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);
-        Task<ResponseViewModel<Response<MoodTypeReadDTO>>> GetByIdAsync(int id);
-        Task<ResponseViewModel<Response<MoodTypeReadDTO>>> UpdateAsync(MoodTypeUpdateDTO updateModel);
+        Task<ResponseViewModel<MoodTypeReadDTO>> GetByIdAsync(int id);
+        Task<ResponseViewModel<MoodTypeReadDTO>> UpdateAsync(MoodTypeUpdateDTO updateModel);
 
         Task<ResponseViewModel<ResponsePagedList<MoodTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO);
 

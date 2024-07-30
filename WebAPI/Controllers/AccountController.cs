@@ -82,7 +82,7 @@ namespace WebAPI.Controllers
 
                     var userResponse = await _accountBLL.GetByUserNameOrEmail(userSignInDTO.Email);
 
-                    TokenResponse tokenResponse = GenerateToken(userResponse.Data);
+                    TokenResponse tokenResponse = GenerateToken(userResponse);
 
 
                     return Ok(tokenResponse);
@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
                 {
                     var userResponse = await _accountBLL.GetByUserNameOrEmail(UserEmail);
 
-                    TokenResponse tokenResponse = GenerateToken(userResponse.Data);
+                    TokenResponse tokenResponse = GenerateToken(userResponse);
 
                     return Ok(tokenResponse);
                 }

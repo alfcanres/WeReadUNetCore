@@ -37,27 +37,27 @@ namespace BusinessLogicLayer
 
 
         #region Public Methods
-        public async Task<Response<ReadDTO>> InsertAsync(CreateDTO createDTO)
+        public async Task<ReadDTO> InsertAsync(CreateDTO createDTO)
         {
             ReadDTO readDTO = await ExecuteInsertAsync(createDTO);
 
-            return new Response<ReadDTO>(readDTO);
+            return readDTO;
         }
-        public async Task<Response<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO)
+        public async Task<ReadDTO> UpdateAsync(int id, UpdateDTO updateDTO)
         {
             ReadDTO readDTO = await ExecuteUpdateAsync(updateDTO);
 
-            return new Response<ReadDTO>(readDTO);
+            return readDTO;
         }
         public async Task DeleteAsync(int id)
         {
             await ExecuteDeleteAsync(id);
         }
-        public async Task<Response<ReadDTO>> GetByIdAsync(int id)
+        public async Task<ReadDTO> GetByIdAsync(int id)
         {
             ReadDTO readDTO = await ExecuteGetByIdAsync(id);
 
-            return new Response<ReadDTO>(readDTO);
+            return readDTO;
         }
 
         #endregion

@@ -34,15 +34,15 @@ namespace BusinessLogicLayer
 
 
         #region Public Methods
-        public async Task<Response<ReadDTO>> InsertAsync(CreateDTO createDTO)
+        public async Task<ReadDTO> InsertAsync(CreateDTO createDTO)
         {
             var entity = Mapper.Map<TEntity>(createDTO);
             await _repository.InsertAsync(entity);
             ReadDTO readDTO = Mapper.Map<ReadDTO>(entity);
 
-            return new Response<ReadDTO>(readDTO);
+            return readDTO;
         }
-        public async Task<Response<ReadDTO>> UpdateAsync(int id, UpdateDTO updateDTO)
+        public async Task<ReadDTO> UpdateAsync(int id, UpdateDTO updateDTO)
         {
 
             var entity = await _repository.GetByIdAsync(id);
@@ -50,18 +50,18 @@ namespace BusinessLogicLayer
             await _repository.UpdateAsync(entity);
             ReadDTO readDTO = Mapper.Map<ReadDTO>(entity);
 
-            return new Response<ReadDTO>(readDTO);
+            return readDTO;
         }
         public async Task DeleteAsync(int id)
         {
             await _repository.DeleteAsync(id);
         }
-        public async Task<Response<ReadDTO>> GetByIdAsync(int id)
+        public async Task<ReadDTO> GetByIdAsync(int id)
         {
             var entity = await _repository.GetByIdAsync(id);
             ReadDTO readDTO = Mapper.Map<ReadDTO>(entity);
 
-            return new Response<ReadDTO>(readDTO);
+            return readDTO;
         }
         #endregion
 

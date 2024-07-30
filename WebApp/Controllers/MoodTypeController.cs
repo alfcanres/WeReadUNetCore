@@ -87,7 +87,15 @@ namespace WebApp.Controllers
                 return RedirectToAction("Logout", "Account");
             }
 
-            return View(response);
+            MoodTypeUpdateDTO moodTypeUpdateDTO = new MoodTypeUpdateDTO
+            {
+                Id = response.Content.Id,
+                Mood = response.Content.Mood,
+                IsAvailable = response.Content.IsAvailable
+            };
+
+
+            return View(moodTypeUpdateDTO);
         }
 
         [HttpPost]
@@ -135,7 +143,7 @@ namespace WebApp.Controllers
             }
 
 
-            return View(response.Content.Data);
+            return View(response.Content);
         }
 
 
@@ -151,7 +159,7 @@ namespace WebApp.Controllers
                 return RedirectToAction("Logout", "Account");
             }
 
-            return View(response);
+            return View(response.Content);
         }
 
         [HttpPost]
