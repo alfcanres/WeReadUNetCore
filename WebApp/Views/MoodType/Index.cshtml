@@ -4,8 +4,6 @@
 }
 
 
-
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,197 +20,206 @@
 
             </ul>
             <form asp-action="Index" method="get" class="d-flex">
-        
+
                 <input class="form-control me-2" id="searchkeyword" name="searchkeyword" type="search" placeholder="Search" aria-label="Search" value="@Model.Content.SearchKeyWord" />
-                
+
                 <input type="hidden" id="recordsperpage" name="recordsperpage" value="@Model.Content.RecordsPerPage" />
 
                 <input type="hidden" id="currentpage" name="currentpage" value="1" />
 
                 <button class="btn btn-outline-success" type="submit">Search</button>
 
-                <a class="btn btn-outline-secondary"
-                   asp-area=""
-                   asp-controller="MoodType"
-                   asp-action="Index"
-                   asp-route-currentpage="1"
-                   asp-route-recordsperpage="@Model.Content.RecordsPerPage"
-                   asp-route-searchkeyword="">Clear</a>
+
 
             </form>
         </div>
     </div>
 </nav>
 
-<div class="container">
-    @if (Model.Status == ResponseStatus.Success)
+@if (!String.IsNullOrEmpty(Model.Content.SearchKeyWord?.Trim()))
+{
+    <div clas="row">
+        <div class="col"></div>
+        <div class="col text-center">
+            <h3>Search result for "@Model.Content.SearchKeyWord"</h3>
+            <a class="btn btn-outline-secondary"
+               asp-area=""
+               asp-controller="MoodType"
+               asp-action="Index"
+               asp-route-currentpage="1"
+               asp-route-recordsperpage="@Model.Content.RecordsPerPage"
+               asp-route-searchkeyword="">Clear search list</a>
+        </div>
+        <div class="col"></div>
+
+    </div>
+
+}
+
+
+
+
+
+@if (Model.Status == ResponseStatus.Success)
+{
+    if (Model.Content.List.Count() <= 0)
     {
-        if (Model.Content.List.Count() <= 0)
-        {
-            <div>
-                <h2>No Mood Type found</h2>
-            </div>
-        }
-        else
-        {
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Mood</th>
-                        <th scope="col">Is Available</th>
-                        <th scope="col">Post Count</th>
-                        <th scope="col">View</th>
-                        <th scope="col">Edit</th>
-                        <th scope="col">Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Content.List)
-                    {
-                        <tr>
-                            <th scope="row">@item.Id</th>
-                            <td>@item.Mood</td>
-                            <td>@item.IsAvailable</td>
-                            <td>@item.PostCount</td>
-                            <td>
-
-                                <a class="btn btn-primary"
-                                   asp-area=""
-                                   asp-controller="MoodType"
-                                   asp-action="View"
-                                   asp-route-id="@item.Id">View</a>
-
-
-
-
-                            </td>
-                            <td>
-
-                                <a class="btn btn-primary"
-                                   asp-area=""
-                                   asp-controller="MoodType"
-                                   asp-action="Edit"
-                                   asp-route-id="@item.Id">Edit</a>
-
-
-
-
-                            </td>
-                            <td>
-
-                                <a class="btn btn-danger"
-                                   asp-area=""
-                                   asp-controller="MoodType"
-                                   asp-action="Delete"
-                                   asp-route-id="@item.Id">Delete</a>
-
-
-                            </td>
-                        </tr>
-                    }
-
-                </tbody>
-            </table>
-
-            @if (Model.Content.PageCount > 1)
-            {
-                <nav aria-label="Page navigation ">
-                    <ul class="pagination">
-
-                        @if (Model.Content.CurrentPage == 1)
-                        {
-                            <li class="page-item disabled">
-                                <a class="page-link">Previous</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="page-item">
-
-                                <a class="page-link"
-                                   asp-area=""
-                                   asp-controller="MoodType"
-                                   asp-action="Index"
-                                   asp-route-currentpage="@(Model.Content.CurrentPage-1)"
-                                   asp-route-recordsperpage="@Model.Content.RecordsPerPage"
-                                   asp-route-searchkeyword="@Model.Content.SearchKeyWord">Previous</a>
-
-                            </li>
-
-
-
-                        }
-
-
-                        @for (int i = 1; i < Model.Content.PageCount + 1; i++)
-                        {
-                            if (i == Model.Content.CurrentPage)
-                            {
-                                <li class="page-item active" aria-current="page">
-                                    <a class="page-link" href="#">@i</a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="page-item">
-
-
-                                    <a class="page-link"
-                                       asp-area=""
-                                       asp-controller="MoodType"
-                                       asp-action="Index"
-                                       asp-route-currentpage="@i"
-                                       asp-route-recordsperpage="@Model.Content.RecordsPerPage"
-                                       asp-route-searchkeyword="@Model.Content.SearchKeyWord">@i</a>
-
-                                </li>
-
-                            }
-                        }
-
-                        @if (Model.Content.CurrentPage == Model.Content.PageCount)
-                        {
-                            <li class="page-item disabled">
-                                <a class="page-link">Next</a>
-                            </li>
-                        }
-                        else
-                        {
-
-                            <li class="page-item">
-
-                                <a class="page-link"
-                                   asp-area=""
-                                   asp-controller="MoodType"
-                                   asp-action="Index"
-                                   asp-route-currentpage="@(Model.Content.CurrentPage+1)"
-                                   asp-route-recordsperpage="@Model.Content.RecordsPerPage"
-                                   asp-route-searchkeyword="@Model.Content.SearchKeyWord">Next</a>
-
-                            </li>
-
-                        }
-
-                    </ul>
-                </nav>
-            }
-        }
-
-
-
-
+        <div>
+            <h2>No Mood Type found</h2>
+        </div>
     }
     else
     {
-        <div class="alert alert-danger">
-            <ul>
-                @foreach (var error in Model.MessageList)
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Mood</th>
+                    <th scope="col">Is Available</th>
+                    <th scope="col">Post Count</th>
+                    <th scope="col">View</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Content.List)
                 {
-                    <li>@error</li>
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.Mood</td>
+                        <td>@item.IsAvailable</td>
+                        <td>@item.PostCount</td>
+                        <td>
+
+                            <a class="btn btn-primary"
+                               asp-area=""
+                               asp-controller="MoodType"
+                               asp-action="View"
+                               asp-route-id="@item.Id">View</a>
+
+
+
+
+                        </td>
+                        <td>
+
+                            <a class="btn btn-primary"
+                               asp-area=""
+                               asp-controller="MoodType"
+                               asp-action="Edit"
+                               asp-route-id="@item.Id">Edit</a>
+
+
+
+
+                        </td>
+                        <td>
+
+                            <a class="btn btn-danger"
+                               asp-area=""
+                               asp-controller="MoodType"
+                               asp-action="Delete"
+                               asp-route-id="@item.Id">Delete</a>
+
+
+                        </td>
+                    </tr>
                 }
-            </ul>
-        </div>
+
+            </tbody>
+        </table>
+
+        @if (Model.Content.PageCount > 1)
+        {
+            <nav aria-label="Page navigation ">
+                <ul class="pagination">
+
+                    @if (Model.Content.CurrentPage == 1)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+
+                            <a class="page-link"
+                               asp-area=""
+                               asp-controller="MoodType"
+                               asp-action="Index"
+                               asp-route-currentpage="@(Model.Content.CurrentPage-1)"
+                               asp-route-recordsperpage="@Model.Content.RecordsPerPage"
+                               asp-route-searchkeyword="@Model.Content.SearchKeyWord?.Trim()">Previous</a>
+
+                        </li>
+
+
+
+                    }
+
+
+                    @for (int i = 1; i < Model.Content.PageCount + 1; i++)
+                    {
+                        if (i == Model.Content.CurrentPage)
+                        {
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="#">@i</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+
+
+                                <a class="page-link"
+                                   asp-area=""
+                                   asp-controller="MoodType"
+                                   asp-action="Index"
+                                   asp-route-currentpage="@i"
+                                   asp-route-recordsperpage="@Model.Content.RecordsPerPage"
+                                   asp-route-searchkeyword="@Model.Content.SearchKeyWord?.Trim()">@i</a>
+
+                            </li>
+
+                        }
+                    }
+
+                    @if (Model.Content.CurrentPage == Model.Content.PageCount)
+                    {
+                        <li class="page-item disabled">
+                            <a class="page-link">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+
+                        <li class="page-item">
+
+                            <a class="page-link"
+                               asp-area=""
+                               asp-controller="MoodType"
+                               asp-action="Index"
+                               asp-route-currentpage="@(Model.Content.CurrentPage+1)"
+                               asp-route-recordsperpage="@Model.Content.RecordsPerPage"
+                               asp-route-searchkeyword="@Model.Content.SearchKeyWord?.Trim()">Next</a>
+
+                        </li>
+
+                    }
+
+                </ul>
+            </nav>
+        }
     }
 
-</div>
+
+
+
+}
+else
+{
+    <partial name="_ErrorAlert" model="@Model.MessageList" />
+}
+
