@@ -15,7 +15,7 @@ namespace WebAPI.Client.Repository.MoodType
 
         Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetIsAvailableAsync(bool isAvailable);
 
-        Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTen();
+        Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTenAsync();
 
     }
 }

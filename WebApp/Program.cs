@@ -17,6 +17,8 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IMoodTypeRepository,MoodTypeRepository>();
 
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddHttpClient(builder.Configuration["HttpClientName"], client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["BaseUrl"]);

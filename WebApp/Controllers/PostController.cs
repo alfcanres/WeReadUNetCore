@@ -1,23 +1,20 @@
-﻿using DataTransferObjects;
-using DataTransferObjects.DTO;
-using Microsoft.AspNetCore.Authorization;
+﻿using DataTransferObjects.DTO;
+using DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Client.Repository.MoodType;
+using WebAPI.Client.Repository.Post;
 using WebAPI.Client.ViewModels;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
-    public class MoodTypeController : Controller
+    public class PostController : Controller
     {
-
-        private readonly IMoodTypeRepository _repository;
-        private readonly ILogger<MoodTypeController> _logger;
+        private readonly IPostRepository _repository;
+        private readonly ILogger<PostController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MoodTypeController(
-            IMoodTypeRepository repository, 
-            ILogger<MoodTypeController> logger, 
+        public PostController(
+            IPostRepository repository,
+            ILogger<PostController> logger,
             IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
@@ -30,9 +27,9 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Index(PagerParams pager = null)
         {
-           
 
-            var response = await _repository.GetPagedAsync(pager);
+
+            var response = await _repository.GetPublishedPagedAsync(pager);
 
             if (response.Status == ResponseStatus.Unauthorized)
             {
@@ -44,18 +41,18 @@ namespace WebApp.Controllers
 
         public IActionResult Create()
         {
-            return View(new MoodTypeCreateDTO());
+            return View(new PostCreateDTO());
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(MoodTypeCreateDTO createModel)
+        public async Task<IActionResult> Create(PostCreateDTO createModel)
         {
             if (!ModelState.IsValid)
             {
                 return View(createModel);
             }
-                       
+
 
             var response = await _repository.CreateAsync(createModel);
 
@@ -66,7 +63,7 @@ namespace WebApp.Controllers
 
             if (response.Status == ResponseStatus.Success)
             {
-                return RedirectToAction("Index", "MoodType");
+                return RedirectToAction("Index", "Post");
             }
             else
             {
@@ -91,19 +88,23 @@ namespace WebApp.Controllers
                 return RedirectToAction("Logout", "Account");
             }
 
-            MoodTypeUpdateDTO moodTypeUpdateDTO = new MoodTypeUpdateDTO
+            PostUpdateDTO PostUpdateDTO = new PostUpdateDTO
             {
                 Id = response.Content.Id,
-                Mood = response.Content.Mood,
-                IsAvailable = response.Content.IsAvailable
+                ApplicationUserId = response.Content.ApplicationUserId,
+                MoodTypeId  = response.Content.MoodTypeId,
+                PostTypeId = response.Content.PostTypeId,
+                Title = response.Content.Title,
+                Text = response.Content.Text,
+
             };
 
 
-            return View(moodTypeUpdateDTO);
+            return View(PostUpdateDTO);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(MoodTypeUpdateDTO editModel)
+        public async Task<ActionResult> Edit(PostUpdateDTO editModel)
         {
             if (!ModelState.IsValid)
             {
@@ -119,7 +120,7 @@ namespace WebApp.Controllers
 
             if (response.Status == ResponseStatus.Success)
             {
-                return RedirectToAction("Index", "MoodType");
+                return RedirectToAction("Index", "Post");
             }
             else
             {
@@ -164,7 +165,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(MoodTypeUpdateDTO editModel)
+        public async Task<ActionResult> Delete(PostUpdateDTO editModel)
         {
 
 
@@ -177,7 +178,7 @@ namespace WebApp.Controllers
 
             if (response.Status == ResponseStatus.Success)
             {
-                return RedirectToAction("Index", "MoodType");
+                return RedirectToAction("Index", "Post");
             }
             else
             {
@@ -189,7 +190,5 @@ namespace WebApp.Controllers
                 return View(editModel);
             }
         }
-
-
     }
 }

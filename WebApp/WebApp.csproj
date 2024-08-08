@@ -24,4 +24,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\ApplicationUserInfo\" />
+    <Folder Include="Views\Post\" />
+    <Folder Include="Views\PostType\" />
+  </ItemGroup>
+
 </Project>

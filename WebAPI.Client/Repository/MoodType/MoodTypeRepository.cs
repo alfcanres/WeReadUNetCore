@@ -38,7 +38,7 @@ namespace WebAPI.Client.Repository.MoodType
             return GetResponse<ResponsePagedList<MoodTypeReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
         }
 
-        public Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTen()
+        public Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTenAsync()
         {
             return GetResponse<ResponseList<MoodTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
         }
