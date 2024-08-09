@@ -11,39 +11,30 @@ namespace WebAPI.Client.Repository.PostType
         BaseRepository<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>,
         IPostTypeRepository
     {
-        public PostTypeRepository(
-        IHttpClientFactory httpClientFactory,
-        IConfiguration configuration,
-        ILogger<BaseRepository<PostTypeCreateDTO, PostTypeReadDTO, PostTypeUpdateDTO>> logger
-        ) :
-        base(
-        "api/posttype",
-        httpClientFactory,
-        configuration,
-        logger
-        )
+        public PostTypeRepository(IHttpClientHelper httpClientHelper)
+            : base("api/posttype", httpClientHelper)
         {
 
         }
 
-        public Task<int> CountAllAsync()
+        public async Task<ResponseViewModel<int>> CountAllAsync()
         {
-            throw new NotImplementedException();
+            return await HttpClientHelper.GetResponse<int>(HttpVerbsEnum.GET, $"/countall");
         }
 
-        public Task<ResponseViewModel<ResponseList<PostTypeReadDTO>>> GetAllByIsAvailableAsync(bool isAvailable)
+        public async Task<ResponseViewModel<ResponseList<PostTypeReadDTO>>> GetAllByIsAvailableAsync(bool isAvailable)
         {
-            return GetResponse<ResponseList<PostTypeReadDTO>, bool>(isAvailable, HttpVerbsEnum.GET, $"/isavailable/{isAvailable}");
+            return await HttpClientHelper.GetResponse<ResponseList<PostTypeReadDTO>, bool>(isAvailable, HttpVerbsEnum.GET, $"/isavailable/{isAvailable}");
         }
 
-        public Task<ResponseViewModel<ResponsePagedList<PostTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
+        public async Task<ResponseViewModel<ResponsePagedList<PostTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
         {
-            return GetResponse<ResponsePagedList<PostTypeReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return await HttpClientHelper.GetResponse<ResponsePagedList<PostTypeReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
         }
 
-        public Task<ResponseViewModel<ResponseList<PostTypeReadDTO>>> GetTopTenAsync(int top)
+        public async Task<ResponseViewModel<ResponseList<PostTypeReadDTO>>> GetTopTenAsync(int top)
         {
-            return GetResponse<ResponseList<PostTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
+            return await HttpClientHelper.GetResponse<ResponseList<PostTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
         }
     }
 }

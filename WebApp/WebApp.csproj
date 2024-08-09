@@ -26,8 +26,9 @@
 
   <ItemGroup>
     <Folder Include="Views\ApplicationUserInfo\" />
+    <Folder Include="Views\PostComment\" />
+    <Folder Include="Views\PostVote\" />
     <Folder Include="Views\Post\" />
-    <Folder Include="Views\PostType\" />
   </ItemGroup>
 
 </Project>

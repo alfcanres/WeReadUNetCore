@@ -1,45 +1,26 @@
-﻿using DataTransferObjects.DTO;
+﻿using DataTransferObjects;
+using DataTransferObjects.DTO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
-using WebAPI.Client.Repository.PostVote;
+
+using WebAPI.Client.Helpers;
+
 using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.PostVote
 {
-    public class PostVoteRepository : IPostVoteRepository
+    public class PostVoteRepository : BaseRepository<PostVoteCreateDTO, PostVoteResultDTO, PostVoteUpdateDTO>, IPostVoteRepository
     {
-        public PostVoteRepository(
-            IHttpClientFactory httpClientFactory,
-            IConfiguration configuration,
-            ILogger<PostVoteRepository> logger
-            ) 
+        public PostVoteRepository(IHttpClientHelper httpClientHelper)
+            : base("api/postvote", httpClientHelper)
         {
 
         }
 
-        public Task<ResponseViewModel<bool>> CreateAsync(PostVoteCreateDTO createModel)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResponseViewModel<bool>> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetBearerToken(string bearerToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResponseViewModel<bool>> UpdateAsync(PostVoteUpdateDTO updateModel)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

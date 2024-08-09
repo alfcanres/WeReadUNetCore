@@ -49,6 +49,7 @@ namespace WebApp.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MoodTypeCreateDTO createModel)
         {
             if (!ModelState.IsValid)
@@ -103,6 +104,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(MoodTypeUpdateDTO editModel)
         {
             if (!ModelState.IsValid)
@@ -164,6 +166,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(MoodTypeUpdateDTO editModel)
         {
 

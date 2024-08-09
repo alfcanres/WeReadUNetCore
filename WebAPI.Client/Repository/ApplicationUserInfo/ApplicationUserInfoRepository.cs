@@ -18,31 +18,23 @@ namespace WebAPI.Client.Repository.ApplicationUserInfo
         IApplicationUserInfoRepository
     {
         public ApplicationUserInfoRepository(
-                   IHttpClientFactory httpClientFactory,
-                   IConfiguration configuration,
-                   ILogger<BaseRepository<ApplicationUserInfoCreateDTO, ApplicationUserInfoReadDTO, ApplicationUserInfoUpdateDTO>> logger
-                   ) :
-                   base(
-                       "api/applicationuserinfo",
-                       httpClientFactory,
-                       configuration,
-                       logger
-                       )
+                    IHttpClientHelper httpClientHelper
+                   ) : base("api/applicationuserinfo", httpClientHelper)
         {
 
         }
 
         public Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
         {
-            return GetResponse<ResponsePagedList<ApplicationUserInfoReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return HttpClientHelper.GetResponse<ResponsePagedList<ApplicationUserInfoReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
         }
         public Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoReadDTO>>> GetPagedByActiveAsync(PagerParams pagerDTO)
         {
-            return GetResponse<ResponsePagedList<ApplicationUserInfoReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return HttpClientHelper.GetResponse<ResponsePagedList<ApplicationUserInfoReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
         }
         public Task<ResponseViewModel<ResponseList<ApplicationUserInfoReadDTO>>> GetTopTenAsync()
         {
-            return GetResponse<ResponseList<ApplicationUserInfoReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
+            return HttpClientHelper.GetResponse<ResponseList<ApplicationUserInfoReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
         }
     }
 }

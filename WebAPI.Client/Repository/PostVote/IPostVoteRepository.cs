@@ -10,9 +10,9 @@ namespace WebAPI.Client.Repository.PostVote
 {
     public interface IPostVoteRepository : IBaseRepository
     {
-        Task<ResponseViewModel<bool>> CreateAsync(PostVoteCreateDTO createModel);
-        Task<ResponseViewModel<bool>> DeleteAsync(int id); 
-        Task<ResponseViewModel<bool>> UpdateAsync(PostVoteUpdateDTO updateModel);
+        Task<ResponseViewModel<PostVoteResultDTO>> CreateAsync(PostVoteCreateDTO createModel);
+        Task<ResponseViewModel<bool>> DeleteAsync(int id);
+        Task<ResponseViewModel<PostVoteResultDTO>> UpdateAsync(PostVoteUpdateDTO updateModel);
 
     }
 }

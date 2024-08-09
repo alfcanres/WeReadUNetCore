@@ -1,4 +1,4 @@
-﻿@model ResponseViewModel<ResponsePagedList<MoodTypeReadDTO>>
+﻿@model ResponseViewModel<ResponsePagedList<PostTypeReadDTO>>
 @{
     ViewData["Title"] = "Mood Type";
 }
@@ -17,7 +17,7 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Mood</th>
+                    <th scope="col">Description</th>
                     <th scope="col">Is Available</th>
                     <th scope="col">Post Count</th>
                     <th scope="col">View</th>
@@ -30,7 +30,7 @@
                 {
                     <tr>
                         <th scope="row">@item.Id</th>
-                        <td>@item.Mood</td>
+                        <td>@item.Description</td>
                         <td>@item.IsAvailable</td>
                         <td>@item.PostCount</td>
                         <td>
@@ -73,13 +73,14 @@
             </tbody>
         </table>
 
+
         <partial name="_Pager" model='new PagerViewModel{
                 RecordsPerPage = Model.Content.RecordsPerPage,
                 SearchKeyWord = Model.Content.SearchKeyWord,
                 PageCount = Model.Content.PageCount,
                 CurrentPage = Model.Content.CurrentPage,
                 Action = "Index",
-                Controller = "MoodType"
+                Controller = "PostType"
                 }' />
 
     }

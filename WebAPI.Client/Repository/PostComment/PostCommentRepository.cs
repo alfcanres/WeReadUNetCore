@@ -17,17 +17,8 @@ namespace WebAPI.Client.Repository.PostComment
         BaseRepository<PostCommentCreateDTO, PostCommentReadDTO, PostCommentUpdateDTO>,
         IPostCommentRepository
     {
-        public PostCommentRepository(
-           IHttpClientFactory httpClientFactory,
-           IConfiguration configuration,
-           ILogger<BaseRepository<PostCommentCreateDTO, PostCommentReadDTO, PostCommentUpdateDTO>> logger
-           ) :
-           base(
-               "api/postcomment",
-               httpClientFactory,
-               configuration,
-               logger
-               )
+        public PostCommentRepository(IHttpClientHelper httpClientHelper) 
+            :base("api/postcomment",httpClientHelper)
         {
 
         }

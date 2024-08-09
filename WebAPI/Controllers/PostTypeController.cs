@@ -62,6 +62,28 @@ namespace WebAPI.Controllers
         }
 
 
+        [HttpGet("CountAll")]
+        public async Task<ActionResult> CountAll()
+        {
+
+            try
+            {
+                var response = await _BLL.CountAllAsync();
+
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "COUNT ALL ");
+
+                return StatusCode(500, _validateDTO);
+            }
+
+        }
+
         [HttpGet("Paged")]
         public async Task<ActionResult> GetPaged([FromQuery] PagerParams pagerDTO)
         {

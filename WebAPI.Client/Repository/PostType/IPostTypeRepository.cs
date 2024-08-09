@@ -16,7 +16,7 @@ namespace WebAPI.Client.Repository.PostType
         Task<ResponseViewModel<PostTypeReadDTO>> GetByIdAsync(int id);
         Task<ResponseViewModel<PostTypeReadDTO>> UpdateAsync(PostTypeUpdateDTO updateModel);
         Task<ResponseViewModel<ResponsePagedList<PostTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO);
-        Task<int> CountAllAsync();
+        Task<ResponseViewModel<int>> CountAllAsync();
         Task<ResponseViewModel<ResponseList<PostTypeReadDTO>>> GetAllByIsAvailableAsync(bool isAvailable);
         Task<ResponseViewModel<ResponseList<PostTypeReadDTO>>> GetTopTenAsync(int top);
 

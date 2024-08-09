@@ -13,34 +13,26 @@ namespace WebAPI.Client.Repository.MoodType
     {
 
         public MoodTypeRepository(
-            IHttpClientFactory httpClientFactory,
-            IConfiguration configuration,
-            ILogger<BaseRepository<MoodTypeCreateDTO, MoodTypeReadDTO, MoodTypeUpdateDTO>> logger
-            ) :
-            base(
-                "api/moodtype",
-                httpClientFactory,
-                configuration,
-                logger
-                )
+            IHttpClientHelper httpClientHelper
+            ) : base("api/moodtype", httpClientHelper)
         {
 
         }
 
-        public Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetIsAvailableAsync(bool isAvailable)
+        public async Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetIsAvailableAsync(bool isAvailable)
         {
 
-            return GetResponse<ResponseList<MoodTypeReadDTO>, bool>(isAvailable, HttpVerbsEnum.GET, $"/isavailable/{isAvailable}");
+            return await HttpClientHelper.GetResponse<ResponseList<MoodTypeReadDTO>, bool>(isAvailable, HttpVerbsEnum.GET, $"/isavailable/{isAvailable}");
         }
 
-        public Task<ResponseViewModel<ResponsePagedList<MoodTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
+        public async Task<ResponseViewModel<ResponsePagedList<MoodTypeReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
         {
-            return GetResponse<ResponsePagedList<MoodTypeReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return await HttpClientHelper.GetResponse<ResponsePagedList<MoodTypeReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
         }
 
-        public Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTenAsync()
+        public async Task<ResponseViewModel<ResponseList<MoodTypeReadDTO>>> GetTopTenAsync()
         {
-            return GetResponse<ResponseList<MoodTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
+            return await HttpClientHelper.GetResponse<ResponseList<MoodTypeReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
         }
     }
 }

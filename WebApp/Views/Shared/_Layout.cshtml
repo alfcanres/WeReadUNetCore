@@ -28,6 +28,15 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MoodType" asp-action="Index">Mood Types</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="PostType" asp-action="Index">Post Types</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Post" asp-action="Admin">Admin Posts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Post" asp-action="Index">Browse Posts</a>
+                            </li>
                         }
 
 
@@ -45,11 +54,12 @@
                                     Welcome @User.Identity.Name!
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="userScrollingDropdown">
-                                    <li><a class="dropdown-item" href="#">My Profile</a></li>
-                                    <li><a class="dropdown-item" href="#">My Posts</a></li>
-                                    <li><a class="dropdown-item" href="#">Change password</a></li>
+                                    <li><a asp-area="" asp-controller="ApplicationUserInfo" asp-action="Index" class="dropdown-item" >My Profile</a></li>
+                                    <li><a asp-area="" asp-controller="Post" asp-action="Create" class="dropdown-item" >Write New Post</a></li>
+                                    <li><a asp-area="" asp-controller="Post" asp-action="MyPosts" class="dropdown-item" >My Posts</a></li>
+                                    <li><a asp-area="" asp-controller="Account" asp-action="ChangePassword" class="dropdown-item" >Change password</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#">Logout</a></li>
+                                    <li><a asp-area="" asp-controller="Account" asp-action="Logout" class="dropdown-item" >Logout</a></li>
                                 </ul>
                             </li>
                         }

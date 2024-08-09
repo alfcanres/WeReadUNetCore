@@ -3,9 +3,11 @@ using DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Client.Repository.PostType;
 using WebAPI.Client.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class PostTypeController : Controller
     {
         private readonly IPostTypeRepository _repository;
@@ -28,7 +30,6 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Index(PagerParams pager = null)
         {
 
-
             var response = await _repository.GetPagedAsync(pager);
 
             if (response.Status == ResponseStatus.Unauthorized)
@@ -46,6 +47,7 @@ namespace WebApp.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostTypeCreateDTO createModel)
         {
             if (!ModelState.IsValid)
@@ -100,6 +102,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(PostTypeUpdateDTO editModel)
         {
             if (!ModelState.IsValid)
@@ -161,9 +164,9 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(PostTypeUpdateDTO editModel)
         {
-
 
             var response = await _repository.DeleteAsync(editModel.Id);
 
