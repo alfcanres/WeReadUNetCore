@@ -1,13 +1,6 @@
 ﻿using BusinessLogicLayer.Interfaces;
 using DataAccessLayer;
-using DataTransferObjects.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer
 {
@@ -31,6 +24,7 @@ namespace BusinessLogicLayer
             }
 
             _dbSet.Remove(entity);
+            await _appDbContext.SaveChangesAsync();
         }
 
         public async Task<TEntity> GetByIdAsync(int id)

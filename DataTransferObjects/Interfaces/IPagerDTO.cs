@@ -11,5 +11,7 @@ namespace DataTransferObjects.Interfaces
         int CurrentPage { get; }
         int RecordsPerPage { get; }
         string SearchKeyWord { get; }
+
+        string ToQueryString();
     }
 }

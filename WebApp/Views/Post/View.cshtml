@@ -1,0 +1,36 @@
+﻿@model PostReadDTO
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+
+
+<div class="card mb-3" style="max-width: 540px;">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="@Model.ProfilePic" class="img-fluid rounded-start" alt="...">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title</h5>
+                <h5 class="card-title">@Model.PostType</h5>
+                <p class="card-text">
+
+                    <figure>
+                        <blockquote class="blockquote">
+                            <p>@Model.Text</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer">
+                            <cite title="Source Title">@Model.UserName - @Model.PublishDate.ToString()</cite>
+                        </figcaption>
+                    </figure>
+
+
+                </p>
+
+                <p class="card-text"><small class="text-muted">@Model.MoodType</small></p>
+            </div>
+        </div>
+    </div>
+</div>

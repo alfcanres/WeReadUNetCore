@@ -13,7 +13,7 @@ namespace DataAccessLayer.Entity
 
         [Required(ErrorMessage ="Mood must have a description")]
         public string Mood { get; set; }
-
+        [Required]
         public bool IsAvailable { get; set; }
 
         public ICollection<Post> Posts { get; set; }

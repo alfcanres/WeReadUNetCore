@@ -1,10 +1,4 @@
 ﻿using DataAccessLayer.Entity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Interfaces
 {
@@ -13,6 +7,9 @@ namespace BusinessLogicLayer.Interfaces
         public IRepository<Post> Posts { get; }
         public IRepository<PostType> PostTypes { get; }
         public IRepository<PostVote> PostVotes { get; }
+        public IRepository<PostComment> PostComments { get; }
+        public IRepository<MoodType> MoodTypes { get; }
+        public IRepository<ApplicationUserInfo> UsersInfo { get; }
         Task SaveAsync();
     }
 }

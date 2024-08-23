@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 namespace DataTransferObjects.DTO
 {
     public record PostTypeUpdateDTO
-    (
-        int Id,
+    {
+        public int Id { init; get; }
+
         [MaxLength(255)]
         [Required(ErrorMessage = "Type of post must have a description")]
-        string Description,
-        bool IsAvailable
-    );
+        public string Description { init; get; }
+        public bool IsAvailable { init; get; }
+    }
+
+
 }

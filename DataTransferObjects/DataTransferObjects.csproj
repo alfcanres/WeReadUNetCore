@@ -7,8 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\PostVote\" />
-    <Folder Include="DTO\Post\" />
+    <Compile Remove="Interfaces\IPagerDTO.cs" />
+    <Compile Remove="Interfaces\IResponseDTO.cs" />
+    <Compile Remove="Interfaces\IResponseListDTO.cs" />
+    <Compile Remove="Interfaces\IResponsePagedListDTO.cs" />
+    <Compile Remove="Interfaces\ITokenResponse.cs" />
+    <Compile Remove="Interfaces\IValidate.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
 </Project>

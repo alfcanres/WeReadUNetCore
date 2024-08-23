@@ -2,12 +2,6 @@
 using BusinessLogicLayer.Interfaces;
 using DataTransferObjects.DTO;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
@@ -17,14 +11,17 @@ namespace BusinessLogicLayer.BusinessObjects
         {
         }
 
-        internal override async Task<int> CountResults()
+        internal override async Task<int> CountResultsAsync()
         {
             return await unitOfWork.PostTypes.Query().CountAsync();
         }
 
-        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResults()
+        internal override async Task<IEnumerable<PostTypeReadDTO>> GetResultsAsync()
         {
-            var result = await unitOfWork.PostTypes.Query().ToListAsync();
+            var result = await unitOfWork.PostTypes
+                .Query()
+                .AsNoTracking()
+                .ToListAsync();
           
             return Map(result);
         }
