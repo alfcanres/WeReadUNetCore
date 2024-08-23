@@ -127,6 +127,28 @@ namespace WebAPI.Controllers
         }
 
         [ResponseCache(Duration = 10)]
+        [HttpGet("PageByUser/{id}")]
+        public async Task<ActionResult> GetPagedByUser(int id, [FromQuery] PagerParams pagerDTO)
+        {
+            try
+            {
+                var response = await _BLL.GetAllPostByUserPagedAsync(id, pagerDTO);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET GetAllPostByUserPagedAsync : {pagerDTO}", pagerDTO);
+
+                return StatusCode(500, _validateDTO);
+            }
+
+        }
+
+
+
+        [ResponseCache(Duration = 10)]
         [HttpGet("PendingPublishPaged")]
         public async Task<ActionResult> GetNotPublished([FromQuery] PagerParams pagerDTO)
         {

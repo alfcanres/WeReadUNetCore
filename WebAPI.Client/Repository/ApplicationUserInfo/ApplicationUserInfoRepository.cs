@@ -1,14 +1,6 @@
 ﻿using DataTransferObjects;
 using DataTransferObjects.DTO;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebAPI.Client.Helpers;
-using WebAPI.Client.Repository.ApplicationUserInfo;
 using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.ApplicationUserInfo
@@ -24,17 +16,22 @@ namespace WebAPI.Client.Repository.ApplicationUserInfo
 
         }
 
-        public Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoReadDTO>>> GetPagedAsync(PagerParams pagerDTO)
+        public async Task<ResponseViewModel<ApplicationUserInfoReadDTO>> GetByEmailAsync(string email)
         {
-            return HttpClientHelper.GetResponse<ResponsePagedList<ApplicationUserInfoReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return await HttpClientHelper.GetResponse<ApplicationUserInfoReadDTO>(HttpVerbsEnum.GET, $"{BaseEndPoint}/GetByEmail/{email}");
         }
-        public Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoReadDTO>>> GetPagedByActiveAsync(PagerParams pagerDTO)
+
+        public Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoListDTO>>> GetPagedAsync(PagerParams pagerDTO)
         {
-            return HttpClientHelper.GetResponse<ResponsePagedList<ApplicationUserInfoReadDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"/paged{pagerDTO.ToQueryString()}");
+            return HttpClientHelper.GetResponse<ResponsePagedList<ApplicationUserInfoListDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"{BaseEndPoint}/paged{pagerDTO.ToQueryString()}");
         }
-        public Task<ResponseViewModel<ResponseList<ApplicationUserInfoReadDTO>>> GetTopTenAsync()
+        public Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoListDTO>>> GetPagedByActiveAsync(PagerParams pagerDTO)
         {
-            return HttpClientHelper.GetResponse<ResponseList<ApplicationUserInfoReadDTO>, int>(10, HttpVerbsEnum.GET, "/top/10");
+            return HttpClientHelper.GetResponse<ResponsePagedList<ApplicationUserInfoListDTO>, PagerParams>(pagerDTO, HttpVerbsEnum.GET, $"{BaseEndPoint}/pagedbyactive{pagerDTO.ToQueryString()}");
+        }
+        public Task<ResponseViewModel<ResponseList<ApplicationUserInfoListDTO>>> GetTopTenAsync()
+        {
+            return HttpClientHelper.GetResponse<ResponseList<ApplicationUserInfoListDTO>, int>(10, HttpVerbsEnum.GET, $"{BaseEndPoint}/top/10");
         }
     }
 }

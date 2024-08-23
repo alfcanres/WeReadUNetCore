@@ -5,12 +5,12 @@ namespace BusinessLogicLayer.BusinessObjects
 {
     public interface IAccountBLL
     {
-        Task<UserRegisteredDTO> InsertAsync(UserCreateDTO createDTO);
-        Task<UserReadDTO> GetByUserNameOrEmail(string userNameOrEmail);
-        public Task<ValidatorResponse> SignInAsync(UserSignInDTO userSignInDTO);
-        Task UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
-        Task<ValidatorResponse> ValidateInsertAsync(UserCreateDTO createDTO);
-        Task<ValidatorResponse> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO);
+        Task<AccountRegisteredDTO> InsertAsync(AccountCreateDTO createDTO);
+        Task<AccountReadDTO> GetByUserNameOrEmail(string userNameOrEmail);
+        public Task<ValidatorResponse> SignInAsync(AccountSignInDTO userSignInDTO);
+        Task UpdatePasswordAsync(AccountChangePasswordDTO updateDTO);
+        Task<ValidatorResponse> ValidateInsertAsync(AccountCreateDTO createDTO);
+        Task<ValidatorResponse> ValidateUpdatePasswordAsync(AccountChangePasswordDTO updateDTO);
         
 
     }

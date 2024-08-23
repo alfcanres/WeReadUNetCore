@@ -9,10 +9,18 @@ using Microsoft.Extensions.Logging;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class ApplcationUserInfoBLL : BaseBLL<ApplicationUserInfoCreateDTO, ApplicationUserInfoReadDTO, ApplicationUserInfoUpdateDTO>, IApplicationUserInfoBLL
+    public class ApplicationUserInfoBLL : BaseBLL<ApplicationUserInfoCreateDTO, ApplicationUserInfoReadDTO, ApplicationUserInfoUpdateDTO>, IApplicationUserInfoBLL
     {
-        public ApplcationUserInfoBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ApplcationUserInfoBLL> logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
+        private readonly IUserManagerWrapper _userManagerWrapper;
+        public ApplicationUserInfoBLL(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ILogger<ApplicationUserInfoBLL> logger,
+            IDataAnnotationsValidator dataAnnotationsValidator,
+            IUserManagerWrapper userManagerWrapper
+            ) : base(unitOfWork, mapper, logger, dataAnnotationsValidator)
         {
+            _userManagerWrapper = userManagerWrapper;
         }
 
         public async Task<ResponsePagedList<ApplicationUserInfoListDTO>> GetAllActivePagedAsync(PagerParams pagerDTO)
@@ -38,17 +46,20 @@ namespace BusinessLogicLayer.BusinessObjects
 
         protected override async Task<ApplicationUserInfoReadDTO> ExecuteGetByIdAsync(int id)
         {
+
             var entity = await UnitOfWork.UsersInfo.GetByIdAsync(id);
-            var dto = Mapper.Map<ApplicationUserInfoReadDTO>(entity);
-            return dto;
+
+
+            return await MapApplicationUserInfoReadDTO(entity);
         }
 
         protected override async Task<ApplicationUserInfoReadDTO> ExecuteInsertAsync(ApplicationUserInfoCreateDTO createDTO)
         {
             ApplicationUserInfo entity = Mapper.Map<ApplicationUserInfo>(createDTO);
+
             await UnitOfWork.UsersInfo.InsertAsync(entity);
-            var dto = Mapper.Map<ApplicationUserInfoReadDTO>(entity);
-            return dto;
+
+            return await MapApplicationUserInfoReadDTO(entity);
         }
 
         protected override async Task<ApplicationUserInfoReadDTO> ExecuteUpdateAsync(ApplicationUserInfoUpdateDTO updateDTO)
@@ -56,8 +67,8 @@ namespace BusinessLogicLayer.BusinessObjects
             var entity = await UnitOfWork.UsersInfo.GetByIdAsync(updateDTO.Id);
             Mapper.Map(updateDTO, entity);
             await UnitOfWork.UsersInfo.UpdateAsync(entity);
-            var dto = Mapper.Map<ApplicationUserInfoReadDTO>(entity);
-            return dto;
+
+            return await MapApplicationUserInfoReadDTO(entity);
         }
 
         protected override async Task ExecValidateDeleteAsync(int id)
@@ -87,6 +98,33 @@ namespace BusinessLogicLayer.BusinessObjects
             }
 
             //TODO apply a business rule for those elements trying to change it's username to an already existent user name
+        }
+
+        public async Task<ApplicationUserInfoReadDTO> GetByUserEmailAsync(string email)
+        {
+            var user = await _userManagerWrapper.FindByEmailAsync(email);
+
+            var entity = await UnitOfWork.UsersInfo.Query().Where(t => t.UserID == user.Id).FirstOrDefaultAsync();
+
+            return await MapApplicationUserInfoReadDTO(entity);
+        }
+
+        private async Task<ApplicationUserInfoReadDTO> MapApplicationUserInfoReadDTO(ApplicationUserInfo entity)
+        {
+            var identityUser = await _userManagerWrapper.FindByIdAsync(entity.UserID);
+
+            var dto = new ApplicationUserInfoReadDTO()
+            {
+                DateOfBirth = entity.DateOfBirth,
+                FirstName = entity.FirstName,
+                Id = entity.Id,
+                IsActive = entity.IsActive,
+                LastName = entity.LastName,
+                ProfilePicture = entity.ProfilePicture,
+                UserName = entity.UserName,
+                UserID = entity.UserID
+            };
+            return dto;
         }
     }
 }

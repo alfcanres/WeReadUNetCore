@@ -12,11 +12,12 @@ namespace WebAPI.Client.Repository.Post
         Task<ResponseViewModel<PostReadDTO>> UpdateAsync(PostUpdateDTO updateModel);
 
         Task<ResponseViewModel<bool>> ApproveAsync(int id);
-        Task<ResponseViewModel<ResponsePagedList<PostReadDTO>>> GetPublishedPagedByUserAsync(int id, PagerParams pagerDTO);
+        Task<ResponseViewModel<ResponsePagedList<PostListDTO>>> GetPublishedPagedByUserAsync(int id, PagerParams pagerDTO);
+        Task<ResponseViewModel<ResponsePagedList<PostListDTO>>> GetAllPagedByUserAsync(int id, PagerParams pagerDTO);
 
-        Task<ResponseViewModel<ResponsePagedList<PostReadDTO>>> GetPublishedPagedAsync(PagerParams pagerDTO);
+        Task<ResponseViewModel<ResponsePagedList<PostListDTO>>> GetPublishedPagedAsync(PagerParams pagerDTO);
 
-        Task<ResponseViewModel<ResponsePagedList<PostReadDTO>>> GetPendingPublishPagedAsync(PagerParams pagerDTO);
+        Task<ResponseViewModel<ResponsePagedList<PostListDTO>>> GetPendingPublishPagedAsync(PagerParams pagerDTO);
 
         Task<ResponseViewModel<ResponsePagedList<PostCommentReadDTO>>> GetPostCommentsPageddAsync(int postId, PagerParams pagerDTO);
 

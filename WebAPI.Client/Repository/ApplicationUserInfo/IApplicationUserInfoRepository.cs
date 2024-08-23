@@ -9,12 +9,13 @@ namespace WebAPI.Client.Repository.ApplicationUserInfo
         Task<ResponseViewModel<ApplicationUserInfoReadDTO>> CreateAsync(ApplicationUserInfoCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);
         Task<ResponseViewModel<ApplicationUserInfoReadDTO>> GetByIdAsync(int id);
+        Task<ResponseViewModel<ApplicationUserInfoReadDTO>> GetByEmailAsync(string email);
         Task<ResponseViewModel<ApplicationUserInfoReadDTO>> UpdateAsync(ApplicationUserInfoUpdateDTO updateModel);
 
-        Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoReadDTO>>> GetPagedAsync(PagerParams pagerDTO);
+        Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoListDTO>>> GetPagedAsync(PagerParams pagerDTO);
 
-        Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoReadDTO>>> GetPagedByActiveAsync(PagerParams pagerDTO);
+        Task<ResponseViewModel<ResponsePagedList<ApplicationUserInfoListDTO>>> GetPagedByActiveAsync(PagerParams pagerDTO);
 
-        Task<ResponseViewModel<ResponseList<ApplicationUserInfoReadDTO>>> GetTopTenAsync();
+        Task<ResponseViewModel<ResponseList<ApplicationUserInfoListDTO>>> GetTopTenAsync();
     }
 }

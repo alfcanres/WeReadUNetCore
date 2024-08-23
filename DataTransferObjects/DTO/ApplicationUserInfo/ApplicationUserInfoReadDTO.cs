@@ -11,16 +11,12 @@ namespace DataTransferObjects.DTO
     {
         public int Id { init; get; }
 
-        [MaxLength(255, ErrorMessage = "Max chars 255")]
-        [Required(ErrorMessage = "Please type your username")]
+        public string UserID { init; get; }
         public string UserName { init; get; }
         public string? ProfilePicture { init; get; }
-
-        [MaxLength(255, ErrorMessage = "Max chars 255")]
-        [Required(ErrorMessage = "Please type your first name")]
         public string FirstName { init; get; }
-        [MaxLength(255, ErrorMessage = "Max chars 255")]
-        [Required(ErrorMessage = "Please type your last name")]
         public string LastName { init; get; }
+        public DateTime? DateOfBirth { init; get; }
+        public bool IsActive { init; get; }
     }
 }

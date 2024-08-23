@@ -9,6 +9,7 @@ namespace BusinessLogicLayer.BusinessObjects
         Task<ResponsePagedList<ApplicationUserInfoListDTO>> GetAllActivePagedAsync(PagerParams pagerDTO);
         Task<ResponseList<ApplicationUserInfoListDTO>> GetTopWithPostsAsync(int top);
         Task<ResponsePagedList<ApplicationUserInfoListDTO>> GetAllPagedAsync(PagerParams pagerDTO);
+        Task<ApplicationUserInfoReadDTO> GetByUserEmailAsync(string email);
 
     }
 }

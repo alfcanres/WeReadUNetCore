@@ -28,7 +28,7 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(UserSignInDTO loginViewModel)
+        public async Task<IActionResult> Login(AccountSignInDTO loginViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -39,12 +39,13 @@ namespace WebApp.Controllers
 
             if (response.Status == ResponseStatus.Success)
             {
-
-
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, loginViewModel.Email)
-                };
+                    {
+                        new Claim(ClaimTypes.Name, loginViewModel.Email),
+                        new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
+                    };
+
+
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -59,7 +60,7 @@ namespace WebApp.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            else 
+            else
             {
                 foreach (var error in response.MessageList)
                 {
@@ -78,7 +79,7 @@ namespace WebApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Register(UserCreateDTO userCreateDTO)
+        public async Task<IActionResult> Register(AccountCreateDTO userCreateDTO)
         {
             if (!ModelState.IsValid)
             {

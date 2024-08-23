@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DataAccessLayer.Entity;
 using DataTransferObjects.DTO;
-using DataTransferObjects.DTO.Post;
 
 namespace BusinessLogicLayer.Helpers
 {

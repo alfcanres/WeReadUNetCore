@@ -34,6 +34,13 @@ namespace WebAPI.Controllers
             return await UpdateAsync(updateModel.Id, updateModel);
         }
 
+        [ResponseCache(Duration = 10)]
+        [HttpGet("{id}")]
+        public async Task<ActionResult> Get(int id)
+        {
+            return await GetByIdAsync(id);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
@@ -104,6 +111,32 @@ namespace WebAPI.Controllers
                 string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
                 base._validateDTO.AddError(friendlyError);
                 _logger.LogError(ex, "GET Top", top);
+
+                return StatusCode(500, _validateDTO);
+            }
+        }
+
+        [ResponseCache(Duration = 10)]
+        [HttpGet("GetByEmail/{email}")]
+        public async Task<ActionResult> GetByEmail([FromQuery] string email)
+        {
+            try
+            {
+                var response = await _BLL.GetByUserEmailAsync(email);
+                if (response != null)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET BY email OPERATION : {email}", email);
 
                 return StatusCode(500, _validateDTO);
             }

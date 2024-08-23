@@ -2,22 +2,28 @@
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
-using DataTransferObjects.DTO.Post;
+using DataTransferObjects.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class GetPostsPublishedByUserPaged : QueryStrategyBase<PostListDTO>
+    public class GetPostsByUserPaged : QueryStrategyBase<PostListDTO>
     {
         private readonly IQueryable<Post> queryList;
         private readonly IQueryable<Post> queryCount;
-        public GetPostsPublishedByUserPaged(int UserID, IUnitOfWork unitOfWork, IMapper mapper, PagerParams pager) : base(unitOfWork, mapper)
+        public GetPostsByUserPaged(
+            int UserID, 
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            PagerParams pager,
+            bool getOnlyPublished = true
+            ) : base(unitOfWork, mapper)
         {
             var baseQuery = unitOfWork.Posts
                  .Query()
                  .AsNoTracking();
 
-            if (String.IsNullOrEmpty(pager.SearchKeyWord))
+            if (!String.IsNullOrEmpty(pager.SearchKeyWord))
             {
                 baseQuery = baseQuery
                     .Where(t =>
@@ -29,10 +35,17 @@ namespace BusinessLogicLayer.BusinessObjects
                     );
             }
 
-            baseQuery = baseQuery
-                .OrderBy(t => t.CreationDate)
-                .Where(t => t.IsPublished && t.ApplicationUserInfoId == UserID);
-
+            if (getOnlyPublished)
+            {
+                baseQuery = baseQuery
+                    .Where(t => t.IsPublished && t.ApplicationUserInfoId == UserID)
+                    .OrderBy(t => t.CreationDate);
+            }
+            else
+            {
+                baseQuery = baseQuery.Where(t=>t.ApplicationUserInfoId == UserID)
+                    .OrderBy(t => t.CreationDate);
+            }
             
             queryCount = baseQuery;
 

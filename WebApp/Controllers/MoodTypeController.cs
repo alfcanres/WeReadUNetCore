@@ -2,6 +2,7 @@
 using DataTransferObjects.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using WebAPI.Client.Repository.MoodType;
 using WebAPI.Client.ViewModels;
 
@@ -25,6 +26,9 @@ namespace WebApp.Controllers
             _httpContextAccessor = httpContextAccessor;
 
             string token = Convert.ToString(_httpContextAccessor.HttpContext.Request.Cookies["AuthToken"]);
+
+
+
             _repository.SetBearerToken(token);
         }
 

@@ -2,7 +2,7 @@
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
-using DataTransferObjects.DTO.Post;
+using DataTransferObjects.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer.BusinessObjects

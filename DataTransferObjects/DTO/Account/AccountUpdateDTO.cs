@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DataTransferObjects.DTO
 {
-    public class UserUpdateDTO
+    public class AccountUpdateDTO
     {
         [MaxLength(255)]
         [Required(ErrorMessage = "Type a valid user name")]

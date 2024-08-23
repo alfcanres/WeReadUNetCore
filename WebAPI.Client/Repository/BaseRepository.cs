@@ -1,12 +1,6 @@
-﻿using DataTransferObjects;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using WebAPI.Client.Helpers;
+﻿using WebAPI.Client.Helpers;
 using WebAPI.Client.ViewModels;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System.Runtime.CompilerServices;
+
 
 namespace WebAPI.Client.Repository
 {
@@ -17,18 +11,18 @@ namespace WebAPI.Client.Repository
     {
         private readonly IHttpClientHelper _httpClientHelper;
 
-        //private readonly string _clientName;
-        //private readonly HttpClient _client;
-        //public HttpClient Client => _client;
-
         public IHttpClientHelper HttpClientHelper => _httpClientHelper;
+
+        public string BaseEndPoint { get => _baseEndPoint; set => _baseEndPoint = value; }
+
+        private string _baseEndPoint = string.Empty;
 
         public BaseRepository(
             string baseEndPoint,
             IHttpClientHelper httpClientHelper)
         {
             _httpClientHelper = httpClientHelper;
-            _httpClientHelper.BaseEndpoint = baseEndPoint;
+            _baseEndPoint = baseEndPoint;
         }
 
         public void SetBearerToken(string bearerToken)
@@ -39,22 +33,22 @@ namespace WebAPI.Client.Repository
 
         public async Task<ResponseViewModel<ReadDTO>> CreateAsync(CreateDTO createModel)
         {
-            return await HttpClientHelper.GetResponse<ReadDTO, CreateDTO>(createModel, HttpVerbsEnum.POST);
+            return await HttpClientHelper.GetResponse<ReadDTO, CreateDTO>(createModel, HttpVerbsEnum.POST, _baseEndPoint);
         }
 
         public async Task<ResponseViewModel<ReadDTO>> UpdateAsync(UpdateDTO createModel)
         {
-            return await HttpClientHelper.GetResponse<ReadDTO, UpdateDTO>(createModel, HttpVerbsEnum.PUT);
+            return await HttpClientHelper.GetResponse<ReadDTO, UpdateDTO>(createModel, HttpVerbsEnum.PUT, _baseEndPoint);
         }
 
         public async Task<ResponseViewModel<ReadDTO>> GetByIdAsync(int id)
         {
-            return await HttpClientHelper.GetResponse<ReadDTO, int>(id, HttpVerbsEnum.GET, $"/{id}");
+            return await HttpClientHelper.GetResponse<ReadDTO, int>(id, HttpVerbsEnum.GET, $"{_baseEndPoint}/{id}");
         }
 
         public async Task<ResponseViewModel<bool>> DeleteAsync(int id)
         {
-            return await HttpClientHelper.GetValidateResponse(id, HttpVerbsEnum.DELETE, $"/{id}");
+            return await HttpClientHelper.GetValidateResponse(id, HttpVerbsEnum.DELETE, $"{_baseEndPoint}/{id}");
         }
 
 

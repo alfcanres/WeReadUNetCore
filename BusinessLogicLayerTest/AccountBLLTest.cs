@@ -36,7 +36,7 @@ namespace BusinessLogicLayerTest
 
             //Act
 
-            var result = await accountBLL.ValidateInsertAsync(new UserCreateDTO()
+            var result = await accountBLL.ValidateInsertAsync(new AccountCreateDTO()
             {
                 UserName = "",
                 ComfirmPassword = "",
@@ -82,7 +82,7 @@ namespace BusinessLogicLayerTest
 
             //Act
 
-            var result = await accountBLL.ValidateInsertAsync(new UserCreateDTO()
+            var result = await accountBLL.ValidateInsertAsync(new AccountCreateDTO()
             {
                 UserName = "alfcanres@gmail.com",
                 ComfirmPassword = "Alfredo79#",
@@ -129,7 +129,7 @@ namespace BusinessLogicLayerTest
 
             //Act
 
-            var result = await accountBLL.InsertAsync(new UserCreateDTO()
+            var result = await accountBLL.InsertAsync(new AccountCreateDTO()
             {
                 UserName = "alfcanres@gmail.com",
                 ComfirmPassword = "Alfredo79#",

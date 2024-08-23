@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
             return await DeleteAsync(id);
         }
 
-        [ResponseCache(Duration = 10)]
+  
         [HttpGet("Available/{isAvalable}")]
         public async Task<ActionResult> GetIsAvailable(bool isAvalable)
         {

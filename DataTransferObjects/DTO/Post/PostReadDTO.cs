@@ -10,7 +10,7 @@ namespace DataTransferObjects.DTO
     public record PostReadDTO
     {
         public int Id { get; init; }
-        public string ApplicationUserId { init; get; }
+        public int ApplicationUserInfoId { init; get; }
         public string UserName { init; get; }
         public int MoodTypeId { init; get; }
         public int PostTypeId { init; get; }
@@ -19,5 +19,7 @@ namespace DataTransferObjects.DTO
         public string MoodType { get; init; }
         public string Title { init; get; }
         public string Text { get; init; }
+        public Nullable<DateTime> PublishDate { get; set; }
+        public bool IsPublished { get; set; }
     }
 }

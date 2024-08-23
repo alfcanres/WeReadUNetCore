@@ -30,7 +30,7 @@ namespace BusinessLogicLayer.BusinessObjects
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ValidatorResponse> ValidateInsertAsync(UserCreateDTO createDTO)
+        public async Task<ValidatorResponse> ValidateInsertAsync(AccountCreateDTO createDTO)
         {
             _validate.Clear();
 
@@ -63,10 +63,10 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return this._validate;
         }
-        public async Task<UserRegisteredDTO> InsertAsync(UserCreateDTO createDTO)
+        public async Task<AccountRegisteredDTO> InsertAsync(AccountCreateDTO createDTO)
         {
 
-            UserRegisteredDTO registeredUser = new UserRegisteredDTO();
+            AccountRegisteredDTO registeredUser = new AccountRegisteredDTO();
 
             ValidatorResponse validateDTO = new ValidatorResponse();
             validateDTO.IsValid = true;
@@ -107,7 +107,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return registeredUser;
         }
-        public async Task<ValidatorResponse> SignInAsync(UserSignInDTO userSignInDTO)
+        public async Task<ValidatorResponse> SignInAsync(AccountSignInDTO userSignInDTO)
         {
             _validate.Clear();
 
@@ -130,7 +130,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return this._validate;
         }
-        public async Task<ValidatorResponse> ValidateUpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        public async Task<ValidatorResponse> ValidateUpdatePasswordAsync(AccountChangePasswordDTO updateDTO)
         {
             _validate.Clear();
 
@@ -161,30 +161,45 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return this._validate;
         }
-        public async Task UpdatePasswordAsync(UserUpdatePasswordDTO updateDTO)
+        public async Task UpdatePasswordAsync(AccountChangePasswordDTO updateDTO)
         {
             var applicationUser = await _userManager.FindByEmailAsync(updateDTO.Email);
 
             var result = await _userManager.ChangePasswordAsync(applicationUser, updateDTO.OldPassword, updateDTO.NewPassword);
         }
-        public async Task<UserReadDTO> GetByUserNameOrEmail(string userNameOrEmail)
+        public async Task<AccountReadDTO> GetByUserNameOrEmail(string userNameOrEmail)
         {
             _validate.Clear();
-            UserReadDTO userDTO = null;
+            AccountReadDTO userDTO = null;
             var identityUser = await _userManager.FindByNameAsync(userNameOrEmail);
 
             if (identityUser != null)
             {
-                var userInfo = await GetUserInfoAsync(identityUser);
-
-                userDTO = new UserReadDTO
+                var userInfo = await GetUserInfoAsync(identityUser.Id);
+                if(userInfo != null)
                 {
-                    Email = identityUser.Email,
-                    FirstName = userInfo.FirstName,
-                    LastName = userInfo.LastName,
-                    UserName = userInfo.UserName,
-                    FullName = $"{userInfo.FirstName} {userInfo.LastName}"
-                };
+                    userDTO = new AccountReadDTO
+                    {
+                        UserID = identityUser.Id,
+                        ApplicationUserInfoId = userInfo.Id,
+                        Email = identityUser.Email,
+                        UserName = userInfo.UserName,
+                        FullName = $"{userInfo.FirstName} {userInfo.LastName}",
+                        ProfilePicture = userInfo.ProfilePicture
+                    };
+                }
+                else
+                {
+                    userDTO = new AccountReadDTO
+                    {
+                        UserID = identityUser.Id,
+                        ApplicationUserInfoId = 0,
+                        Email = "",
+                        UserName = "",
+                        FullName = "",
+                        ProfilePicture = ""
+                    };
+                }
             }
             else
             {
@@ -193,23 +208,12 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return userDTO;
         }
-        private async Task<(string UserName, string FirstName, string LastName, string ProfilePicture)> GetUserInfoAsync(IdentityUser user)
+        private async Task<ApplicationUserInfo> GetUserInfoAsync(string userID)
         {
-            var userInfo = await _unitOfWork.UsersInfo.Query().FirstOrDefaultAsync(t => t.UserID == user.Id);
-            string firstName = "";
-            string lastName = "";
-            string profilePicture = "";
-            string userName = user.Email;
+            var userInfo = await _unitOfWork.UsersInfo.Query().FirstOrDefaultAsync(t => t.UserID == userID);
+ 
 
-            if (userInfo is ApplicationUserInfo)
-            {
-                firstName = userInfo.FirstName;
-                lastName = userInfo.LastName;
-                profilePicture = userInfo.ProfilePicture;
-                userName = userInfo.UserName;
-            }
-
-            return (userName, firstName, lastName, profilePicture);
+            return userInfo;
 
         }
 

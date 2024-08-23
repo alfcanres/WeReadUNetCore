@@ -53,6 +53,9 @@ builder.Services.AddScoped<IPostTypeBLL, PostTypeBLL>();
 
 builder.Services.AddScoped<IPostVoteBLL, PostVoteBLL>();
 
+builder.Services.AddScoped<IApplicationUserInfoBLL, ApplicationUserInfoBLL>();
+
+
 #endregion
 
 builder.Services.AddResponseCaching();

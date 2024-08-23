@@ -1,8 +1,4 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using WebAPI.Client.Helpers;
 using WebAPI.Client.Repository.Account;
 using WebAPI.Client.Repository.ApplicationUserInfo;

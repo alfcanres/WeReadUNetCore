@@ -19,6 +19,7 @@ namespace WebAPI.Client.Repository.Account
         private const string _registerEndpoint = "/register";
         private const string _refreshTokenEndpoint = "/refreshtoken";
         private const string _changePasswordEndPoint = "/changepassword";
+        private const string _getUserEndPoint = "/getuser";
         private readonly ILogger<AccountRepository> _logger;
 
 
@@ -35,7 +36,7 @@ namespace WebAPI.Client.Repository.Account
 
         }
 
-        public async Task<ResponseViewModel<TokenResponse>> LoginAsync(UserSignInDTO loginViewModel)
+        public async Task<ResponseViewModel<TokenResponse>> LoginAsync(AccountSignInDTO loginViewModel)
         {
             var content = new StringContent(JsonSerializer.Serialize(loginViewModel), Encoding.UTF8, "application/json");
             ResponseViewModel<TokenResponse> responseView = new ResponseViewModel<TokenResponse>();
@@ -82,7 +83,7 @@ namespace WebAPI.Client.Repository.Account
             return responseView;
 
         }
-        public async Task<ResponseViewModel<bool>> RegisterAsync(UserCreateDTO createModel)
+        public async Task<ResponseViewModel<bool>> RegisterAsync(AccountCreateDTO createModel)
         {
             var content = new StringContent(JsonSerializer.Serialize(createModel), Encoding.UTF8, "application/json");
             var responseViewModel = new ResponseViewModel<bool>();
@@ -93,7 +94,7 @@ namespace WebAPI.Client.Repository.Account
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var userRegistered = await JsonSerializer.DeserializeAsync<UserRegisteredDTO>(
+                    var userRegistered = await JsonSerializer.DeserializeAsync<AccountRegisteredDTO>(
                         await response.Content.ReadAsStreamAsync(),
                         new JsonSerializerOptions
                         {
@@ -176,5 +177,6 @@ namespace WebAPI.Client.Repository.Account
 
             return responseView;
         }
+
     }
 }

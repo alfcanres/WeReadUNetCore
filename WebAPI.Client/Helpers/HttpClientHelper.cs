@@ -15,7 +15,6 @@ namespace WebAPI.Client.Helpers
         private readonly HttpClient _client;
         private const string _refreshTokenEndpoint = "/api/Account/RefreshToken";
         private string _token = string.Empty;
-        private string _baseEndpoint = string.Empty;
         private readonly ILogger<HttpClientHelper> _logger;
 
         public HttpClientHelper(
@@ -30,7 +29,6 @@ namespace WebAPI.Client.Helpers
             _client = _httpClientFactory.CreateClient(_clientName);
         }
 
-        public string BaseEndpoint { get => _baseEndpoint; set => _baseEndpoint = value; }
         public string Token { get => _token; }
 
         public void SetBearerToken(string bearerToken)
@@ -257,16 +255,16 @@ namespace WebAPI.Client.Helpers
             switch (HttpVerb)
             {
                 case HttpVerbsEnum.GET:
-                    response = await _client.GetAsync($"{BaseEndpoint}{endPoint}");
+                    response = await _client.GetAsync(endPoint);
                     break;
                 case HttpVerbsEnum.POST:
-                    response = await _client.PostAsync($"{BaseEndpoint}{endPoint}", content);
+                    response = await _client.PostAsync($"{endPoint}", content);
                     break;
                 case HttpVerbsEnum.PUT:
-                    response = await _client.PutAsync($"{BaseEndpoint}{endPoint}", content);
+                    response = await _client.PutAsync($"{endPoint}", content);
                     break;
                 case HttpVerbsEnum.DELETE:
-                    response = await _client.DeleteAsync($"{BaseEndpoint}{endPoint}");
+                    response = await _client.DeleteAsync($"{endPoint}");
                     break;
             }
 

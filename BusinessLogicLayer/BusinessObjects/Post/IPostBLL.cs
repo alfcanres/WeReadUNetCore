@@ -1,7 +1,6 @@
 ﻿using BusinessLogicLayer.Interfaces;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.DTO.Post;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
@@ -13,6 +12,7 @@ namespace BusinessLogicLayer.BusinessObjects
         Task<ResponsePagedList<PostPendingToPublishDTO>> GetAllPostsNotPublishedAsync(PagerParams pagerDTO);
         Task<ResponsePagedList<PostListDTO>> GetPostsPublishedPagedAsync(PagerParams pagerDTO);
         Task<ResponsePagedList<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, PagerParams pagerDTO);
+        Task<ResponsePagedList<PostListDTO>> GetAllPostByUserPagedAsync(int UserID, PagerParams pagerDTO);
 
 
     }

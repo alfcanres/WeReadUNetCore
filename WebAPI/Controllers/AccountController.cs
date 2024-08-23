@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<ActionResult> Post([FromBody] UserCreateDTO createModel)
+        public async Task<ActionResult> Post([FromBody] AccountCreateDTO createModel)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("Login")]
-        public async Task<ActionResult> Login([FromBody] UserSignInDTO userSignInDTO)
+        public async Task<ActionResult> Login([FromBody] AccountSignInDTO userSignInDTO)
         {
 
             try
@@ -136,7 +136,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("ChangePassword")]
-        public async Task<ActionResult> ChangePassword([FromBody] UserUpdatePasswordDTO updateModel)
+        public async Task<ActionResult> ChangePassword([FromBody] AccountChangePasswordDTO updateModel)
         {
             try
             {
@@ -160,12 +160,43 @@ namespace WebAPI.Controllers
             }
         }
 
-        private TokenResponse GenerateToken(UserReadDTO userReadDTO)
+        [HttpPost("GetUser")]
+        public async Task<ActionResult> GetUser([FromBody] string userNameOrEmail)
+        {
+
+            try
+            {
+
+                var response = await _accountBLL.GetByUserNameOrEmail(userNameOrEmail);
+                if (response is AccountReadDTO)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return NotFound();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string friendlyError = FriendlyErrorMessages.ErrorOnReadOpeation;
+                _validateDTO.AddError(friendlyError);
+                _logger.LogError(ex, "GET USER BY EMAIL OPERATION : {userNameOrEmail}", userNameOrEmail);
+
+                return StatusCode(500, _validateDTO);
+            }
+        }
+
+        private TokenResponse GenerateToken(AccountReadDTO userReadDTO)
         {
 
             IEnumerable<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Email, userReadDTO.Email),
+                new Claim("ApplicationUserInfoId", userReadDTO.ApplicationUserInfoId.ToString()),
+                new Claim("UserID", userReadDTO.UserID),
+                new Claim("FullName", userReadDTO.FullName),
             };
 
             var securityKey = new SymmetricSecurityKey(

@@ -10,7 +10,7 @@ namespace DataTransferObjects.DTO
     public record PostPendingToPublishDTO
     {
         public int Id { get; init; }
-        public string ApplicationUserId { init; get; }
+        public int ApplicationUserInfoId { init; get; }
         public string UserName { init; get; }
         public string ProfilePic { init; get; }
         public string PostType { get; init; }

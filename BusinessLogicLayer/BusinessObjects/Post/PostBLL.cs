@@ -3,16 +3,19 @@ using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Entity;
 using DataTransferObjects;
 using DataTransferObjects.DTO;
-using DataTransferObjects.DTO.Post;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BusinessLogicLayer.BusinessObjects
 {
-    public class PostBLL : CRUDBaseBLL<Post, PostCreateDTO, PostReadDTO, PostUpdateDTO>, IPostBLL
+    public class PostBLL : BaseBLL<PostCreateDTO, PostReadDTO, PostUpdateDTO>, IPostBLL
     {
         private readonly IUnitOfWork _unitOfWork;
-        public PostBLL(IUnitOfWork unitOfWork, IMapper mapper, ILogger<PostBLL> logger, IDataAnnotationsValidator dataAnnotationsValidator) : base(unitOfWork.Posts, mapper, logger, dataAnnotationsValidator)
+        public PostBLL(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ILogger<PostBLL> logger,
+            IDataAnnotationsValidator dataAnnotationsValidator) :
+            base(unitOfWork, mapper, logger, dataAnnotationsValidator)
         {
             _unitOfWork = unitOfWork;
         }
@@ -30,7 +33,7 @@ namespace BusinessLogicLayer.BusinessObjects
 
         public async Task<ResponsePagedList<PostListDTO>> GetPostsPublishedByUserPagedAsync(int UserID, PagerParams pagerDTO)
         {
-            return await ExecutePagedListAsync(new GetPostsPublishedByUserPaged(UserID, _unitOfWork, Mapper, pagerDTO), pagerDTO);
+            return await ExecutePagedListAsync(new GetPostsByUserPaged(UserID, _unitOfWork, Mapper, pagerDTO, true), pagerDTO);
         }
 
         public async Task ApprovePostPublishAsync(int postId)
@@ -41,6 +44,38 @@ namespace BusinessLogicLayer.BusinessObjects
 
             await _unitOfWork.Posts.UpdateAsync(entity);
         }
+
+        protected override async Task ExecuteDeleteAsync(int id)
+        {
+            await _unitOfWork.Posts.DeleteAsync(id);
+        }
+
+        protected override async Task<PostReadDTO> ExecuteGetByIdAsync(int id)
+        {
+            var entity = await _unitOfWork.Posts.GetByIdAsync(id);
+            PostReadDTO readDTO = Mapper.Map<PostReadDTO>(entity);
+
+            return readDTO;
+        }
+
+        protected override async Task<PostReadDTO> ExecuteInsertAsync(PostCreateDTO createDTO)
+        {
+            var entity = Mapper.Map<Post>(createDTO);
+            entity.CreationDate = DateTime.Now;
+            await _unitOfWork.Posts.InsertAsync(entity);
+            PostReadDTO readDTO = Mapper.Map<PostReadDTO>(entity);
+            return readDTO;
+        }
+
+        protected override async Task<PostReadDTO> ExecuteUpdateAsync(PostUpdateDTO updateDTO)
+        {
+            var entity = await _unitOfWork.Posts.GetByIdAsync(updateDTO.Id);
+            Mapper.Map(updateDTO, entity);
+            await _unitOfWork.Posts.UpdateAsync(entity);
+            PostReadDTO readDTO = Mapper.Map<PostReadDTO>(entity);
+            return readDTO;
+        }
+
         public async Task<ValidatorResponse> ValidateApprovePostPublishAsync(int postId)
         {
 
@@ -66,8 +101,6 @@ namespace BusinessLogicLayer.BusinessObjects
 
             return this._validate;
         }
-
-
 
         protected override async Task ExecValidateDeleteAsync(int id)
         {
@@ -96,6 +129,10 @@ namespace BusinessLogicLayer.BusinessObjects
             }
         }
 
+        public async Task<ResponsePagedList<PostListDTO>> GetAllPostByUserPagedAsync(int UserID, PagerParams pagerDTO)
+        {
+            return await ExecutePagedListAsync(new GetPostsByUserPaged(UserID, _unitOfWork, Mapper, pagerDTO, false), pagerDTO);
 
+        }
     }
 }

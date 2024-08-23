@@ -10,7 +10,7 @@ namespace DataTransferObjects.DTO
     public record PostUpdateDTO
     {
         public int Id { get; init; }
-        public string ApplicationUserId { init; get; }
+        public int ApplicationUserInfoId { init; get; }
         public int PostTypeId { get; init; }
         public int MoodTypeId { get; init; }
 
