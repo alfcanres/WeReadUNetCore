@@ -8,7 +8,7 @@ using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.PostVote
 {
-    public interface IPostVoteRepository : IBaseRepository
+    public interface IPostVoteRepository 
     {
         Task<ResponseViewModel<PostVoteResultDTO>> CreateAsync(PostVoteCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);

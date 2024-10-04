@@ -4,7 +4,7 @@ using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.ApplicationUserInfo
 {
-    public interface IApplicationUserInfoRepository : IBaseRepository
+    public interface IApplicationUserInfoRepository 
     {
         Task<ResponseViewModel<ApplicationUserInfoReadDTO>> CreateAsync(ApplicationUserInfoCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);

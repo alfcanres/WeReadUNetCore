@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpPut("Approve")]
+        [HttpPut("Approve/{id}")]
         public async Task<ActionResult> Put(int id)
         {
 

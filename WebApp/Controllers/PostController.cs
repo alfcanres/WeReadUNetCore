@@ -3,11 +3,11 @@ using DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Client.Repository.Post;
 using WebAPI.Client.ViewModels;
-using WebApp.Models;
 using WebAPI.Client.Repository.PostType;
 using WebAPI.Client.Repository.MoodType;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebAPI.Client.Repository.ApplicationUserInfo;
+using WebAPI.Client.Repository;
 
 
 
@@ -17,11 +17,10 @@ namespace WebApp.Controllers
     {
         private readonly IPostRepository _repository;
         private readonly ILogger<PostController> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPostTypeRepository _postTypeRepository;
         private readonly IMoodTypeRepository _moodTypeRepository;
         private readonly IApplicationUserInfoRepository _applicationUserInfoRepository;
-        private readonly string _authToken;
+        private readonly IJwtTokenAuthenticationHandler _jwtTokenAuthenticationHandler;
         private readonly int _currentUserID;
 
         public PostController(
@@ -29,22 +28,21 @@ namespace WebApp.Controllers
             IPostTypeRepository postTypeRepository,
             IMoodTypeRepository moodTypeRepository,
             IApplicationUserInfoRepository applicationUserInfoRepository,
-            ILogger<PostController> logger,
-            IHttpContextAccessor httpContextAccessor)
+            IJwtTokenAuthenticationHandler jwtTokenAuthenticationHandler,
+            ILogger<PostController> logger)
         {
             _repository = repository;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
             _postTypeRepository = postTypeRepository;
             _moodTypeRepository = moodTypeRepository;
             _applicationUserInfoRepository = applicationUserInfoRepository;
-            _authToken = Convert.ToString(_httpContextAccessor.HttpContext.Request.Cookies["AuthToken"]);
+            _jwtTokenAuthenticationHandler = jwtTokenAuthenticationHandler;
 
-            if (!string.IsNullOrEmpty(_authToken))
+            string authToken = _jwtTokenAuthenticationHandler.GetToken();
+
+            if (!string.IsNullOrEmpty(authToken))
             {
-                _currentUserID = Helpers.ClaimsHelper.GetApplicationUserInfoId(_authToken);
-
-                _repository.SetBearerToken(_authToken);
+                _currentUserID = Helpers.ClaimsHelper.GetApplicationUserInfoId(authToken);
             }
 
         }
@@ -92,7 +90,6 @@ namespace WebApp.Controllers
             );
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Create(PostCreateDTO createDTO)
         {
@@ -139,7 +136,6 @@ namespace WebApp.Controllers
                 return View(createDTO);
             }
         }
-
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -228,9 +224,7 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> View(int id)
         {
-
-
-
+            
             var response = await _repository.GetByIdAsync(id);
 
             if (response.Status == ResponseStatus.Unauthorized)
@@ -241,7 +235,6 @@ namespace WebApp.Controllers
 
             return View(response.Content);
         }
-
 
         public async Task<IActionResult> Delete(int id)
         {
@@ -258,11 +251,11 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(PostUpdateDTO editModel)
+        public async Task<ActionResult> Delete(PostReadDTO postReadDTO)
         {
 
 
-            var response = await _repository.DeleteAsync(editModel.Id);
+            var response = await _repository.DeleteAsync(postReadDTO.Id);
 
             if (response.Status == ResponseStatus.Unauthorized)
             {
@@ -280,9 +273,52 @@ namespace WebApp.Controllers
                     ModelState.AddModelError(string.Empty, error);
                 }
 
-                return View(editModel);
+                return View(postReadDTO);
             }
         }
+
+
+        public async Task<IActionResult> Publish(int id)
+        {
+
+
+            var response = await _repository.GetByIdAsync(id);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            return View(response.Content);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Publish(PostReadDTO readDTO)
+        {
+
+
+            var response = await _repository.ApproveAsync(readDTO.Id);
+
+            if (response.Status == ResponseStatus.Unauthorized)
+            {
+                return RedirectToAction("Logout", "Account");
+            }
+
+            if (response.Status == ResponseStatus.Success)
+            {
+                return RedirectToAction("Index", "Post");
+            }
+            else
+            {
+                foreach (var error in response.MessageList)
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+
+                return View(readDTO);
+            }
+        }
+
 
         private async Task<ResponseStatus> LoadDropDowns()
         {

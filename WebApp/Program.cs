@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using WebAPI.Client.Helpers;
+using WebAPI.Client.Repository;
 using WebAPI.Client.Repository.Account;
 using WebAPI.Client.Repository.ApplicationUserInfo;
 using WebAPI.Client.Repository.MoodType;
@@ -7,6 +8,7 @@ using WebAPI.Client.Repository.Post;
 using WebAPI.Client.Repository.PostComment;
 using WebAPI.Client.Repository.PostType;
 using WebAPI.Client.Repository.PostVote;
+using WebApp.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,8 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IPostCommentRepository, PostCommentRepository>();
 builder.Services.AddScoped<IPostTypeRepository, PostTypeRepository>();
 builder.Services.AddScoped<IPostVoteRepository, PostVoteRepository>();
+
+builder.Services.AddScoped<IJwtTokenAuthenticationHandler, JwtTokenAuthenticationHandler>(); // Handles storing and retrieving JWT tokens
 
 
 builder.Services.AddHttpContextAccessor();

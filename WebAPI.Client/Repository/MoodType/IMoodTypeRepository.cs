@@ -4,7 +4,7 @@ using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.MoodType
 {
-    public interface IMoodTypeRepository : IBaseRepository
+    public interface IMoodTypeRepository 
     {
         Task<ResponseViewModel<MoodTypeReadDTO>> CreateAsync(MoodTypeCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using WebAPI.Client.Repository;
 using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Helpers
@@ -13,38 +14,38 @@ namespace WebAPI.Client.Helpers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _client;
-        private const string _refreshTokenEndpoint = "/api/Account/RefreshToken";
         private string _token = string.Empty;
         private readonly ILogger<HttpClientHelper> _logger;
+        private readonly IJwtTokenAuthenticationHandler _jwtAuthTokenHandler;
 
         public HttpClientHelper(
             IHttpClientFactory httpClientFactory,
             IConfiguration configuration,
-            ILogger<HttpClientHelper> logger)
+            ILogger<HttpClientHelper> logger,
+            IJwtTokenAuthenticationHandler jwtAuthTokenHandler)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
             _logger = logger;
             string _clientName = _configuration["HttpClientName"];
             _client = _httpClientFactory.CreateClient(_clientName);
+            _jwtAuthTokenHandler = jwtAuthTokenHandler;
+            _token = _jwtAuthTokenHandler.GetToken();
+
+            SetBearerToken();
+
         }
 
-        public string Token { get => _token; }
-
-        public void SetBearerToken(string bearerToken)
+        private void SetBearerToken()
         {
-
-
-            if (string.IsNullOrWhiteSpace(bearerToken))
+            if (string.IsNullOrEmpty(_token))
             {
                 _client.DefaultRequestHeaders.Authorization = null;
                 _token = string.Empty;
             }
             else
             {
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-                _token = bearerToken;
-
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             }
         }
         public async Task<ResponseViewModel<RetDTO>> GetResponse<RetDTO, InputDTO>(InputDTO inputDTO, HttpVerbsEnum HttpVerb, string endPoint = "")
@@ -227,26 +228,18 @@ namespace WebAPI.Client.Helpers
             return responseView;
 
         }
-
         private async Task<bool> RefreshTokenAsync()
         {
-            if (String.IsNullOrEmpty(Token))
+            if (String.IsNullOrEmpty(_token))
             {
                 return false;
             }
 
-            var response = await _client.PostAsync(_refreshTokenEndpoint, new StringContent(Token));
+            _token = await _jwtAuthTokenHandler.GetTokenRefreshAsync();
+            
+            SetBearerToken();
 
-            if (response.IsSuccessStatusCode)
-            {
-                var tokenResponse = await JsonSerializer.DeserializeAsync<TokenResponse>(await response.Content.ReadAsStreamAsync(),
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-                SetBearerToken(tokenResponse.Token);
-                return true;
-            }
-
-            return false;
+            return true;
         }
         private async Task<HttpResponseMessage> SendRequest(HttpVerbsEnum HttpVerb, string endPoint, HttpContent? content = null)
         {
@@ -271,6 +264,5 @@ namespace WebAPI.Client.Helpers
             return response;
         }
 
-        
     }
 }

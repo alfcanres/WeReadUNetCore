@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebAPI.Client.Repository
+namespace WebAPI.Test
 {
-    public interface IBaseRepository
+
+    public class PostRepositoryTest
     {
-        void SetBearerToken(string bearerToken);
     }
 }

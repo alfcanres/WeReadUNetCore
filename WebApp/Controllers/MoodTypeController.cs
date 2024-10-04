@@ -14,7 +14,6 @@ namespace WebApp.Controllers
 
         private readonly IMoodTypeRepository _repository;
         private readonly ILogger<MoodTypeController> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public MoodTypeController(
             IMoodTypeRepository repository, 
@@ -23,13 +22,7 @@ namespace WebApp.Controllers
         {
             _repository = repository;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
 
-            string token = Convert.ToString(_httpContextAccessor.HttpContext.Request.Cookies["AuthToken"]);
-
-
-
-            _repository.SetBearerToken(token);
         }
 
         public async Task<IActionResult> Index(PagerParams pager = null)
@@ -171,11 +164,11 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(MoodTypeUpdateDTO editModel)
+        public async Task<ActionResult> Delete(MoodTypeReadDTO readDTO)
         {
 
 
-            var response = await _repository.DeleteAsync(editModel.Id);
+            var response = await _repository.DeleteAsync(readDTO.Id);
 
             if (response.Status == ResponseStatus.Unauthorized)
             {
@@ -193,7 +186,7 @@ namespace WebApp.Controllers
                     ModelState.AddModelError(string.Empty, error);
                 }
 
-                return View(editModel);
+                return View(readDTO);
             }
         }
 

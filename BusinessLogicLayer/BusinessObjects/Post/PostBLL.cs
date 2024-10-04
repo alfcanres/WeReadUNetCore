@@ -52,7 +52,15 @@ namespace BusinessLogicLayer.BusinessObjects
 
         protected override async Task<PostReadDTO> ExecuteGetByIdAsync(int id)
         {
-            var entity = await _unitOfWork.Posts.GetByIdAsync(id);
+            var entity = await _unitOfWork
+                .Posts
+                .Query()
+                .Include(t => t.MoodType)
+                .Include(t => t.PostType)
+                .Include(t => t.ApplicationUserInfo)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id);
+
             PostReadDTO readDTO = Mapper.Map<PostReadDTO>(entity);
 
             return readDTO;
@@ -70,9 +78,23 @@ namespace BusinessLogicLayer.BusinessObjects
         protected override async Task<PostReadDTO> ExecuteUpdateAsync(PostUpdateDTO updateDTO)
         {
             var entity = await _unitOfWork.Posts.GetByIdAsync(updateDTO.Id);
+
             Mapper.Map(updateDTO, entity);
+            
             await _unitOfWork.Posts.UpdateAsync(entity);
-            PostReadDTO readDTO = Mapper.Map<PostReadDTO>(entity);
+
+            var updatedEntity = await _unitOfWork
+                                .Posts
+                                .Query()
+                                .Include(t => t.MoodType)
+                                .Include(t => t.PostType)
+                                .Include(t => t.ApplicationUserInfo)
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(t => t.Id == updateDTO.Id);
+
+
+            PostReadDTO readDTO = Mapper.Map<PostReadDTO>(updatedEntity);
+
             return readDTO;
         }
 

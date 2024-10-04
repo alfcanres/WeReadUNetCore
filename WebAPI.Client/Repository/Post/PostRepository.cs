@@ -11,14 +11,14 @@ namespace WebAPI.Client.Repository.Post
     {
 
         public PostRepository(IHttpClientHelper httpClientHelper) :
-            base("api/post",httpClientHelper)
+            base("api/post", httpClientHelper)
         {
 
         }
 
         public async Task<ResponseViewModel<bool>> ApproveAsync(int id)
         {
-            return await HttpClientHelper.GetValidateResponse<int>(id, HttpVerbsEnum.POST, $"{BaseEndPoint}/approve");
+            return await HttpClientHelper.GetValidateResponse<int>(id, HttpVerbsEnum.PUT, $"{BaseEndPoint}/approve/{id}");
         }
 
 

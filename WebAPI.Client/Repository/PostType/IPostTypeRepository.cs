@@ -9,7 +9,7 @@ using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.PostType
 {
-    public interface IPostTypeRepository : IBaseRepository
+    public interface IPostTypeRepository 
     {
         Task<ResponseViewModel<PostTypeReadDTO>> CreateAsync(PostTypeCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);

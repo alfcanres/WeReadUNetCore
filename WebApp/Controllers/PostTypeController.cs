@@ -12,19 +12,14 @@ namespace WebApp.Controllers
     {
         private readonly IPostTypeRepository _repository;
         private readonly ILogger<PostTypeController> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PostTypeController(
             IPostTypeRepository repository,
-            ILogger<PostTypeController> logger,
-            IHttpContextAccessor httpContextAccessor)
+            ILogger<PostTypeController> logger)
         {
             _repository = repository;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
 
-            string token = Convert.ToString(_httpContextAccessor.HttpContext.Request.Cookies["AuthToken"]);
-            _repository.SetBearerToken(token);
         }
 
         public async Task<IActionResult> Index(PagerParams pager = null)
@@ -165,10 +160,10 @@ namespace WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(PostTypeUpdateDTO editModel)
+        public async Task<ActionResult> Delete(PostTypeReadDTO postReadDTO)
         {
 
-            var response = await _repository.DeleteAsync(editModel.Id);
+            var response = await _repository.DeleteAsync(postReadDTO.Id);
 
             if (response.Status == ResponseStatus.Unauthorized)
             {
@@ -186,7 +181,7 @@ namespace WebApp.Controllers
                     ModelState.AddModelError(string.Empty, error);
                 }
 
-                return View(editModel);
+                return View(postReadDTO);
             }
         }
     }

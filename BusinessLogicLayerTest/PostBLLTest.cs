@@ -1,10 +1,6 @@
 ﻿using DataAccessLayer.Entity;
 using DataAccessLayer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using AutoMapper;
 using BusinessLogicLayer.BusinessObjects;
 using BusinessLogicLayer.Helpers;
@@ -245,6 +241,116 @@ namespace BusinessLogicLayerTest
             Assert.Equal(totalVotesExpected, totalVotesActual);
 
         }
+
+        [Fact]
+        public async Task GetById_Should_Retrieve_Post()
+        {
+            //Arrange
+
+            var dbOptions = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "Test")
+                .Options;
+
+            var dbContext = new AppDbContext(dbOptions);
+
+            await CreateTestDataAsync(dbContext);
+
+            int postId = 1;
+            string postTitleExpected = "Happy 1";
+            string postTextExpected = "3 Comments 3 Votes";
+            string postTypeExpected = "Any";
+            string moodTypeExpected = "Happy";
+            string postUserNameExpected = "TEST USER TEST USER";
+
+
+
+            var unitOfWork = new UnitOfWork(dbContext);
+
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<AutoMapperProfiles>();
+            });
+
+            var mapper = mapperConfiguration.CreateMapper();
+            IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
+            var logger = new Mock<ILogger<PostBLL>>();
+
+            PostBLL postBLL = new PostBLL(
+                unitOfWork,
+                mapper,
+                logger.Object,
+                validator
+                );
+
+            //Act
+            var response = await postBLL.GetByIdAsync(postId);
+
+            //Assert
+
+
+            Assert.Equal(postTitleExpected, response.Title);
+            Assert.Equal(postTextExpected, response.Text);
+            Assert.Equal(postTypeExpected, response.PostType);
+            Assert.Equal(moodTypeExpected, response.MoodType);
+            Assert.Equal(postUserNameExpected, response.UserFullName);
+
+        }
+
+        [Fact]
+        public async Task Approve_Post_Should_Be_Published()
+        {
+            //Arrange
+
+            var dbOptions = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "Test")
+                .Options;
+
+            var dbContext = new AppDbContext(dbOptions);
+
+            await CreateTestDataAsync(dbContext);
+
+
+            var postNotPublished = dbContext.Posts.Where(t => t.IsPublished == false).FirstOrDefault();
+
+            int postId = postNotPublished.Id;
+            bool publishedStatusExpected = true;
+            string publishedDateExpected = DateTime.Now.ToShortDateString();
+
+
+            var unitOfWork = new UnitOfWork(dbContext);
+
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<AutoMapperProfiles>();
+            });
+
+            var mapper = mapperConfiguration.CreateMapper();
+            IDataAnnotationsValidator validator = new DataAnnotationsValidatorHelper();
+            var logger = new Mock<ILogger<PostBLL>>();
+
+            PostBLL postBLL = new PostBLL(
+                unitOfWork,
+                mapper,
+                logger.Object,
+                validator
+                );
+
+            //Act
+            await postBLL.ApprovePostPublishAsync(postId);
+
+            var response = await postBLL.GetByIdAsync(postId);
+
+            string publishedDateActual = response.PublishDate.HasValue ? response.PublishDate.Value.ToShortDateString() : "";
+
+
+            //Assert
+
+            Assert.Equal(publishedStatusExpected, response.IsPublished);
+            Assert.Equal(publishedDateExpected, publishedDateActual);
+
+
+        }
+
 
 
         private async Task CreateTestDataAsync(AppDbContext dbContext)

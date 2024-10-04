@@ -24,7 +24,12 @@ namespace BusinessLogicLayer.Helpers
             CreateMap<PostCreateDTO, Post>();
             CreateMap<PostUpdateDTO, Post>();
             CreateMap<Post, PostReadDTO>()
-                 .ReverseMap();
+                .ForMember(t => t.UserName, t => t.MapFrom(m => m.ApplicationUserInfo.UserName))
+                .ForMember(t => t.UserFullName, t => t.MapFrom(m => m.ApplicationUserInfo.FirstName + " " + m.ApplicationUserInfo.LastName))
+                .ForMember(t => t.ProfilePic, t => t.MapFrom(m => m.ApplicationUserInfo.ProfilePicture))
+                .ForMember(t => t.PostType, t => t.MapFrom(m => m.PostType.Description))
+                .ForMember(t => t.MoodType, t => t.MapFrom(m => m.MoodType.Mood))
+                .ReverseMap();
 
             CreateMap<Post, PostPendingToPublishDTO>()
                 .ForMember(t => t.UserName, t => t.MapFrom(m => m.ApplicationUserInfo.UserName))

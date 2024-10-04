@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using WebAPI.Client.ViewModels;
+using WebAPI.Client.Repository;
 
 
 namespace WebApp.Controllers
@@ -14,13 +15,16 @@ namespace WebApp.Controllers
 
         private readonly ILogger<AccountController> _logger;
         private readonly IAccountRepository _accountRepository;
+        private readonly IJwtTokenAuthenticationHandler _jwtTokenAuthenticationHandler;
 
 
-        public AccountController(ILogger<AccountController> logger, IAccountRepository accountRepository)
+        public AccountController(ILogger<AccountController> logger, IAccountRepository accountRepository, IJwtTokenAuthenticationHandler jwtTokenAuthenticationHandler)
         {
             _logger = logger;
             _accountRepository = accountRepository;
+            _jwtTokenAuthenticationHandler = jwtTokenAuthenticationHandler;
         }
+
 
         public IActionResult Login()
         {
@@ -57,6 +61,8 @@ namespace WebApp.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                 HttpContext.Response.Cookies.Append("AuthToken", response.Content.Token, new CookieOptions { HttpOnly = true, Secure = true });
+
+                //_jwtTokenAuthenticationHandler.SaveToken(response.Content.Token);
 
                 return RedirectToAction("Index", "Home");
             }

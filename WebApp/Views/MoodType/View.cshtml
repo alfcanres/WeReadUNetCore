@@ -4,20 +4,7 @@
     ViewData["Title"] = "Mood Type";
 }
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (var key in ViewData.ModelState.Keys)
-            {
-                foreach (var error in ViewData.ModelState[key].Errors)
-                {
-                    <li>@error.ErrorMessage</li>
-                }
-            }
-        </ul>
-    </div>
-}
+<partial name="_ValidationSummary" model=@ViewData />
 
 <div class="form-group">
     <label asp-for="Id">Id</label>

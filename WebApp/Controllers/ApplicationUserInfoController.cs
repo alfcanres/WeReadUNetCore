@@ -10,19 +10,13 @@ namespace WebApp.Controllers
     {
         private readonly IApplicationUserInfoRepository _repository;
         private readonly ILogger<ApplicationUserInfoController> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ApplicationUserInfoController(
             IApplicationUserInfoRepository repository,
-            ILogger<ApplicationUserInfoController> logger,
-            IHttpContextAccessor httpContextAccessor)
+            ILogger<ApplicationUserInfoController> logger)
         {
             _repository = repository;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
-
-            string token = Convert.ToString(_httpContextAccessor.HttpContext.Request.Cookies["AuthToken"]);
-            _repository.SetBearerToken(token);
         }
 
         public async Task<IActionResult> Index(PagerParams pager = null)
@@ -69,11 +63,11 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(ApplicationUserInfoUpdateDTO editModel)
+        public async Task<ActionResult> Delete(ApplicationUserInfoReadDTO postReadDTO)
         {
 
 
-            var response = await _repository.DeleteAsync(editModel.Id);
+            var response = await _repository.DeleteAsync(postReadDTO.Id);
 
             if (response.Status == ResponseStatus.Unauthorized)
             {
@@ -91,7 +85,7 @@ namespace WebApp.Controllers
                     ModelState.AddModelError(string.Empty, error);
                 }
 
-                return View(editModel);
+                return View(postReadDTO);
             }
         }
 

@@ -25,12 +25,6 @@ namespace WebAPI.Client.Repository
             _baseEndPoint = baseEndPoint;
         }
 
-        public void SetBearerToken(string bearerToken)
-        {
-            HttpClientHelper.SetBearerToken(bearerToken);
-        }
-
-
         public async Task<ResponseViewModel<ReadDTO>> CreateAsync(CreateDTO createModel)
         {
             return await HttpClientHelper.GetResponse<ReadDTO, CreateDTO>(createModel, HttpVerbsEnum.POST, _baseEndPoint);

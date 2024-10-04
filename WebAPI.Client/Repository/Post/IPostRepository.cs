@@ -4,7 +4,7 @@ using WebAPI.Client.ViewModels;
 
 namespace WebAPI.Client.Repository.Post
 {
-    public interface IPostRepository : IBaseRepository
+    public interface IPostRepository 
     {
         Task<ResponseViewModel<PostReadDTO>> CreateAsync(PostCreateDTO createModel);
         Task<ResponseViewModel<bool>> DeleteAsync(int id);

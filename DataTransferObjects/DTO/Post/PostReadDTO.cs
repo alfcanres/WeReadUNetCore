@@ -12,6 +12,7 @@ namespace DataTransferObjects.DTO
         public int Id { get; init; }
         public int ApplicationUserInfoId { init; get; }
         public string UserName { init; get; }
+        public string UserFullName { init; get; }
         public int MoodTypeId { init; get; }
         public int PostTypeId { init; get; }
         public string ProfilePic { init; get; }
